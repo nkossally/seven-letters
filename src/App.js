@@ -1,10 +1,28 @@
-import { useState } from "react";
-import logo from "./logo.svg";
-import {randomAtoZ, lookUpWord} from "./util"
-import "./App.css";
+import { useState, useEffect } from "react";
+import { randomAtoZ, lookUpWord } from "./util";
+import WordTile from "./components/WordTile";
+import Sortable, { MultiDrag, Swap } from 'sortablejs';
+import {Container} from "./Container"
+import "./styles.scss";
+
+const HAND_SIZE = 7;
 
 function App() {
   const [input, setInput] = useState("");
+  const [hand, setHand] = useState([]);
+  const [hasGameStarted, setHasGameStarted] = useState(false);
+
+  useEffect(() => {
+    if(!hasGameStarted) {
+      let handBuilder = [];
+      for (let i = 0; i < HAND_SIZE; i++) {
+        const letter = randomAtoZ();
+        handBuilder.push(letter);
+      }
+      setHand(handBuilder);
+      setHasGameStarted(true)
+    }
+  }, [hasGameStarted]);
 
   const handleInput = (e) => {
     setInput(e.target.value);
@@ -12,22 +30,14 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
         <input onChange={handleInput}></input>
         <button onClick={() => lookUpWord(input)}> click me </button>
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+        <Container />
+        <div className="tile-row">
+          {hand.map((letter) => {
+            return <WordTile letter={letter} />;
+          })}
+        </div>
     </div>
   );
 }
