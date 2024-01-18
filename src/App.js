@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { randomAtoZ, lookUpWord } from "./util";
 import WordTile from "./components/WordTile";
-import Sortable, { MultiDrag, Swap } from "sortablejs";
 import { Container } from "./Container";
+import MultipleDragList from './components/multiple-list-dnd.component';
 import "./styles.scss";
 
 const HAND_SIZE = 7;
@@ -33,6 +33,8 @@ function App() {
       <input onChange={handleInput}></input>
       <button onClick={() => lookUpWord(input)}> click me </button>
       <Container />
+      <h3>Multiple Vertical Lists</h3>
+      <MultipleDragList />
       <div className="tile-row">
         {hand.map((letter) => {
           return <WordTile letter={letter} />;

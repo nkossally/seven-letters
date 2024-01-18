@@ -3,37 +3,39 @@ import { useCallback, useState } from 'react'
 import { Card } from './Card.js'
 const style = {
   width: 400,
+  display: "flex",
+ "flex-direction": "row",
 }
 export const Container = () => {
   {
     const [cards, setCards] = useState([
       {
         id: 1,
-        text: 'Write a cool JS library',
+        text: 'A',
       },
       {
         id: 2,
-        text: 'Make it generic enough',
+        text: 'E',
       },
       {
         id: 3,
-        text: 'Write README',
+        text: 'I',
       },
       {
         id: 4,
-        text: 'Create some examples',
+        text: 'T',
       },
       {
         id: 5,
-        text: 'Spam in Twitter and IRC to promote it (note that this element is taller than the others)',
+        text: 'S',
       },
       {
         id: 6,
-        text: '???',
+        text: 'j',
       },
       {
         id: 7,
-        text: 'PROFIT',
+        text: 'P',
       },
     ])
     const moveCard = useCallback((dragIndex, hoverIndex) => {
@@ -58,9 +60,11 @@ export const Container = () => {
       )
     }, [])
     return (
-      <>
-        <div style={style}>{cards.map((card, i) => renderCard(card, i))}</div>
-      </>
+      <div className="board">
+        <div style={style}>{cards.slice(0, 5).map((card, i) => renderCard(card, i))}</div>
+        <div className="blarg"/>
+        <div style={style}>{cards.slice(5).map((card, i) => renderCard(card, i))}</div>
+      </div>
     )
   }
 }

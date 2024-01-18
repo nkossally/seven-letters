@@ -10,11 +10,6 @@
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
@@ -49,4 +44,17 @@
   height: 60px;
   width: 35px;
   margin: 10px 10px;
+}
+
+.board {
+  width: 700px;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+.blarg {
+  width: 700px;
+  height: 300px;
+  border: 2px dotted green;
 }
