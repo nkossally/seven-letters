@@ -4,8 +4,6 @@ import "./index.css";
 import App from "./App";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import Example from './example'
-import {Container} from "./Container";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
