@@ -32,12 +32,7 @@ function App() {
     <div className="App">
       <input onChange={handleInput}></input>
       <button onClick={() => lookUpWord(input)}> click me </button>
-      <MultipleDragList />
-      <div className="tile-row">
-        {hand.map((letter) => {
-          return <WordTile letter={letter} />;
-        })}
-      </div>
+      <MultipleDragList hand={hand} />
     </div>
   );
 }
