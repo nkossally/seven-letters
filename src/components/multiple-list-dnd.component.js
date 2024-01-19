@@ -1,12 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { randomAtoZ, lookUpWord } from "../util";
 
-const getItems = (count, offset = 0) =>
-  Array.from({ length: count }, (v, k) => k).map((k) => ({
-    id: `item-${k + offset}`,
-    content: randomAtoZ(),
-  }));
+const HAND_SIZE = 7;
+
+const LETTER_VALUES = {
+  A: 1,
+  B: 3,
+  C: 3,
+  D: 2,
+  E: 1,
+  F: 4,
+  G: 2,
+  H: 4,
+  I: 1,
+  J: 8,
+  K: 5,
+  L: 1,
+  M: 3,
+  N: 1,
+  O: 1,
+  P: 3,
+  Q: 10,
+  R: 1,
+  S: 1,
+  T: 1,
+  U: 1,
+  V: 4,
+  W: 4,
+  X: 8,
+  Y: 4,
+  Z: 10,
+};
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -50,12 +75,30 @@ const getListStyle = (isDraggingOver) => ({
   width: 500,
   height: 80,
   display: "flex",
-  "flexDirection": "row",
+  flexDirection: "row",
 });
 
 const MultipleDragList = ({ hand }) => {
-  const [items, setItems] = useState(getItems(7));
+  const [items, setItems] = useState([]);
   const [selected, setSelected] = useState([]);
+  const [score, setScore] = useState(0);
+
+  const getItems = (count) => {
+    const newItems = Array.from(items);
+    for (let i = 1; i <= count; i++) {
+      if (newItems.find((item) => item.id === `item-${i}`) === undefined) {
+        newItems.push({
+          id: `item-${i}`,
+          content: randomAtoZ(),
+        });
+      }
+    }
+    setItems(newItems);
+  };
+
+  useEffect(() => {
+    getItems(HAND_SIZE);
+  }, [items.length + selected.length]);
 
   // Defining unique ID for multiple lists
   const id2List = {
@@ -100,17 +143,23 @@ const MultipleDragList = ({ hand }) => {
     }
   };
 
-  const submitWord = async () =>{
-    const word = selected.map(item =>
-         item["content"]
-    ).join("")
+  const submitWord = async () => {
+    const letters = selected.map((item) => item["content"]);
+    let sum = letters.reduce((acc, letter) => acc + LETTER_VALUES[letter], 0);
+    const word = letters.join("");
     const result = await lookUpWord(word);
-    console.log(word)
-    console.log(result)
-  }
+    if (result !== undefined) {
+      setSelected([]);
+      setScore(score + sum);
+    }
+    console.log(word);
+    console.log(result);
+  };
 
   return (
-    <div style={{ display: "flex", "flexDirection": "column" }}>
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      <div className="score">{score}</div>
+
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="droppable" direction="horizontal">
           {(provided, snapshot) => (
@@ -131,6 +180,7 @@ const MultipleDragList = ({ hand }) => {
                       )}
                     >
                       {item.content}
+                      {LETTER_VALUES[item.content]}
                     </div>
                   )}
                 </Draggable>
