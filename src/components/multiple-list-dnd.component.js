@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { randomAtoZ, lookUpWord } from "../util";
 
 const getItems = (count, offset = 0) =>
     Array.from({ length: count }, (v, k) => k).map(k => ({
         id: `item-${k + offset}`,
-        content: `item ${k + offset}`
+        content: randomAtoZ()
     }));
 
 const reorder = (list, startIndex, endIndex) => {
@@ -38,6 +39,7 @@ const getItemStyle = (isDragging, draggableStyle) => ({
     margin: `0 0 ${grid}px 0`,
 
     background: isDragging ? 'lightgreen' : 'grey',
+    border: '2px solid black',
 
     ...draggableStyle
 });
@@ -45,13 +47,16 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 const getListStyle = isDraggingOver => ({
     background: isDraggingOver ? 'lightblue' : 'lightgrey',
     padding: grid,
-    width: 250
+    width: 500,
+    height: 80,
+    display: "flex",
+    "flex-direction": "row"
 });
 
 class MultipleDragList extends Component {
     state = {
-        items: getItems(10),
-        selected: getItems(5, 10)
+        items: getItems(7),
+        selected: []
     };
 
     // Defining unique ID for multiple lists
@@ -103,9 +108,9 @@ class MultipleDragList extends Component {
 
     render() {
         return (
-            <div style={{ 'display': 'flex' }}>
+            <div style={{ 'display': 'flex' , 'flex-direction': 'column'}}>
                 <DragDropContext onDragEnd={this.onDragEnd}>
-                    <Droppable droppableId="droppable">
+                    <Droppable droppableId="droppable" direction="horizontal">
                         {(provided, snapshot) => (
                             <div
                                 ref={provided.innerRef}
@@ -133,7 +138,7 @@ class MultipleDragList extends Component {
                             </div>
                         )}
                     </Droppable>
-                    <Droppable droppableId="droppable2">
+                    <Droppable droppableId="droppable2" direction="horizontal">
                         {(provided, snapshot) => (
                             <div
                                 ref={provided.innerRef}

@@ -32,8 +32,6 @@ function App() {
     <div className="App">
       <input onChange={handleInput}></input>
       <button onClick={() => lookUpWord(input)}> click me </button>
-      <Container />
-      <h3>Multiple Vertical Lists</h3>
       <MultipleDragList />
       <div className="tile-row">
         {hand.map((letter) => {
