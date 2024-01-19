@@ -51,7 +51,7 @@ export const lookUpWord = async (word) => {
   try {
     const resp = await fetch(`${DICTIONARY_ENDPOINT}${word}`);
     const responseJson = await resp.json();
-    console.log(responseJson[0]["meanings"][0]["definitions"][0]["definition"]);
+    return responseJson[0]["meanings"][0]["definitions"][0]["definition"];
   } catch (e) {
   }
 };

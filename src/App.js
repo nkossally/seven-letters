@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import { randomAtoZ, lookUpWord } from "./util";
-import WordTile from "./components/WordTile";
-import { Container } from "./Container";
 import MultipleDragList from './components/multiple-list-dnd.component';
 import "./styles.scss";
 

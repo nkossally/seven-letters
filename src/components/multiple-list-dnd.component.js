@@ -50,7 +50,7 @@ const getListStyle = (isDraggingOver) => ({
   width: 500,
   height: 80,
   display: "flex",
-  "flex-direction": "row",
+  "flexDirection": "row",
 });
 
 const MultipleDragList = ({ hand }) => {
@@ -100,8 +100,17 @@ const MultipleDragList = ({ hand }) => {
     }
   };
 
+  const submitWord = async () =>{
+    const word = selected.map(item =>
+         item["content"]
+    ).join("")
+    const result = await lookUpWord(word);
+    console.log(word)
+    console.log(result)
+  }
+
   return (
-    <div style={{ display: "flex", "flex-direction": "column" }}>
+    <div style={{ display: "flex", "flexDirection": "column" }}>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="droppable" direction="horizontal">
           {(provided, snapshot) => (
@@ -158,6 +167,7 @@ const MultipleDragList = ({ hand }) => {
           )}
         </Droppable>
       </DragDropContext>
+      <button onClick={submitWord}> clickity </button>
     </div>
   );
 };
