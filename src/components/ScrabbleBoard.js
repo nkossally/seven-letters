@@ -9,7 +9,7 @@ const ScrabbleBoard = () => {
     dw: [16, 32, 48, 64],
     dl: [3, 36, 45, 52, 92, 96, 108],
   };
-  const arr = [1, 2, 3,4,5,6,7,8,9,10,11,12,13,14,15]
+  const arr = Array(15).fill("")
   const toTileIndex = (row, column) => {
     var boardLen = 15;
     if (row < boardLen && row >= 0 && column < boardLen && column >= 0) {
@@ -57,9 +57,9 @@ const ScrabbleBoard = () => {
   };
 
   return(
-  <div id="js-board" className="board">
+    <div id="js-board">
+  <div  className="board">
     {arr.map((elem, i) => {
-        console.log(i)
       return (
         <div className="row">
           {arr.map((elem, j) => {
@@ -85,6 +85,7 @@ const ScrabbleBoard = () => {
                 )}
                 data-row={i}
                 data-col={j}
+                key={`tile${i}.${j}`}
               >
                 <div className="decal"> {addLetters && specialScore.toUpperCase()}</div>
                 <input maxLength={1} readOnly={1}></input>
@@ -92,9 +93,10 @@ const ScrabbleBoard = () => {
             );
           })}
         </div>
+        
       );
     })}
-  </div>)
+  </div> </div>)
 
   // tabletop.append(board);
   // // listener for tile keydown event
