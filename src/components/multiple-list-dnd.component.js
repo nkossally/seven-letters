@@ -147,21 +147,20 @@ const MultipleDragList = ({ hand }) => {
     const letters = selected.map((item) => item["content"]);
     let sum = letters.reduce((acc, letter) => acc + LETTER_VALUES[letter], 0);
     const word = letters.join("");
+    if(word.length < 3) return;
     const result = await lookUpWord(word);
     if (result !== undefined) {
       setSelected([]);
       setScore(score + sum);
     }
-    console.log(word);
-    console.log(result);
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
+    <div className="board">
       <div className="score">{score}</div>
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="droppable" direction="horizontal">
+        <Droppable droppableId="droppable" direction="horizontal" >
           {(provided, snapshot) => (
             <div
               ref={provided.innerRef}
@@ -178,9 +177,10 @@ const MultipleDragList = ({ hand }) => {
                         snapshot.isDragging,
                         provided.draggableProps.style
                       )}
+                      className="tile"
                     >
-                      {item.content}
-                      {LETTER_VALUES[item.content]}
+                      <div>{item.content}</div>
+                      <div className="letter-val">{LETTER_VALUES[item.content]}</div>
                     </div>
                   )}
                 </Draggable>
@@ -206,9 +206,10 @@ const MultipleDragList = ({ hand }) => {
                         snapshot.isDragging,
                         provided.draggableProps.style
                       )}
+                      className="tile"
                     >
-                      {item.content}
-                    </div>
+                      <div>{item.content}</div>
+                      <div className="letter-val">{LETTER_VALUES[item.content]}</div>                    </div>
                   )}
                 </Draggable>
               ))}
@@ -217,7 +218,7 @@ const MultipleDragList = ({ hand }) => {
           )}
         </Droppable>
       </DragDropContext>
-      <button onClick={submitWord}> clickity </button>
+      <button onClick={submitWord} className="submit-button"> Submit </button>
     </div>
   );
 };

@@ -1,37 +1,18 @@
 import { useState, useEffect } from "react";
 import { randomAtoZ, lookUpWord } from "./util";
 import MultipleDragList from './components/multiple-list-dnd.component';
+import ScrabbleBoard from './components/ScrabbleBoard';
 import "./styles.scss";
 
 const HAND_SIZE = 7;
 
 function App() {
-  const [input, setInput] = useState("");
-  const [hand, setHand] = useState([]);
-  const [hasGameStarted, setHasGameStarted] = useState(false);
-
-  useEffect(() => {
-    if (!hasGameStarted) {
-      let handBuilder = [];
-      for (let i = 0; i < HAND_SIZE; i++) {
-        const letter = randomAtoZ();
-        handBuilder.push(letter);
-      }
-      setHand(handBuilder);
-      setHasGameStarted(true);
-    }
-  }, [hasGameStarted]);
-
-  const handleInput = (e) => {
-    setInput(e.target.value);
-  };
 
   return (
-    <div className="App">
-      <input onChange={handleInput}></input>
-      <button onClick={() => lookUpWord(input)}> click me </button>
-      <MultipleDragList hand={hand} />
-    </div>
+    // <div className="App">
+      <ScrabbleBoard />
+      // <MultipleDragList />
+    // </div>
   );
 }
 

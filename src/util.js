@@ -4,32 +4,32 @@ const HUNDRED_THOUSAND = 100000;
 // Ranges calculated from data found at
   // http://en.wikipedia.org/wiki/Letter_frequency
 var LETTER_FREQUENCIES = {
-  a: 8167,
-  b: 9659,
-  c: 12441,
-  d: 16694,
-  e: 29396,
-  f: 31624,
-  g: 33639,
-  h: 39733,
-  i: 46699,
-  j: 46852,
-  k: 47624,
-  l: 51649,
-  m: 54055,
-  n: 60804,
-  o: 68311,
-  p: 70240,
-  q: 70335,
-  r: 76322,
-  s: 82649,
-  t: 91705,
-  u: 94463,
-  v: 95441,
-  w: 97801,
-  x: 97951,
-  y: 99925,
-  z: HUNDRED_THOUSAND,
+  A: 8167,
+  B: 9659,
+  C: 12441,
+  D: 16694,
+  E: 29396,
+  F: 31624,
+  G: 33639,
+  H: 39733,
+  I: 46699,
+  J: 46852,
+  K: 47624,
+  L: 51649,
+  M: 54055,
+  M: 60804,
+  O: 68311,
+  P: 70240,
+  Q: 70335,
+  R: 76322,
+  S: 82649,
+  T: 91705,
+  U: 94463,
+  V: 95441,
+  W: 97801,
+  X: 97951,
+  Y: 99925,
+  Z: HUNDRED_THOUSAND,
 };
 
 export const randomAtoZ = () => {
@@ -39,7 +39,7 @@ export const randomAtoZ = () => {
   let result;
   for (let i = 0; i < letters.length; i++) {
     const letter = letters[i];
-    if (LETTER_FREQUENCIES[letter.toLowerCase()] > random) {
+    if (LETTER_FREQUENCIES[letter] > random) {
       result = letter;
       break;
     }
