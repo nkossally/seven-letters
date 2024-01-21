@@ -4,12 +4,17 @@ const ScrabbleBoard = () => {
   var tileScore = {};
   var tileScoreIdx = {
     ct: [112],
-    tw: [0, 7, 105],
-    tl: [20, 76, 80],
-    dw: [16, 32, 48, 64],
-    dl: [3, 36, 45, 52, 92, 96, 108],
+    tw: [0, 7, 14, 105, 119, 210, 217, 224],
+    tl: [20, 24, 76, 80, 84, 88, 136, 140, 144, 148, 200, 204],
+    dw: [
+      16, 28, 32, 42, 48, 56, 64, 70, 154, 160, 168, 176, 182, 192, 196, 208,
+    ],
+    dl: [
+      3, 11, 36, 38, 45, 52, 59, 88, 92, 96, 98, 102, 108, 116, 122, 126, 128,
+      132, 165, 172, 179, 186, 188, 213, 221,
+    ],
   };
-  const arr = Array(15).fill("")
+  const arr = Array(15).fill("");
   const toTileIndex = (row, column) => {
     var boardLen = 15;
     if (row < boardLen && row >= 0 && column < boardLen && column >= 0) {
@@ -56,47 +61,40 @@ const ScrabbleBoard = () => {
     return null;
   };
 
-  return(
+  return (
     <div id="js-board">
-  <div  className="board">
-    {arr.map((elem, i) => {
-      return (
-        <div className="row">
-          {arr.map((elem, j) => {
-            const specialScore = getSpecialTileScoreIdx(i, j);
-            const addLetters =
-              specialScore && (i !== boardSize / 2 || j !== boardSize / 2);
-
-            if (specialScore && j <= boardSize) {
-              // flip col
-              var tiHMir = toTileIndex(i, boardSize - j);
-              tileScoreIdx[specialScore].push(tiHMir);
-            }
-            if (specialScore && i <= boardSize) {
-              // flip row
-              var tiVMir = toTileIndex(boardSize - i, j);
-              tileScoreIdx[specialScore].push(tiVMir);
-            }
-            return (
-              <div
-                className={classNames(
-                  "tile",
-                  specialScore && `tile-${specialScore}`
-                )}
-                data-row={i}
-                data-col={j}
-                key={`tile${i}.${j}`}
-              >
-                <div className="decal"> {addLetters && specialScore.toUpperCase()}</div>
-                <input maxLength={1} readOnly={1}></input>
-              </div>
-            );
-          })}
-        </div>
-        
-      );
-    })}
-  </div> </div>)
+      <div className="board">
+        {arr.map((elem, i) => {
+          return (
+            <div className="row" key={`row${i}`}>
+              {arr.map((elem, j) => {
+                const specialScore = getSpecialTileScoreIdx(i, j);
+                const addLetters =
+                  specialScore && (i !== boardSize / 2 || j !== boardSize / 2);
+                return (
+                  <div
+                    className={classNames(
+                      "tile",
+                      specialScore && `tile-${specialScore}`
+                    )}
+                    data-row={i}
+                    data-col={j}
+                    key={`tile${i}.${j}`}
+                  >
+                    <div className="decal">
+                      {" "}
+                      {addLetters && specialScore.toUpperCase()}
+                    </div>
+                    <input maxLength={1} readOnly={1}></input>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>{" "}
+    </div>
+  );
 
   // tabletop.append(board);
   // // listener for tile keydown event
