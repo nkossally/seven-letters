@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import $ from "jquery";
 import Draggable from "react-draggable";
+import Letter from "./Letter";
 
 const LETTER_COUNTS = {
   A: 9,
@@ -35,6 +36,7 @@ const LETTER_COUNTS = {
 const Hand = () => {
   const [hand, setHand] = useState([]);
   const [lettersLeft, setLettersLeft] = useState([]);
+  const [count, setCount] = useState(0);
 
   const shuffle = (array) => {
     let currentIndex = array.length,
@@ -65,6 +67,7 @@ const Hand = () => {
     });
     letters = shuffle(letters);
     setHand(letters.slice(0, 7));
+    setCount(count + 1);
     setLettersLeft(letters.slice(7));
   }, []);
 
@@ -75,7 +78,7 @@ const Hand = () => {
 
     $(":visible").each(function () {
       var offset = $(this).offset();
-    //     console.log(offset)
+      //     console.log(offset)
 
       if (
         offset.left < x &&
@@ -90,26 +93,38 @@ const Hand = () => {
     return hitElements;
   };
 
-  const onStop = (e) => {
+  const onStop = (e, i) => {
     const elems = getHitElements(e);
-    elems.forEach(elem =>{
+    let row;
+    let col;
+    for (let i = 0; i < elems.length; i++) {
+      const maybeRow = parseInt(elems[i][0].getAttribute("data-row"));
+      const maybeCol = parseInt(elems[i][0].getAttribute("data-col"));
+      if (typeof maybeCol === "number" && typeof maybeRow === "number") {
+        row = maybeRow;
+        col = maybeCol;
+        setCount(count + 1)
+        setHand(hand.slice(0, i).concat(hand.slice(i + 1)));
+        break;
+      }
+    }
+    if (!(typeof col === "number" && typeof row === "number")) {
+      setCount(count + 1)
 
-    console.log(elem[0].getAttribute("data-row"))
-    console.log(elem[0].getAttribute("data-col"))
-
-    })
+      setHand(hand)
+    }
+    console.log(row, col);
   };
 
-  const onDrag = () =>{
-    
-  }
   return (
     <div className="hand">
       {hand.map((letter, i) => {
         return (
-          <Draggable onStop={onStop} key={`draggable-${i}`}>
-            <div className="hand-tile">{letter}</div>
-          </Draggable>
+          <Letter
+            onStop={(e) => onStop(e, i)}
+            letter={letter}
+            key={`draggable-${i}.${letter}.${count}`}
+          />
         );
       })}
     </div>
