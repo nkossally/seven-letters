@@ -1,6 +1,6 @@
 import classNames from "classnames";
 
-const ScrabbleBoard = () => {
+const ScrabbleBoard2 = () => {
   var boardSize = 14;
   var tileScore = {};
   var tileScoreIdx = {
@@ -82,11 +82,11 @@ const ScrabbleBoard = () => {
                     data-col={j}
                     key={`tile${i}.${j}`}
                   >
-                    <div className="decal">
+                    <div className="decal" data-row={i}
+                    data-col={j}>
                       {" "}
                       {addLetters && specialScore.toUpperCase()}
                     </div>
-                    <input maxLength={1} readOnly={1}></input>
                   </div>
                 );
               })}
@@ -119,4 +119,4 @@ const ScrabbleBoard = () => {
 //   });
 };
 
-export default ScrabbleBoard;
+export default ScrabbleBoard2;
