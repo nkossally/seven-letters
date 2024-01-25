@@ -1,4 +1,6 @@
 import { useEffect, useState, useRef } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { addLetterToBoard } from "../reducers/boardValuesSlice"
 import $ from "jquery";
 import Letter from "./Letter";
 import _ from 'lodash';
@@ -37,6 +39,7 @@ const Hand = ({setPlacedLetters, placedLetters}) => {
   const [hand, setHand] = useState([]);
   const [lettersLeft, setLettersLeft] = useState([]);
   const [count, setCount] = useState(0);
+  const dispatch = useDispatch();
 
   const shuffle = (array) => {
     let currentIndex = array.length,
@@ -78,7 +81,6 @@ const Hand = ({setPlacedLetters, placedLetters}) => {
 
     $(":visible").each(function () {
       var offset = $(this).offset();
-      //     console.log(offset)
 
       if (
         offset.left < x &&
@@ -108,14 +110,16 @@ const Hand = ({setPlacedLetters, placedLetters}) => {
         setPlacedLetters(newPlacedLetters)
         setCount(count + 1)
         setHand(hand.slice(0, idx).concat(hand.slice(idx + 1)));
+        dispatch(addLetterToBoard({row, col, letter}))
         break;
       }
     }
-    if (!(typeof col === "number" && typeof row === "number")) {
+    if (!(!isNaN( row)  && !isNaN(col))) {
+      // If the letter tile was not dragged to a spot on the board
+      // trigger a re-render that snaps the letter back to the original hand placement.
       setCount(count + 1)
       setHand(hand)
     }
-    console.log(row, col);
   };
 
   return (

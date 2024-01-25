@@ -182,6 +182,7 @@ body {
           }
         }
       }
+      
     }
   }
 }
@@ -227,17 +228,30 @@ body {
   border: 2px dotted green;
 }
 
-.hand-tile {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-transform: uppercase;
-  font-size: 35px;
-  height: 40px;
-  width: 35px;
-  margin: 10px 10px;
-  border: 2px solid black;
+// .hand-tile {
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: center;
+//   text-transform: uppercase;
+//   font-size: 35px;
+//   height: 40px;
+//   width: 35px;
+//   margin: 10px 10px;
+//   border: 2px solid black;
+//   z-index: 1000;
+// }
+.hand-tile{
+  @include coloredSquare($tile-size, $tile-color);
+  border: solid $tile-border-color $tile-border-width;
+  display: inline-block;
+  color: $decal-font-color;
+  font-size: 30px;
+  font-weight: 900;
+  text-align: center;
+  display: inline-flex; 
   z-index: 1000;
+
+
 }
 
 

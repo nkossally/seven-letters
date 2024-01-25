@@ -1,3 +1,4 @@
+import { BOARD_SIZE } from "./consts";
 const DICTIONARY_ENDPOINT = "https://api.dictionaryapi.dev/api/v2/entries/en/"
 const HUNDRED_THOUSAND = 100000;
 
@@ -17,7 +18,7 @@ var LETTER_FREQUENCIES = {
   K: 47624,
   L: 51649,
   M: 54055,
-  M: 60804,
+  N: 60804,
   O: 68311,
   P: 70240,
   Q: 70335,
@@ -55,3 +56,12 @@ export const lookUpWord = async (word) => {
   } catch (e) {
   }
 };
+
+export const createEmptyBoard = () =>{
+  const arr = [];
+  for(let i = 0; i < BOARD_SIZE; i++){
+    arr.push([])
+  }
+  return arr;
+}
+

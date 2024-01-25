@@ -1,7 +1,12 @@
 import classNames from "classnames";
+import { BOARD_SIZE } from "../consts";
+import { useSelector, useDispatch } from "react-redux";
 
 const ScrabbleBoard2 = ({ placedLetters }) => {
-  var boardSize = 14;
+  const boardValues = useSelector((state) => state.boardValues);
+  console.log(boardValues);
+  var boardSize = BOARD_SIZE - 1;
+
   var tileScore = {};
   var tileScoreIdx = {
     ct: [112],
@@ -15,11 +20,10 @@ const ScrabbleBoard2 = ({ placedLetters }) => {
       132, 165, 172, 179, 186, 188, 213, 221,
     ],
   };
-  const arr = Array(15).fill("");
+  const arr = Array(BOARD_SIZE).fill("");
   const toTileIndex = (row, column) => {
-    var boardLen = 15;
-    if (row < boardLen && row >= 0 && column < boardLen && column >= 0) {
-      return row * boardLen + column;
+    if (row < BOARD_SIZE && row >= 0 && column < BOARD_SIZE && column >= 0) {
+      return row * BOARD_SIZE + column;
     } else {
       return -1;
     }
@@ -73,25 +77,33 @@ const ScrabbleBoard2 = ({ placedLetters }) => {
                 const addLetters =
                   specialScore && (i !== boardSize / 2 || j !== boardSize / 2);
                 return (
-                  <div
-                    className={classNames(
-                      "tile",
-                      specialScore && `tile-${specialScore}`
+                  <>
+                    {typeof boardValues[i][j] === "string" && (
+                      <div className="hand-tile">
+                        {boardValues[i][j]}
+                      </div>
                     )}
-                    data-row={i}
-                    data-col={j}
-                    key={`tile${i}.${j}`}
-                  >
-                    <div className="decal" data-row={i} data-col={j}>
-                      {placedLetters[i] && placedLetters[i][j] && placedLetters[i][j]}
-                      {addLetters && specialScore.toUpperCase()}
-                    </div>
-                  </div>
+                    {typeof boardValues[i][j] !== "string" && (
+                      <div
+                        className={classNames(
+                          "tile",
+                          specialScore && `tile-${specialScore}`
+                        )}
+                        data-row={i}
+                        data-col={j}
+                        key={`tile${i}.${j}`}
+                      >
+                        <div className="decal" data-row={i} data-col={j}>
+                          {addLetters && specialScore.toUpperCase()}
+                        </div>
+                      </div>
+                    )}
+                  </>
                 );
               })}
             </div>
           );
-        })}
+        })}{" "}
       </div>{" "}
     </div>
   );
