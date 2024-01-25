@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import $ from "jquery";
-import Draggable from "react-draggable";
 import Letter from "./Letter";
+import _ from 'lodash';
 
 const LETTER_COUNTS = {
   A: 9,
@@ -33,7 +33,7 @@ const LETTER_COUNTS = {
   "": 2,
 };
 
-const Hand = () => {
+const Hand = ({setPlacedLetters, placedLetters}) => {
   const [hand, setHand] = useState([]);
   const [lettersLeft, setLettersLeft] = useState([]);
   const [count, setCount] = useState(0);
@@ -82,9 +82,9 @@ const Hand = () => {
 
       if (
         offset.left < x &&
-        offset.left + 50 > x &&
+        offset.left + 30 > x &&
         offset.top < y &&
-        offset.top + 50 > y
+        offset.top + 30 > y
       ) {
         hitElements.push($(this));
       }
@@ -93,24 +93,26 @@ const Hand = () => {
     return hitElements;
   };
 
-  const onStop = (e, i) => {
+  const onStop = (e, idx, letter) => {
     const elems = getHitElements(e);
     let row;
     let col;
     for (let i = 0; i < elems.length; i++) {
       const maybeRow = parseInt(elems[i][0].getAttribute("data-row"));
       const maybeCol = parseInt(elems[i][0].getAttribute("data-col"));
-      if (typeof maybeCol === "number" && typeof maybeRow === "number") {
+      if (!isNaN( maybeCol)  && !isNaN(maybeRow)) {
         row = maybeRow;
         col = maybeCol;
+        const newPlacedLetters = _.cloneDeep(placedLetters)
+        newPlacedLetters[row][col] = letter;
+        setPlacedLetters(newPlacedLetters)
         setCount(count + 1)
-        setHand(hand.slice(0, i).concat(hand.slice(i + 1)));
+        setHand(hand.slice(0, idx).concat(hand.slice(idx + 1)));
         break;
       }
     }
     if (!(typeof col === "number" && typeof row === "number")) {
       setCount(count + 1)
-
       setHand(hand)
     }
     console.log(row, col);
@@ -121,7 +123,7 @@ const Hand = () => {
       {hand.map((letter, i) => {
         return (
           <Letter
-            onStop={(e) => onStop(e, i)}
+            onStop={(e) => onStop(e, i, letter)}
             letter={letter}
             key={`draggable-${i}.${letter}.${count}`}
           />

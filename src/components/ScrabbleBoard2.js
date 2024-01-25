@@ -1,6 +1,6 @@
 import classNames from "classnames";
 
-const ScrabbleBoard2 = () => {
+const ScrabbleBoard2 = ({ placedLetters }) => {
   var boardSize = 14;
   var tileScore = {};
   var tileScoreIdx = {
@@ -82,9 +82,8 @@ const ScrabbleBoard2 = () => {
                     data-col={j}
                     key={`tile${i}.${j}`}
                   >
-                    <div className="decal" data-row={i}
-                    data-col={j}>
-                      {" "}
+                    <div className="decal" data-row={i} data-col={j}>
+                      {placedLetters[i] && placedLetters[i][j] && placedLetters[i][j]}
                       {addLetters && specialScore.toUpperCase()}
                     </div>
                   </div>
@@ -96,27 +95,6 @@ const ScrabbleBoard2 = () => {
       </div>{" "}
     </div>
   );
-
-//   tabletop.append(board);
-//   // listener for tile keydown event
-//   tabletop.on('keydown', '.tile input', function(event) {
-//     var elem = $(this);
-//     var ltr = event.key;
-//     var keyCode = event.keyCode;
-//     // only update on alphabet char
-//     if(keyCode >= 65 && keyCode <= 90) {
-//       elem.val(ltr);
-//       elem.addClass('filled');
-//       elem.parent(".tile").attr("data-value", sb.letterValue(ltr));
-//     }
-//     // clear on backspace or delete
-//     else if(keyCode == 8 || keyCode == 46) {
-//       elem.removeClass('filled');
-//       elem.parent(".tile").removeAttr("data-value");
-//     }
-//     // allow change
-//     return true;
-//   });
 };
 
 export default ScrabbleBoard2;

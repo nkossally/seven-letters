@@ -1,11 +1,9 @@
-import { useEffect, useState, useRef } from "react";
 import Draggable from "react-draggable";
 
 const Letter = ({ letter, onStop }) => {
-
   return (
     <Draggable onStop={onStop}>
-      <div className="hand-tile"  >{letter}</div>
+      <div className="hand-tile">{letter}</div>
     </Draggable>
   );
 };
