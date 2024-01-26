@@ -1,10 +1,10 @@
 import classNames from "classnames";
 import { BOARD_SIZE } from "../consts";
 import { useSelector, useDispatch } from "react-redux";
+import Letter from "./Letter"
 
-const ScrabbleBoard2 = ({ placedLetters }) => {
+const ScrabbleBoard2 = () => {
   const boardValues = useSelector((state) => state.boardValues);
-  console.log(boardValues);
   var boardSize = BOARD_SIZE - 1;
 
   var tileScore = {};
@@ -79,9 +79,8 @@ const ScrabbleBoard2 = ({ placedLetters }) => {
                 return (
                   <>
                     {typeof boardValues[i][j] === "string" && (
-                      <div className="hand-tile">
-                        {boardValues[i][j]}
-                      </div>
+                      <Letter letter={boardValues[i][j]} />
+                        
                     )}
                     {typeof boardValues[i][j] !== "string" && (
                       <div

@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { modifyHand } from "../reducers/handSlice"
 import { addLetterToBoard } from "../reducers/boardValuesSlice"
 import $ from "jquery";
 import Letter from "./Letter";
@@ -35,8 +36,8 @@ const LETTER_COUNTS = {
   "": 2,
 };
 
-const Hand = ({setPlacedLetters, placedLetters}) => {
-  const [hand, setHand] = useState([]);
+const Hand = () => {
+  const hand = useSelector((state) => state.hand);
   const [lettersLeft, setLettersLeft] = useState([]);
   const [count, setCount] = useState(0);
   const dispatch = useDispatch();
@@ -69,67 +70,20 @@ const Hand = ({setPlacedLetters, placedLetters}) => {
       }
     });
     letters = shuffle(letters);
-    setHand(letters.slice(0, 7));
+    dispatch(modifyHand(letters.slice(0, 7)))
     setCount(count + 1);
     setLettersLeft(letters.slice(7));
   }, []);
-
-  var getHitElements = function (e) {
-    var x = e.pageX;
-    var y = e.pageY;
-    var hitElements = [];
-
-    $(":visible").each(function () {
-      var offset = $(this).offset();
-
-      if (
-        offset.left < x &&
-        offset.left + 30 > x &&
-        offset.top < y &&
-        offset.top + 30 > y
-      ) {
-        hitElements.push($(this));
-      }
-    });
-
-    return hitElements;
-  };
-
-  const onStop = (e, idx, letter) => {
-    const elems = getHitElements(e);
-    let row;
-    let col;
-    for (let i = 0; i < elems.length; i++) {
-      const maybeRow = parseInt(elems[i][0].getAttribute("data-row"));
-      const maybeCol = parseInt(elems[i][0].getAttribute("data-col"));
-      if (!isNaN( maybeCol)  && !isNaN(maybeRow)) {
-        row = maybeRow;
-        col = maybeCol;
-        const newPlacedLetters = _.cloneDeep(placedLetters)
-        newPlacedLetters[row][col] = letter;
-        setPlacedLetters(newPlacedLetters)
-        setCount(count + 1)
-        setHand(hand.slice(0, idx).concat(hand.slice(idx + 1)));
-        dispatch(addLetterToBoard({row, col, letter}))
-        break;
-      }
-    }
-    if (!(!isNaN( row)  && !isNaN(col))) {
-      // If the letter tile was not dragged to a spot on the board
-      // trigger a re-render that snaps the letter back to the original hand placement.
-      setCount(count + 1)
-      setHand(hand)
-    }
-  };
 
   return (
     <div className="hand">
       {hand.map((letter, i) => {
         return (
           <Letter
-            onStop={(e) => onStop(e, i, letter)}
             letter={letter}
             key={`draggable-${i}.${letter}.${count}`}
+            idx={i}
+            isInHand={true}
           />
         );
       })}

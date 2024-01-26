@@ -21,8 +21,7 @@ function App() {
       <InstructionsModal />
       <Hand placedLetters={placedLetters} setPlacedLetters={setPlacedLetters} />
       <ScrabbleBoard2
-        placedLetters={placedLetters}
-        setPlacedLetters={setPlacedLetters}
+        
       />
     </>
   );
