@@ -87,16 +87,16 @@ const ScrabbleBoard2 = () => {
 
   const submitWord = async () => {
     const rowsAndCols = getPlacedLettersRowsAndCols();
-    const rows = rowsAndCols.rows;
-    const cols = rowsAndCols.cols;
+    let rows = rowsAndCols.rows;
+    let cols = rowsAndCols.cols;
+    if(rows.length > 1 && cols.length > 1) return;
     let word = "";
-    const letterCount = Math.max(rows.size, cols.size)
-    if (rows.size === 1) {
+    const letterCount = Math.max(rows.length, cols.length)
+    if (rows.length === 1) {
       const missingNumbers = getMissingConsecutiveNumbers(cols);
-      let colsArr = Array.from(cols).sort((a, b) => a - b);
-      const row = Array.from(rows)[0];
+      const row = rows[0];
       const missingCol = missingNumbers[0];
-      const boundaries = getBoundaries(colsArr, row, true);
+      const boundaries = getBoundaries(cols, row, true);
 
       if (missingNumbers.length > 1) return;
       if (turns === 1 && missingNumbers.length > 0) return;
@@ -109,8 +109,8 @@ const ScrabbleBoard2 = () => {
         return;
       }
 
-      colsArr = colsArr.concat(boundaries).sort((a, b) => a - b);
-      for (let i = colsArr[0]; i <= colsArr[colsArr.length - 1]; i++) {
+      cols = cols.concat(boundaries).sort((a, b) => a - b);
+      for (let i = cols[0]; i <= cols[cols.length - 1]; i++) {
         if (i === missingCol || boundaries.includes(i)) {
           word += boardValues[row][i];
         } else {
@@ -119,14 +119,11 @@ const ScrabbleBoard2 = () => {
       }
 
     }
-    if (cols.size === 1) {
+    if (cols.length === 1) {
       const missingNumbers = getMissingConsecutiveNumbers(rows);
-      let rowsArr = Array.from(rows).sort((a, b) => a - b);
-      const col = Array.from(cols)[0];
+      const col = cols[0];
       const missingRow = missingNumbers[0];
-      const boundaries = getBoundaries(rowsArr, col, false);
-
-      console.log("rowsArr", rowsArr, "col",col, "missingNumbers", missingNumbers, "boundaries", boundaries )
+      const boundaries = getBoundaries(rows, col, false);
 
       if (missingNumbers.length > 1) return;
       if (turns === 1 && missingNumbers.length > 0) return;
@@ -139,8 +136,8 @@ const ScrabbleBoard2 = () => {
         return;
       }
 
-      rowsArr = rowsArr.concat(boundaries).sort((a, b) => a - b);
-      for (let i = rowsArr[0]; i <= rowsArr[rowsArr.length - 1]; i++) {
+      rows = rows.concat(boundaries).sort((a, b) => a - b);
+      for (let i = rows[0]; i <= rows[rows.length - 1]; i++) {
         if (i === missingRow || boundaries.includes(i)) {
           word += boardValues[i][col];
         } else {
@@ -151,6 +148,7 @@ const ScrabbleBoard2 = () => {
     console.log("word", word);
     if (word.length >= 2) {
       const definition = await lookUpWord(word);
+      console.log("definition", definition)
       if (definition) {
         for (let i = 0; i < BOARD_SIZE; i++) {
           for (let j = 0; j < BOARD_SIZE; j++) {
@@ -179,22 +177,37 @@ const ScrabbleBoard2 = () => {
         }
       }
     }
-    return { rows, cols };
+    const rowsArr = Array.from(rows).sort((a, b) => a - b)
+    const colsArr = Array.from(cols).sort((a, b) => a - b)
+
+    return { rows: rowsArr, cols: colsArr };
   };
 
-  const getMissingConsecutiveNumbers = (set) => {
+  const getIsContinuosWord = (rows, cols) =>{
+    if(rows.size === 1 && cols.size === 1) return true;
+    const rowsArr = Array.from(rows).sort((a, b) => a - b)
+    // const colsArr = 
+    let dx;
+    let dy;
+    let min;
+    let max;
+    if(rows.size > 1){
+
+
+    }
+  }
+
+  const getMissingConsecutiveNumbers = (arr) => {
     const missingNumbers = [];
-    const arr = Array.from(set).sort((a, b) => a - b);
     for (let i = arr[0]; i <= arr[arr.length - 1]; i++) {
-      if (!set.has(i)) {
+      if (!arr.includes(i)) {
         missingNumbers.push(i);
       }
     }
     return missingNumbers;
   };
 
-  const getBoundaries = (set, num, isRow) => {
-    const arr = Array.from(set).sort((a, b) => a - b);
+  const getBoundaries = (arr, num, isRow) => {
     const lowerBound = arr[0] - 1;
     const upperBound = arr[arr.length - 1] + 1;
     let boundaries = [];
