@@ -254,6 +254,22 @@ body {
 
 }
 
+.hand-tile-permanent{
+  @include coloredSquare($tile-size, $tile-color);
+  border: solid $tile-border-color $tile-border-width;
+  border: 2px solid green;
+  display: inline-block;
+  color: $decal-font-color;
+  color: purple;
+  font-size: 30px;
+  font-weight: 900;
+  text-align: center;
+  display: inline-flex; 
+  z-index: 1000;
+
+
+}
+
 
 .letter-val{
   margin-top: 2px;

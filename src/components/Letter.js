@@ -1,17 +1,28 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { modifyHand } from "../reducers/handSlice";
-import { addLetterToBoard } from "../reducers/boardValuesSlice";
+import {
+  addLetterToBoard,
+  removeLetterFromBoard,
+} from "../reducers/boardValuesSlice";
+import {
+  addTempLetterToBoard,
+  removeTempLetterFromBoard,
+} from "../reducers/tempBoardValuesSlice";
 
 import Draggable from "react-draggable";
 import $ from "jquery";
 import _ from "lodash";
 
-const Letter = ({ letter, idx, isInHand }) => {
-  const [count, setCount] = useState(0);
+const Letter = ({
+  letter,
+  handIdx,
+  isInHand,
+  boardRow,
+  boardCol,
+  permanentlyOnBoard,
+}) => {
   const hand = useSelector((state) => state.hand);
-  console.log("hand", hand);
-  const boardValues = useSelector((state) => state.boardValues);
 
   const dispatch = useDispatch();
 
@@ -38,7 +49,6 @@ const Letter = ({ letter, idx, isInHand }) => {
 
   const onStop = (e) => {
     const elems = getHitElements(e);
-    console.log(elems);
     let row;
     let col;
     for (let i = 0; i < elems.length; i++) {
@@ -47,31 +57,33 @@ const Letter = ({ letter, idx, isInHand }) => {
       if (!isNaN(maybeCol) && !isNaN(maybeRow)) {
         row = maybeRow;
         col = maybeCol;
-        console.log(row, col);
         if (isInHand) {
-          dispatch(modifyHand(hand.slice(0, idx).concat(hand.slice(idx + 1))));
+          dispatch(
+            modifyHand(hand.slice(0, handIdx).concat(hand.slice(handIdx + 1)))
+          );
+        } else {
+          dispatch(removeTempLetterFromBoard({ row: boardRow, col: boardCol }));
         }
-        dispatch(addLetterToBoard({ row, col, letter }));
-        // setCount(count + 1)
+        dispatch(addTempLetterToBoard({ row, col, letter }));
+
         break;
       }
     }
     if (!(!isNaN(row) && !isNaN(col))) {
-      if(isInHand){
-      // If the letter tile was not dragged to a spot on the board
-      // trigger a re-render that snaps the letter back to the original hand placement.
-      dispatch(modifyHand(hand.map((elem) => elem.toLowerCase())));
-      setTimeout(() => {
-        dispatch(modifyHand(hand));
-      }, 0);
-    } else {
-      dispatch(modifyHand(hand.concat([letter])));
-    }
-
-      // dispatch(modifyHand(hand.slice(0, idx).concat(hand.slice(idx + 1)).concat([letter])))
-      setCount(count + 1);
+      if (isInHand) {
+        // If the letter tile was not dragged to a spot on the board
+        // trigger a re-render that snaps the letter back to the original hand placement.
+        dispatch(modifyHand(hand.map((elem) => elem.toLowerCase())));
+        setTimeout(() => {
+          dispatch(modifyHand(hand));
+        }, 0);
+      } else {
+        dispatch(modifyHand(hand.concat([letter])));
+        dispatch(removeTempLetterFromBoard({ row: boardRow, col: boardCol }));
+      }
     }
   };
+  if (permanentlyOnBoard) return <div className="hand-tile-permanent">{letter}</div>;
   return (
     <Draggable onStop={onStop}>
       <div className="hand-tile">{letter}</div>

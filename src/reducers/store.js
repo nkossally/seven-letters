@@ -1,9 +1,14 @@
-import { configureStore } from '@reduxjs/toolkit'
-import  boardValuesReducer from './boardValuesSlice'
-import handReducer from './handSlice'
+import { configureStore } from "@reduxjs/toolkit";
+import boardValuesReducer from "./boardValuesSlice";
+import tempBoardValuesReducer from "./tempBoardValuesSlice";
+import handReducer from "./handSlice";
+import lettersLeftReducer from "./lettersLeftSlice"
+
 export default configureStore({
   reducer: {
     boardValues: boardValuesReducer,
-    hand: handReducer
+    tempBoardValues: tempBoardValuesReducer,
+    hand: handReducer,
+    lettersLeft: lettersLeftReducer,
   },
-})
+});
