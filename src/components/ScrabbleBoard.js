@@ -102,6 +102,8 @@ const ScrabbleBoard2 = () => {
       word = getHorizontalWordAtCoordinate(rows[0], cols[0])
     }
 
+    if(turns > 1 && !getIsConnectedToPrevWord(rows, cols)) return;
+
     console.log("word", word);
     if (word.length >= 2) {
       const definition = await lookUpWord(word);
@@ -173,6 +175,27 @@ const ScrabbleBoard2 = () => {
 
   const getTempLetterAtCoordinate = (x, y) =>{
     return isOnBoard(x, y) ? tempBoardValues[x][y]: undefined;
+  }
+
+  const getIsConnectedToPrevWord = (rows, cols) =>{
+    let result = false;
+    if(rows.length > 1){
+      const col = cols[0]
+      rows.forEach(row =>{
+        if(getAdjacentToPlacedLetter(row, col)){
+          result = true;
+        }
+      })
+
+    } else {
+      const row = rows[0]
+      cols.forEach(col =>{
+        if(getAdjacentToPlacedLetter(row, col)){
+          result = true;
+        }
+      })
+    }
+    return result
   }
 
   const getAdjacentToPlacedLetter = (x, y) =>{
