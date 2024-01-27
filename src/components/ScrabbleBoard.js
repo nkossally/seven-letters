@@ -9,6 +9,8 @@ import { addLetterToBoard } from "../reducers/boardValuesSlice";
 import { modifyHand } from "../reducers/handSlice";
 import { modifyLettersLeft } from "../reducers/lettersLeftSlice";
 
+const DIRS = [[0, 1], [0, -1], [1, 0], [-1, 0]];
+
 const ScrabbleBoard2 = () => {
   const [turns, setTurns] = useState(1);
   const boardValues = useSelector((state) => state.boardValues);
@@ -92,59 +94,14 @@ const ScrabbleBoard2 = () => {
     if(rows.length > 1 && cols.length > 1) return;
     let word = "";
     const letterCount = Math.max(rows.length, cols.length)
-    if (rows.length === 1) {
-      const missingNumbers = getMissingConsecutiveNumbers(cols);
-      const row = rows[0];
-      const missingCol = missingNumbers[0];
-      const boundaries = getBoundaries(cols, row, true);
+    if(!getIsContinuousWord(rows, cols)) return;
 
-      if (missingNumbers.length > 1) return;
-      if (turns === 1 && missingNumbers.length > 0) return;
-      if (turns > 1 && missingNumbers.length + boundaries.length === 0) return;
-      if (
-        turns > 1 &&
-        typeof missingCol === "number" &&
-        boardValues[row][missingCol] === undefined
-      ) {
-        return;
-      }
-
-      cols = cols.concat(boundaries).sort((a, b) => a - b);
-      for (let i = cols[0]; i <= cols[cols.length - 1]; i++) {
-        if (i === missingCol || boundaries.includes(i)) {
-          word += boardValues[row][i];
-        } else {
-          word += tempBoardValues[row][i];
-        }
-      }
-
+    if(rows.length > 1){
+      word =  getVerticalWordAtCoordinate(rows[0], cols[0])
+    } else {
+      word = getHorizontalWordAtCoordinate(rows[0], cols[0])
     }
-    if (cols.length === 1) {
-      const missingNumbers = getMissingConsecutiveNumbers(rows);
-      const col = cols[0];
-      const missingRow = missingNumbers[0];
-      const boundaries = getBoundaries(rows, col, false);
 
-      if (missingNumbers.length > 1) return;
-      if (turns === 1 && missingNumbers.length > 0) return;
-      if (turns > 1 && missingNumbers.length + boundaries.length === 0) return;
-      if (
-        turns > 1 &&
-        typeof missingRow === "number" &&
-        boardValues[missingRow][col] === undefined
-      ) {
-        return;
-      }
-
-      rows = rows.concat(boundaries).sort((a, b) => a - b);
-      for (let i = rows[0]; i <= rows[rows.length - 1]; i++) {
-        if (i === missingRow || boundaries.includes(i)) {
-          word += boardValues[i][col];
-        } else {
-          word += tempBoardValues[i][col];
-        }
-      }
-    }
     console.log("word", word);
     if (word.length >= 2) {
       const definition = await lookUpWord(word);
@@ -171,7 +128,7 @@ const ScrabbleBoard2 = () => {
     const cols = new Set();
     for (let i = 0; i < BOARD_SIZE; i++) {
       for (let j = 0; j < BOARD_SIZE; j++) {
-        if (tempBoardValues[i][j] !== undefined) {
+        if (getTempLetterAtCoordinate(i, j)) {
           rows.add(i);
           cols.add(j);
         }
@@ -183,57 +140,87 @@ const ScrabbleBoard2 = () => {
     return { rows: rowsArr, cols: colsArr };
   };
 
-  const getIsContinuosWord = (rows, cols) =>{
-    if(rows.size === 1 && cols.size === 1) return true;
-    const rowsArr = Array.from(rows).sort((a, b) => a - b)
-    // const colsArr = 
-    let dx;
-    let dy;
-    let min;
-    let max;
-    if(rows.size > 1){
-
-
+  const getIsContinuousWord = (rows, cols) =>{
+    if(rows.length === 1 && cols.length === 1) return true;
+    let dx = 0;
+    let dy = 0;
+    let dist;
+    let result = true;
+    if(rows.length > 1){
+      dx = 1;
+      dist = rows[rows.length - 1] - rows[0]
+    } else {
+      dy = 1;
+      dist = cols[cols.length - 1] - cols[0]
     }
+    let x = rows[0];
+    let y = cols[0]
+    
+    for(let i = 0; i < dist; i++){
+      x += dx;
+      y += dy;
+      if(!getLetterAtCoordinate(x, y) && !getTempLetterAtCoordinate(x,  y)){
+        result = false;
+        break;
+      }
+    }
+    return result;
   }
 
-  const getMissingConsecutiveNumbers = (arr) => {
-    const missingNumbers = [];
-    for (let i = arr[0]; i <= arr[arr.length - 1]; i++) {
-      if (!arr.includes(i)) {
-        missingNumbers.push(i);
-      }
-    }
-    return missingNumbers;
-  };
+  const getLetterAtCoordinate = (x, y) =>{
+    return isOnBoard(x, y) ? boardValues[x][y] : undefined;
+  }
 
-  const getBoundaries = (arr, num, isRow) => {
-    const lowerBound = arr[0] - 1;
-    const upperBound = arr[arr.length - 1] + 1;
-    let boundaries = [];
-    if (isRow) {
-      if (boardValues[num][lowerBound] !== undefined) {
-        boundaries.push(lowerBound);
+  const getTempLetterAtCoordinate = (x, y) =>{
+    return isOnBoard(x, y) ? tempBoardValues[x][y]: undefined;
+  }
+
+  const getAdjacentToPlacedLetter = (x, y) =>{
+    let result = false;
+    DIRS.forEach(dir =>{
+      const x1 = x + dir[0];
+      const y1 = y + dir[1]
+      if(isOnBoard(x1, y1) && getLetterAtCoordinate(x1, y1)){
+        result = true;
       }
-      if (boardValues[num][upperBound] !== undefined) {
-        boundaries.push(upperBound);
-      }
-    } else {
-      if (
-        boardValues[lowerBound] &&
-        boardValues[lowerBound][num] !== undefined
-      ) {
-        boundaries.push(lowerBound);
-      }
-      if (
-        boardValues[upperBound] &&
-        boardValues[upperBound][num] !== undefined
-      ) {
-        boundaries.push(upperBound);
-      }
+    })
+    return result;
+  }
+
+  const isOnBoard = (x, y) =>{
+    return x >= 0 && x < BOARD_SIZE && y>= 0 && y < BOARD_SIZE;
+  }
+
+  const getVerticalWordAtCoordinate = (x, y) =>{
+    let currX = x;
+    let word = "";
+    while(getTempLetterAtCoordinate(currX, y) || getLetterAtCoordinate(currX, y)){
+      word += getTempLetterAtCoordinate(currX, y) || getLetterAtCoordinate(currX, y)
+      currX++;
     }
-    return boundaries;
-  };
+    currX = x - 1;
+    while(getTempLetterAtCoordinate(currX, y) || getLetterAtCoordinate(currX, y)){
+      word = getTempLetterAtCoordinate(currX, y) || getLetterAtCoordinate(currX, y) + word
+      currX--;
+    }
+    return word;
+  }
+
+  const getHorizontalWordAtCoordinate = (x, y) =>{
+    let currY = y;
+    let word = "";
+    while(getTempLetterAtCoordinate(x, currY) || getLetterAtCoordinate(x, currY)){
+      word += getTempLetterAtCoordinate(x, currY) || getLetterAtCoordinate(x, currY)
+      currY++;
+    }
+    currY = y - 1;
+    while(getTempLetterAtCoordinate(x, currY) || getLetterAtCoordinate(x, currY)){
+      word = getTempLetterAtCoordinate(x, currY) || getLetterAtCoordinate(x, currY) + word
+      currY--;
+    }
+    return word;
+  }
+
 
   return (
     <div id="js-board">
