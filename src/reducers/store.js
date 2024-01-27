@@ -3,6 +3,7 @@ import boardValuesReducer from "./boardValuesSlice";
 import tempBoardValuesReducer from "./tempBoardValuesSlice";
 import handReducer from "./handSlice";
 import lettersLeftReducer from "./lettersLeftSlice"
+import scoreSliceReducer from "./scoreSlice";
 
 export default configureStore({
   reducer: {
@@ -10,5 +11,6 @@ export default configureStore({
     tempBoardValues: tempBoardValuesReducer,
     hand: handReducer,
     lettersLeft: lettersLeftReducer,
+    score: scoreSliceReducer, 
   },
 });

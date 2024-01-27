@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import ScrabbleBoard2 from "./components/ScrabbleBoard2";
+import ScrabbleBoard from "./components/ScrabbleBoard";
 import InstructionsModal from "./components/InstructionsModal";
 import Hand from "./components/Hand";
 import "./styles.scss";
 import { BOARD_SIZE } from "./consts";
+import { ScopedCssBaseline } from "@mui/material";
+import ScoreCard from "./components/ScoreCard";
 
 function App() {
   const [placedLetters, setPlacedLetters] = useState([]);
@@ -19,8 +21,9 @@ function App() {
   return (
     <>
       <InstructionsModal />
+      <ScoreCard />
       <Hand placedLetters={placedLetters} setPlacedLetters={setPlacedLetters} />
-      <ScrabbleBoard2
+      <ScrabbleBoard
         
       />
     </>
