@@ -8,6 +8,7 @@ import { removeTempLetterFromBoard } from "../reducers/tempBoardValuesSlice";
 import { addLetterToBoard } from "../reducers/boardValuesSlice";
 import { modifyHand } from "../reducers/handSlice";
 import { modifyLettersLeft } from "../reducers/lettersLeftSlice";
+import { updateScore } from "../reducers/scoreSlice";
 
 const DIRS = [
   [0, 1],
@@ -15,6 +16,7 @@ const DIRS = [
   [1, 0],
   [-1, 0],
 ];
+const MID_IDX = 7;
 
 const ScrabbleBoard2 = () => {
   const [turns, setTurns] = useState(1);
@@ -100,9 +102,9 @@ const ScrabbleBoard2 = () => {
     let cols = rowsAndCols.cols;
     if (rows.length > 1 && cols.length > 1) return;
     let word = "";
-    const letterCount = Math.max(rows.length, cols.length);
     if (!getIsContinuousWord(rows, cols)) return;
     if (turns > 1 && !getIsConnectedToPrevWord(rows, cols)) return;
+    if(turns === 1 && (!rows.includes(MID_IDX) || !cols.includes(MID_IDX))) return;
 
     let allWordsInDict = true;
 
@@ -139,7 +141,9 @@ const ScrabbleBoard2 = () => {
     }
     if (allWordsInDict) {
       permanentlyPlaceLetters();
+      dispatch(updateScore(score + currScore));
     }
+    setCurrScore(0);
   };
 
   const permanentlyPlaceLetters = () => {
