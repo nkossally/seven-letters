@@ -9,6 +9,7 @@ import {
   addTempLetterToBoard,
   removeTempLetterFromBoard,
 } from "../reducers/tempBoardValuesSlice";
+import { LETTER_TO_SCORE } from "../consts";
 
 import Draggable from "react-draggable";
 import $ from "jquery";
@@ -83,10 +84,14 @@ const Letter = ({
       }
     }
   };
-  if (permanentlyOnBoard) return <div className="hand-tile-permanent">{letter}</div>;
+  if (permanentlyOnBoard)
+    return <div className="hand-tile-permanent">{letter}</div>;
   return (
     <Draggable onStop={onStop}>
-      <div className="hand-tile">{letter}</div>
+      <div className="hand-tile">
+        <div>{letter}</div>
+        <span className="score-in-tile">{LETTER_TO_SCORE[letter]}</span>
+      </div>
     </Draggable>
   );
 };

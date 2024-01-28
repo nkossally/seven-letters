@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { BOARD_SIZE } from "../consts";
+import { BOARD_SIZE, LETTER_TO_SCORE } from "../consts";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Letter from "./Letter";
@@ -9,14 +9,21 @@ import { addLetterToBoard } from "../reducers/boardValuesSlice";
 import { modifyHand } from "../reducers/handSlice";
 import { modifyLettersLeft } from "../reducers/lettersLeftSlice";
 
-const DIRS = [[0, 1], [0, -1], [1, 0], [-1, 0]];
+const DIRS = [
+  [0, 1],
+  [0, -1],
+  [1, 0],
+  [-1, 0],
+];
 
 const ScrabbleBoard2 = () => {
   const [turns, setTurns] = useState(1);
+  const [currScore, setCurrScore] = useState(0);
   const boardValues = useSelector((state) => state.boardValues);
   const tempBoardValues = useSelector((state) => state.tempBoardValues);
   const lettersLeft = useSelector((state) => state.lettersLeft);
   const hand = useSelector((state) => state.hand);
+  const score = useSelector((state) => state.score);
   const dispatch = useDispatch();
 
   var boardSize = BOARD_SIZE - 1;
@@ -91,38 +98,66 @@ const ScrabbleBoard2 = () => {
     const rowsAndCols = getPlacedLettersRowsAndCols();
     let rows = rowsAndCols.rows;
     let cols = rowsAndCols.cols;
-    if(rows.length > 1 && cols.length > 1) return;
+    if (rows.length > 1 && cols.length > 1) return;
     let word = "";
-    const letterCount = Math.max(rows.length, cols.length)
-    if(!getIsContinuousWord(rows, cols)) return;
+    const letterCount = Math.max(rows.length, cols.length);
+    if (!getIsContinuousWord(rows, cols)) return;
+    if (turns > 1 && !getIsConnectedToPrevWord(rows, cols)) return;
 
-    if(rows.length > 1){
-      word =  getVerticalWordAtCoordinate(rows[0], cols[0])
-    } else {
-      word = getHorizontalWordAtCoordinate(rows[0], cols[0])
-    }
+    let allWordsInDict = true;
 
-    if(turns > 1 && !getIsConnectedToPrevWord(rows, cols)) return;
-
-    console.log("word", word);
-    if (word.length >= 2) {
-      const definition = await lookUpWord(word);
-      console.log("definition", definition)
-      if (definition) {
-        for (let i = 0; i < BOARD_SIZE; i++) {
-          for (let j = 0; j < BOARD_SIZE; j++) {
-            const letter = tempBoardValues[i][j];
-            if (letter) {
-              dispatch(addLetterToBoard({ row: i, col: j, letter }));
-              dispatch(removeTempLetterFromBoard({ row: i, col: j }));
-            }
-          }
+    if (rows.length > 1) {
+      word = getVerticalWordAtCoordinate(rows[0], cols[0]);
+      if (word.length > 1) {
+        const definition = await lookUpWord(word);
+        console.log(word);
+        if (!definition) allWordsInDict = false;
+      }
+      rows.forEach(async (row) => {
+        const word = getHorizontalWordAtCoordinate(row, cols[0]);
+        if (word.length > 1) {
+          console.log(word);
+          const definition = await lookUpWord(word);
+          if (!definition) allWordsInDict = false;
         }
-        dispatch(modifyHand(hand.concat(lettersLeft.slice(0, letterCount))));
-        dispatch(modifyLettersLeft(lettersLeft.slice(letterCount)));
-        setTurns(turns + 1);
+      });
+    } else {
+      word = getHorizontalWordAtCoordinate(rows[0], cols[0]);
+      if (word.length > 1) {
+        const definition = await lookUpWord(word);
+        console.log(word);
+        if (!definition) allWordsInDict = false;
+      }
+      rows.forEach(async (row) => {
+        const word = getVerticalWordAtCoordinate(row, cols[0]);
+        if (word.length > 1) {
+          console.log(word);
+          const definition = await lookUpWord(word);
+          if (!definition) allWordsInDict = false;
+        }
+      });
+    }
+    if (allWordsInDict) {
+      permanentlyPlaceLetters();
+    }
+  };
+
+  const permanentlyPlaceLetters = () => {
+    let letterCount = 0;
+    for (let i = 0; i < BOARD_SIZE; i++) {
+      for (let j = 0; j < BOARD_SIZE; j++) {
+        const letter = getTempLetterAtCoordinate(i, j);
+        if (letter) {
+          dispatch(addLetterToBoard({ row: i, col: j, letter }));
+          dispatch(removeTempLetterFromBoard({ row: i, col: j }));
+          letterCount++;
+        }
       }
     }
+
+    dispatch(modifyHand(hand.concat(lettersLeft.slice(0, letterCount))));
+    dispatch(modifyLettersLeft(lettersLeft.slice(letterCount)));
+    setTurns(turns + 1);
   };
 
   const getPlacedLettersRowsAndCols = () => {
@@ -136,114 +171,183 @@ const ScrabbleBoard2 = () => {
         }
       }
     }
-    const rowsArr = Array.from(rows).sort((a, b) => a - b)
-    const colsArr = Array.from(cols).sort((a, b) => a - b)
+    const rowsArr = Array.from(rows).sort((a, b) => a - b);
+    const colsArr = Array.from(cols).sort((a, b) => a - b);
 
     return { rows: rowsArr, cols: colsArr };
   };
 
-  const getIsContinuousWord = (rows, cols) =>{
-    if(rows.length === 1 && cols.length === 1) return true;
+  const getIsContinuousWord = (rows, cols) => {
+    if (rows.length === 1 && cols.length === 1) return true;
     let dx = 0;
     let dy = 0;
     let dist;
     let result = true;
-    if(rows.length > 1){
+    if (rows.length > 1) {
       dx = 1;
-      dist = rows[rows.length - 1] - rows[0]
+      dist = rows[rows.length - 1] - rows[0];
     } else {
       dy = 1;
-      dist = cols[cols.length - 1] - cols[0]
+      dist = cols[cols.length - 1] - cols[0];
     }
     let x = rows[0];
-    let y = cols[0]
-    
-    for(let i = 0; i < dist; i++){
+    let y = cols[0];
+
+    for (let i = 0; i < dist; i++) {
       x += dx;
       y += dy;
-      if(!getLetterAtCoordinate(x, y) && !getTempLetterAtCoordinate(x,  y)){
+      if (!getLetterAtCoordinate(x, y) && !getTempLetterAtCoordinate(x, y)) {
         result = false;
         break;
       }
     }
     return result;
-  }
+  };
 
-  const getLetterAtCoordinate = (x, y) =>{
+  const getLetterAtCoordinate = (x, y) => {
     return isOnBoard(x, y) ? boardValues[x][y] : undefined;
-  }
+  };
 
-  const getTempLetterAtCoordinate = (x, y) =>{
-    return isOnBoard(x, y) ? tempBoardValues[x][y]: undefined;
-  }
+  const getTempLetterAtCoordinate = (x, y) => {
+    return isOnBoard(x, y) ? tempBoardValues[x][y] : undefined;
+  };
 
-  const getIsConnectedToPrevWord = (rows, cols) =>{
+  const getIsConnectedToPrevWord = (rows, cols) => {
     let result = false;
-    if(rows.length > 1){
-      const col = cols[0]
-      rows.forEach(row =>{
-        if(getAdjacentToPlacedLetter(row, col)){
+    if (rows.length > 1) {
+      const col = cols[0];
+      rows.forEach((row) => {
+        if (getAdjacentToPlacedLetter(row, col)) {
           result = true;
         }
-      })
-
+      });
     } else {
-      const row = rows[0]
-      cols.forEach(col =>{
-        if(getAdjacentToPlacedLetter(row, col)){
+      const row = rows[0];
+      cols.forEach((col) => {
+        if (getAdjacentToPlacedLetter(row, col)) {
           result = true;
         }
-      })
+      });
     }
-    return result
-  }
+    return result;
+  };
 
-  const getAdjacentToPlacedLetter = (x, y) =>{
+  const getAdjacentToPlacedLetter = (x, y) => {
     let result = false;
-    DIRS.forEach(dir =>{
+    DIRS.forEach((dir) => {
       const x1 = x + dir[0];
-      const y1 = y + dir[1]
-      if(isOnBoard(x1, y1) && getLetterAtCoordinate(x1, y1)){
+      const y1 = y + dir[1];
+      if (isOnBoard(x1, y1) && getLetterAtCoordinate(x1, y1)) {
         result = true;
       }
-    })
+    });
     return result;
-  }
+  };
 
-  const isOnBoard = (x, y) =>{
-    return x >= 0 && x < BOARD_SIZE && y>= 0 && y < BOARD_SIZE;
-  }
+  const isOnBoard = (x, y) => {
+    return x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
+  };
 
-  const getVerticalWordAtCoordinate = (x, y) =>{
+  const getVerticalWordAtCoordinate = (x, y) => {
     let currX = x;
     let word = "";
-    while(getTempLetterAtCoordinate(currX, y) || getLetterAtCoordinate(currX, y)){
-      word += getTempLetterAtCoordinate(currX, y) || getLetterAtCoordinate(currX, y)
+    let wordScore = 0;
+    let multiplier = 1;
+    while (
+      getTempLetterAtCoordinate(currX, y) ||
+      getLetterAtCoordinate(currX, y)
+    ) {
+      word +=
+        getTempLetterAtCoordinate(currX, y) || getLetterAtCoordinate(currX, y);
+      const letterScoreObj = calculateScoreFromLetter(currX, y);
+      wordScore += letterScoreObj.letterPoints;
+      multiplier *= letterScoreObj.wordMultiplier;
       currX++;
     }
     currX = x - 1;
-    while(getTempLetterAtCoordinate(currX, y) || getLetterAtCoordinate(currX, y)){
-      word = getTempLetterAtCoordinate(currX, y) || getLetterAtCoordinate(currX, y) + word
+    while (
+      getTempLetterAtCoordinate(currX, y) ||
+      getLetterAtCoordinate(currX, y)
+    ) {
+      word =
+        getTempLetterAtCoordinate(currX, y) ||
+        getLetterAtCoordinate(currX, y) + word;
+      const letterScoreObj = calculateScoreFromLetter(currX, y);
+      wordScore += letterScoreObj.letterPoints;
+      multiplier *= letterScoreObj.wordMultiplier;
       currX--;
     }
+    wordScore *= multiplier;
+    console.log(word, wordScore);
+    setCurrScore(currScore + wordScore);
     return word;
-  }
+  };
 
-  const getHorizontalWordAtCoordinate = (x, y) =>{
+  const getHorizontalWordAtCoordinate = (x, y) => {
     let currY = y;
     let word = "";
-    while(getTempLetterAtCoordinate(x, currY) || getLetterAtCoordinate(x, currY)){
-      word += getTempLetterAtCoordinate(x, currY) || getLetterAtCoordinate(x, currY)
+    let wordScore = 0;
+    let multiplier = 1;
+    while (
+      getTempLetterAtCoordinate(x, currY) ||
+      getLetterAtCoordinate(x, currY)
+    ) {
+      word +=
+        getTempLetterAtCoordinate(x, currY) || getLetterAtCoordinate(x, currY);
+      const letterScoreObj = calculateScoreFromLetter(x, currY);
+      wordScore += letterScoreObj.letterPoints;
+      multiplier *= letterScoreObj.wordMultiplier;
       currY++;
     }
     currY = y - 1;
-    while(getTempLetterAtCoordinate(x, currY) || getLetterAtCoordinate(x, currY)){
-      word = getTempLetterAtCoordinate(x, currY) || getLetterAtCoordinate(x, currY) + word
+    while (
+      getTempLetterAtCoordinate(x, currY) ||
+      getLetterAtCoordinate(x, currY)
+    ) {
+      word =
+        getTempLetterAtCoordinate(x, currY) ||
+        getLetterAtCoordinate(x, currY) + word;
+      const letterScoreObj = calculateScoreFromLetter(x, currY);
+      wordScore += letterScoreObj.letterPoints;
+      multiplier *= letterScoreObj.wordMultiplier;
       currY--;
     }
+    wordScore *= multiplier;
+    console.log(word, wordScore);
+    setCurrScore(currScore + wordScore);
     return word;
-  }
+  };
 
+  const calculateScoreFromLetter = (i, j) => {
+    const letter =
+      getTempLetterAtCoordinate(i, j) || getLetterAtCoordinate(i, j);
+    let letterPoints = LETTER_TO_SCORE[letter];
+    let wordMultiplier = 1;
+
+    if (getTempLetterAtCoordinate(i, j)) {
+      letterPoints = LETTER_TO_SCORE[letter];
+      const specialScore = getSpecialTileScoreIdx(i, j);
+
+      switch (specialScore) {
+        case "ct":
+          wordMultiplier = 2;
+          break;
+        case "tw":
+          wordMultiplier = 3;
+          break;
+        case "tl":
+          letterPoints *= 3;
+          break;
+        case "dw":
+          wordMultiplier = 2;
+          break;
+        case "dl":
+          letterPoints *= 2;
+          break;
+      }
+    }
+    return { letterPoints, wordMultiplier };
+  };
 
   return (
     <div id="js-board">

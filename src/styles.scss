@@ -243,12 +243,13 @@ body {
 .hand-tile{
   @include coloredSquare($tile-size, $tile-color);
   border: solid $tile-border-color $tile-border-width;
-  display: inline-block;
+  // display: inline-block;
   color: $decal-font-color;
   font-size: 30px;
   font-weight: 900;
   text-align: center;
   display: inline-flex; 
+  flex-direction: row;
   z-index: 1000;
 
 
@@ -258,15 +259,21 @@ body {
   @include coloredSquare($tile-size, $tile-color);
   border: solid $tile-border-color $tile-border-width;
   border: 2px solid green;
-  display: inline-block;
   color: $decal-font-color;
   color: purple;
   font-size: 30px;
   font-weight: 900;
   text-align: center;
   display: inline-flex; 
+  flex-direction: row;
+
   z-index: 1000;
 
+
+}
+
+.score-in-tile{
+  font-size: 10px;
 
 }
 

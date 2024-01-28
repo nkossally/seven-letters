@@ -11,7 +11,6 @@ const Hand = () => {
   const lettersLeft = useSelector((state) => state.lettersLeft);
   const [count, setCount] = useState(0);
   const dispatch = useDispatch();
-  console.log("hand size", hand.length);
 
   useEffect(() => {
     let letters = [];
