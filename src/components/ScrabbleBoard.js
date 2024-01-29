@@ -37,7 +37,7 @@ const ScrabbleBoard2 = () => {
   const [placedLettersArr, setPlacedLettersArr] = useState([]);
   const [placedTempLettersArr, setPlacedTempLettersArr] = useState([]);
   const [localDictionary, setLocalDictionary] = useState(new Set());
-  const [isComputersTurn, setIsComputersTurn] = useState(true)
+  const [isComputersTurn, setIsComputersTurn] = useState(false);
 
   const boardValues = useSelector((state) => state.boardValues);
   const tempBoardValues = useSelector((state) => state.tempBoardValues);
@@ -59,7 +59,6 @@ const ScrabbleBoard2 = () => {
       const text = await result.text();
       const dict = text.split("\r\n").map((elem) => elem.toUpperCase());
       setLocalDictionary(new Set(dict));
-      console.log(dict)
     };
     getSetOfDictionaryWords();
   }, []);
@@ -88,6 +87,7 @@ const ScrabbleBoard2 = () => {
     tempBoardValues.length,
     boardValues.length,
     turns,
+    isComputersTurn
   ]);
 
   const buildEmptyBoard = () => {
@@ -185,10 +185,13 @@ const ScrabbleBoard2 = () => {
       permanentlyPlaceLetters(virtualBoard);
       dispatch(updateScore(score + currScore));
 
-      setTurns(turns + 1)
+      setTurns(turns + 1);
     }
     setCurrScore(0);
-    if (allWordsInDict) return true;
+    if (allWordsInDict) {
+      if (!isComputersTurn) setIsComputersTurn(true);
+      return true;
+    }
   };
 
   const checkAllWordsOnBoard = (virtualBoard) => {
@@ -234,6 +237,7 @@ const ScrabbleBoard2 = () => {
 
   const permanentlyPlaceLetters = (virtualBoard) => {
     let letterCount = 0;
+    const computerHandCopy =  Array.from(computerHand)
     for (let i = 0; i < BOARD_SIZE; i++) {
       for (let j = 0; j < BOARD_SIZE; j++) {
         const letter =
@@ -241,13 +245,32 @@ const ScrabbleBoard2 = () => {
           (virtualBoard && virtualBoard[i][j]);
         if (letter) {
           dispatch(addLetterToBoard({ row: i, col: j, letter }));
-          dispatch(removeTempLetterFromBoard({ row: i, col: j }));
           letterCount++;
+          if (virtualBoard) {
+            const k = computerHandCopy.indexOf(letter);
+            computerHandCopy.splice(k, 1)
+            dispatch(
+              modifyComputerHand(
+                computerHand.slice(0, k).concat(computerHand.slice(k + 1))
+              )
+            );
+          } else {
+            dispatch(removeTempLetterFromBoard({ row: i, col: j }));
+          }
         }
       }
     }
 
-    dispatch(modifyHand(hand.concat(lettersLeft.slice(0, letterCount))));
+    if (virtualBoard) {
+      console.log(letterCount, computerHand, computerHandCopy,  "lettersLeft", lettersLeft.slice(0, letterCount))
+      dispatch(
+        modifyComputerHand(
+          computerHandCopy.concat(lettersLeft.slice(0, letterCount))
+        )
+      );
+    } else {
+      dispatch(modifyHand(hand.concat(lettersLeft.slice(0, letterCount))));
+    }
     dispatch(modifyLettersLeft(lettersLeft.slice(letterCount)));
   };
 
@@ -349,7 +372,6 @@ const ScrabbleBoard2 = () => {
   };
 
   const getVerticalWordAtCoordinate = (x, y, virtualBoard) => {
-    console.log("getVerticalWordAtCoordinate" )
     let currX = x;
     let word = "";
     let wordScore = 0;
@@ -376,14 +398,13 @@ const ScrabbleBoard2 = () => {
     ) {
       word =
         (getTempLetterAtCoordinate(currX, y) ||
-        getLetterAtCoordinate(currX, y) ||
-        (virtualBoard && virtualBoard[currX][y])) + word;
+          getLetterAtCoordinate(currX, y) ||
+          (virtualBoard && virtualBoard[currX][y])) + word;
       const letterScoreObj = calculateScoreFromLetter(currX, y);
       wordScore += letterScoreObj.letterPoints;
       multiplier *= letterScoreObj.wordMultiplier;
       currX--;
     }
-    console.log("getVerticalWordAtCoordinate", word)
     wordScore *= multiplier;
     setCurrScore(currScore + wordScore);
     return word;
@@ -423,7 +444,6 @@ const ScrabbleBoard2 = () => {
       multiplier *= letterScoreObj.wordMultiplier;
       currY--;
     }
-    console.log("getHorizontalWord", word)
 
     wordScore *= multiplier;
     setCurrScore(currScore + wordScore);
@@ -462,8 +482,12 @@ const ScrabbleBoard2 = () => {
   };
 
   const handleComputerStep = () => {
+    if (turns === 1) {
+      handleFirstComputerStep();
+      return;
+    }
     let result;
-    let n = Math.max(MAX_LETTERS, computerHand.length);
+    let n =  computerHand.length;
 
     while (n > 1) {
       const perms = getAllPermutationsOfSizeN(computerHand, n);
@@ -475,6 +499,7 @@ const ScrabbleBoard2 = () => {
       if (result) break;
       n--;
     }
+    setIsComputersTurn(false);
   };
 
   const tryToPlaceComputerLetters = (arr) => {
@@ -599,6 +624,7 @@ const ScrabbleBoard2 = () => {
     let lettersToPlay = MAX_LETTERS;
 
     let result;
+    const computerHandCopy = Array.from(computerHand)
     while (lettersToPlay > 2) {
       const perms = getAllPermutationsOfSizeN(computerHand, lettersToPlay);
 
@@ -609,6 +635,9 @@ const ScrabbleBoard2 = () => {
 
         if (definition) {
           for (let j = 0; j < perm.length; j++) {
+            const k = computerHandCopy.indexOf(perm[j]);
+            computerHandCopy.splice(k, 1)
+            console.log(k, computerHandCopy)
             dispatch(
               addLetterToBoard({
                 row: MID_IDX - 2 + j,
@@ -624,67 +653,84 @@ const ScrabbleBoard2 = () => {
       lettersToPlay--;
       if (result) break;
     }
+    console.log("word", computerHandCopy);
+    dispatch(
+      modifyComputerHand(
+        computerHandCopy.concat(lettersLeft.slice(0, result.length))
+      )
+    );
+    dispatch(modifyLettersLeft(lettersLeft.slice(result.length)));
     setTurns(turns + 1);
+    setIsComputersTurn(false);
   };
 
+  const pass = () => setIsComputersTurn(true);
+
   return (
-    <div id="js-board">
-      <button onClick={() => submitWord(undefined)}>press here</button>
+    <>
+      <button disabled={isComputersTurn} onClick={() => submitWord(undefined)}>
+        press here
+      </button>
       <p />
       <button onClick={handleFirstComputerStep}>computer first step</button>
       <p />
       <button onClick={handleComputerStep}>computer play</button>
-      <div className="board">
-        {arr.map((elem, i) => {
-          return (
-            <div className="row" key={`row${i}`}>
-              {arr.map((elem, j) => {
-                const specialScore = getSpecialTileScoreIdx(i, j);
-                const addLetters =
-                  specialScore && (i !== boardSize / 2 || j !== boardSize / 2);
-                return (
-                  <>
-                    {typeof boardValues[i][j] === "string" && (
-                      <Letter
-                        letter={boardValues[i][j]}
-                        boardRow={i}
-                        boardCol={j}
-                        permanentlyOnBoard={true}
-                        key={`tile${i}.${j}.boardVal`}
-                      />
-                    )}
-                    {typeof tempBoardValues[i][j] === "string" && (
-                      <Letter
-                        letter={tempBoardValues[i][j]}
-                        boardRow={i}
-                        boardCol={j}
-                        key={`tile${i}.${j}.tempBoardVal`}
-                      />
-                    )}
-                    {typeof tempBoardValues[i][j] !== "string" &&
-                      typeof boardValues[i][j] !== "string" && (
-                        <div
-                          className={classNames(
-                            "tile",
-                            specialScore && `tile-${specialScore}`
-                          )}
-                          data-row={i}
-                          data-col={j}
-                          key={`tile${i}.${j}`}
-                        >
-                          <div className="decal" data-row={i} data-col={j}>
-                            {addLetters && specialScore.toUpperCase()}
-                          </div>
-                        </div>
+      <p />
+      <button onClick={pass}>PASS</button>
+      <div id="js-board">
+        <div className="board">
+          {arr.map((elem, i) => {
+            return (
+              <div className="row" key={`row${i}`}>
+                {arr.map((elem, j) => {
+                  const specialScore = getSpecialTileScoreIdx(i, j);
+                  const addLetters =
+                    specialScore &&
+                    (i !== boardSize / 2 || j !== boardSize / 2);
+                  return (
+                    <>
+                      {typeof boardValues[i][j] === "string" && (
+                        <Letter
+                          letter={boardValues[i][j]}
+                          boardRow={i}
+                          boardCol={j}
+                          permanentlyOnBoard={true}
+                          key={`tile${i}.${j}.boardVal`}
+                        />
                       )}
-                  </>
-                );
-              })}
-            </div>
-          );
-        })}{" "}
-      </div>{" "}
-    </div>
+                      {typeof tempBoardValues[i][j] === "string" && (
+                        <Letter
+                          letter={tempBoardValues[i][j]}
+                          boardRow={i}
+                          boardCol={j}
+                          key={`tile${i}.${j}.tempBoardVal`}
+                        />
+                      )}
+                      {typeof tempBoardValues[i][j] !== "string" &&
+                        typeof boardValues[i][j] !== "string" && (
+                          <div
+                            className={classNames(
+                              "tile",
+                              specialScore && `tile-${specialScore}`
+                            )}
+                            data-row={i}
+                            data-col={j}
+                            key={`tile${i}.${j}`}
+                          >
+                            <div className="decal" data-row={i} data-col={j}>
+                              {addLetters && specialScore.toUpperCase()}
+                            </div>
+                          </div>
+                        )}
+                    </>
+                  );
+                })}
+              </div>
+            );
+          })}{" "}
+        </div>{" "}
+      </div>
+    </>
   );
 };
 
