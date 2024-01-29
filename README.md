@@ -17,3 +17,4 @@ https://codepen.io/iamogbz/pen/pwyEVm
 
 aspell -d en dump master | aspell -l en expand > words.txt
 
+Collins Scrabble Words (2019). 279,496 words. Words only.

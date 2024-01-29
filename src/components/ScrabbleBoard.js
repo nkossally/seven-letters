@@ -20,7 +20,6 @@ import { modifyComputerHand } from "../reducers/computerHandSlice";
 import { modifyLettersLeft } from "../reducers/lettersLeftSlice";
 import { updateScore } from "../reducers/scoreSlice";
 import AllWords from "../words.txt";
-import { add } from "lodash";
 
 const DIRS = [
   [0, 1],
@@ -38,6 +37,7 @@ const ScrabbleBoard2 = () => {
   const [placedLettersArr, setPlacedLettersArr] = useState([]);
   const [placedTempLettersArr, setPlacedTempLettersArr] = useState([]);
   const [localDictionary, setLocalDictionary] = useState(new Set());
+  const [isComputersTurn, setIsComputersTurn] = useState(true)
 
   const boardValues = useSelector((state) => state.boardValues);
   const tempBoardValues = useSelector((state) => state.tempBoardValues);
@@ -45,7 +45,6 @@ const ScrabbleBoard2 = () => {
   const hand = useSelector((state) => state.hand);
   const computerHand = useSelector((state) => state.computerHand);
   const score = useSelector((state) => state.score);
-  const [count, setCount] = useState(0);
   const dispatch = useDispatch();
 
   var boardSize = BOARD_SIZE - 1;
@@ -55,25 +54,14 @@ const ScrabbleBoard2 = () => {
   }, []);
 
   useEffect(() => {
-    // let file = "./words.text";
-    // const handleFileRead = e => {
-    //   let content = fileReader.result;
-    //   // let text = deleteLines(content, 3);
-    //   // content = cleanContent(content);
-    //   // … do something with the 'content' …
-    //   console.log(content);
-    // };
-    // let fileReader = new FileReader();
-    // fileReader.onloadend = handleFileRead;
-    // console.log(typeof  "./words.text")
-    // fileReader.readAsText( "./words.text");
-    const blarg = async () => {
+    const getSetOfDictionaryWords = async () => {
       const result = await fetch(AllWords);
       const text = await result.text();
-      const dict = text.split("\n").map((elem) => elem.toUpperCase());
+      const dict = text.split("\r\n").map((elem) => elem.toUpperCase());
       setLocalDictionary(new Set(dict));
+      console.log(dict)
     };
-    blarg();
+    getSetOfDictionaryWords();
   }, []);
 
   useEffect(() => {
@@ -101,6 +89,14 @@ const ScrabbleBoard2 = () => {
     boardValues.length,
     turns,
   ]);
+
+  const buildEmptyBoard = () => {
+    const arr = [];
+    for (let i = 0; i < BOARD_SIZE; i++) {
+      arr.push([]);
+    }
+    return arr;
+  };
 
   const startGame = () => {
     let letters = [];
@@ -173,68 +169,76 @@ const ScrabbleBoard2 = () => {
     return null;
   };
 
-  const submitWord = () => {
-    const rowsAndCols = getPlacedLettersRowsAndCols();
+  const submitWord = (virtualBoard) => {
+    const rowsAndCols = getPlacedLettersRowsAndCols(virtualBoard);
     let rows = rowsAndCols.rows;
     let cols = rowsAndCols.cols;
     if (rows.length > 1 && cols.length > 1) return;
-    let word = "";
-    if (!getIsContinuousWord(rows, cols)) return;
+    if (!getIsContinuousWord(rows, cols, virtualBoard)) return;
     if (turns > 1 && !getIsConnectedToPrevWord(rows, cols)) return;
     if (turns === 1 && (!rows.includes(MID_IDX) || !cols.includes(MID_IDX)))
       return;
 
-    let allWordsInDict = true;
+    const allWordsInDict = checkAllWordsOnBoard(virtualBoard);
 
+    if (allWordsInDict) {
+      permanentlyPlaceLetters(virtualBoard);
+      dispatch(updateScore(score + currScore));
+
+      setTurns(turns + 1)
+    }
+    setCurrScore(0);
+    if (allWordsInDict) return true;
+  };
+
+  const checkAllWordsOnBoard = (virtualBoard) => {
+    const rowsAndCols = getPlacedLettersRowsAndCols(virtualBoard);
+    let rows = rowsAndCols.rows;
+    let cols = rowsAndCols.cols;
+
+    let word = "";
+    let allWordsInDict = true;
     if (rows.length > 1) {
-      word = getVerticalWordAtCoordinate(rows[0], cols[0]);
+      word = getVerticalWordAtCoordinate(rows[0], cols[0], virtualBoard);
       if (word.length > 1) {
         const definition = localDictionary.has(word);
-        console.log(word);
         if (!definition) allWordsInDict = false;
       }
       rows.forEach((row) => {
-        const word = getHorizontalWordAtCoordinate(row, cols[0]);
+        const word = getHorizontalWordAtCoordinate(row, cols[0], virtualBoard);
         if (word.length > 1) {
-          console.log(word);
           const definition = localDictionary.has(word);
 
           if (!definition) allWordsInDict = false;
         }
       });
     } else {
-      word = getHorizontalWordAtCoordinate(rows[0], cols[0]);
-      console.log(word)
+      word = getHorizontalWordAtCoordinate(rows[0], cols[0], virtualBoard);
       if (word.length > 1) {
         const definition = localDictionary.has(word);
 
-        console.log(word);
         if (!definition) allWordsInDict = false;
       }
-      rows.forEach((row) => {
-        const word = getVerticalWordAtCoordinate(row, cols[0]);
+      cols.forEach((col) => {
+        const word = getVerticalWordAtCoordinate(rows[0], col, virtualBoard);
         if (word.length > 1) {
-          console.log(word);
           const definition = localDictionary.has(word);
 
           if (!definition) allWordsInDict = false;
         }
       });
     }
-    if (allWordsInDict) {
-      permanentlyPlaceLetters();
-      dispatch(updateScore(score + currScore));
-    }
-    setCurrScore(0);
 
-    return true;
+    return allWordsInDict;
   };
 
-  const permanentlyPlaceLetters = () => {
+  const permanentlyPlaceLetters = (virtualBoard) => {
     let letterCount = 0;
     for (let i = 0; i < BOARD_SIZE; i++) {
       for (let j = 0; j < BOARD_SIZE; j++) {
-        const letter = getTempLetterAtCoordinate(i, j);
+        const letter =
+          getTempLetterAtCoordinate(i, j) ||
+          (virtualBoard && virtualBoard[i][j]);
         if (letter) {
           dispatch(addLetterToBoard({ row: i, col: j, letter }));
           dispatch(removeTempLetterFromBoard({ row: i, col: j }));
@@ -245,15 +249,19 @@ const ScrabbleBoard2 = () => {
 
     dispatch(modifyHand(hand.concat(lettersLeft.slice(0, letterCount))));
     dispatch(modifyLettersLeft(lettersLeft.slice(letterCount)));
-    setTurns(turns + 1);
   };
 
-  const getPlacedLettersRowsAndCols = () => {
+  const getPlacedLettersRowsAndCols = (virtualBoard) => {
     const rows = new Set();
     const cols = new Set();
     for (let i = 0; i < BOARD_SIZE; i++) {
       for (let j = 0; j < BOARD_SIZE; j++) {
-        if (getTempLetterAtCoordinate(i, j)) {
+        if (virtualBoard) {
+          if (virtualBoard[i][j]) {
+            rows.add(i);
+            cols.add(j);
+          }
+        } else if (getTempLetterAtCoordinate(i, j)) {
           rows.add(i);
           cols.add(j);
         }
@@ -265,7 +273,7 @@ const ScrabbleBoard2 = () => {
     return { rows: rowsArr, cols: colsArr };
   };
 
-  const getIsContinuousWord = (rows, cols) => {
+  const getIsContinuousWord = (rows, cols, virtualBoard) => {
     if (rows.length === 1 && cols.length === 1) return true;
     let dx = 0;
     let dy = 0;
@@ -284,7 +292,11 @@ const ScrabbleBoard2 = () => {
     for (let i = 0; i < dist; i++) {
       x += dx;
       y += dy;
-      if (!getLetterAtCoordinate(x, y) && !getTempLetterAtCoordinate(x, y)) {
+      if (
+        !getLetterAtCoordinate(x, y) &&
+        !getTempLetterAtCoordinate(x, y) &&
+        !(virtualBoard && virtualBoard[x][y])
+      ) {
         result = false;
         break;
       }
@@ -336,17 +348,21 @@ const ScrabbleBoard2 = () => {
     return x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
   };
 
-  const getVerticalWordAtCoordinate = (x, y) => {
+  const getVerticalWordAtCoordinate = (x, y, virtualBoard) => {
+    console.log("getVerticalWordAtCoordinate" )
     let currX = x;
     let word = "";
     let wordScore = 0;
     let multiplier = 1;
     while (
       getTempLetterAtCoordinate(currX, y) ||
-      getLetterAtCoordinate(currX, y)
+      getLetterAtCoordinate(currX, y) ||
+      (virtualBoard && virtualBoard[currX][y])
     ) {
       word +=
-        getTempLetterAtCoordinate(currX, y) || getLetterAtCoordinate(currX, y);
+        getTempLetterAtCoordinate(currX, y) ||
+        getLetterAtCoordinate(currX, y) ||
+        (virtualBoard && virtualBoard[currX][y]);
       const letterScoreObj = calculateScoreFromLetter(currX, y);
       wordScore += letterScoreObj.letterPoints;
       multiplier *= letterScoreObj.wordMultiplier;
@@ -355,33 +371,38 @@ const ScrabbleBoard2 = () => {
     currX = x - 1;
     while (
       getTempLetterAtCoordinate(currX, y) ||
-      getLetterAtCoordinate(currX, y)
+      getLetterAtCoordinate(currX, y) ||
+      (virtualBoard && virtualBoard[currX][y])
     ) {
       word =
-        getTempLetterAtCoordinate(currX, y) ||
-        getLetterAtCoordinate(currX, y) + word;
+        (getTempLetterAtCoordinate(currX, y) ||
+        getLetterAtCoordinate(currX, y) ||
+        (virtualBoard && virtualBoard[currX][y])) + word;
       const letterScoreObj = calculateScoreFromLetter(currX, y);
       wordScore += letterScoreObj.letterPoints;
       multiplier *= letterScoreObj.wordMultiplier;
       currX--;
     }
+    console.log("getVerticalWordAtCoordinate", word)
     wordScore *= multiplier;
-    console.log(word, wordScore);
     setCurrScore(currScore + wordScore);
     return word;
   };
 
-  const getHorizontalWordAtCoordinate = (x, y) => {
+  const getHorizontalWordAtCoordinate = (x, y, virtualBoard) => {
     let currY = y;
     let word = "";
     let wordScore = 0;
     let multiplier = 1;
     while (
       getTempLetterAtCoordinate(x, currY) ||
-      getLetterAtCoordinate(x, currY)
+      getLetterAtCoordinate(x, currY) ||
+      (virtualBoard && virtualBoard[x][currY])
     ) {
       word +=
-        getTempLetterAtCoordinate(x, currY) || getLetterAtCoordinate(x, currY);
+        getTempLetterAtCoordinate(x, currY) ||
+        getLetterAtCoordinate(x, currY) ||
+        (virtualBoard && virtualBoard[x][currY]);
       const letterScoreObj = calculateScoreFromLetter(x, currY);
       wordScore += letterScoreObj.letterPoints;
       multiplier *= letterScoreObj.wordMultiplier;
@@ -390,18 +411,21 @@ const ScrabbleBoard2 = () => {
     currY = y - 1;
     while (
       getTempLetterAtCoordinate(x, currY) ||
-      getLetterAtCoordinate(x, currY)
+      getLetterAtCoordinate(x, currY) ||
+      (virtualBoard && virtualBoard[x][currY])
     ) {
       word =
         getTempLetterAtCoordinate(x, currY) ||
-        getLetterAtCoordinate(x, currY) + word;
+        getLetterAtCoordinate(x, currY) ||
+        (virtualBoard && virtualBoard[x][currY]) + word;
       const letterScoreObj = calculateScoreFromLetter(x, currY);
       wordScore += letterScoreObj.letterPoints;
       multiplier *= letterScoreObj.wordMultiplier;
       currY--;
     }
+    console.log("getHorizontalWord", word)
+
     wordScore *= multiplier;
-    console.log(word, wordScore);
     setCurrScore(currScore + wordScore);
     return word;
   };
@@ -451,37 +475,59 @@ const ScrabbleBoard2 = () => {
       if (result) break;
       n--;
     }
-
   };
 
   const tryToPlaceComputerLetters = (arr) => {
-    let wordAndCoordinates;
+    let result;
+    let virtualBoard;
     for (let i = 0; i < placedLettersArr.length; i++) {
       const boardLetterObj = placedLettersArr[i];
       const row = boardLetterObj.row;
       const col = boardLetterObj.col;
-      wordAndCoordinates = placeLettersAroundSpot(row, col, arr);
+      const wordAndCoordinates = placeLettersAroundSpot(row, col, arr);
 
-      if (wordAndCoordinates) break;
+      if (wordAndCoordinates) {
+        const coordinates = wordAndCoordinates.coordinates;
+        virtualBoard = buildEmptyBoard();
+        coordinates.forEach((coords, i) => {
+          virtualBoard[coords[0]][coords[1]] = arr[i];
+        });
+        result = submitWord(virtualBoard);
+      }
+      if (result) break;
     }
-    if(wordAndCoordinates){
-      const coordinates = wordAndCoordinates.coordinates;
-      coordinates.forEach((coords, i) =>{
-        dispatch(addLetterToBoard({letter: arr[i], row: coords[0], col: coords[1]}))
-      })
-    }
-    return wordAndCoordinates
+    return result;
   };
 
   const placeLettersAroundSpot = (i, j, arr) => {
     let result;
-    for(let m = 0; m <= arr.length; m++){
-      const wordAndCoordinates = placeLettersMLettersBeforeAndNLettersAfterHorizontally(i, j, m, arr.length - m, arr)
-      if(wordAndCoordinates){
-        const word = wordAndCoordinates.word
-        if(localDictionary.has(word)){
-          console.log(word, wordAndCoordinates.coordinates)
-          result = wordAndCoordinates
+    for (let m = 0; m <= arr.length; m++) {
+      // place horizontally
+      const wordAndCoordinates = placeLettersMLettersBeforeAndNLettersAfter(
+        i,
+        j,
+        m,
+        arr.length - m,
+        arr,
+        0,
+        1
+      );
+      // place vertically
+      if (!wordAndCoordinates)
+        placeLettersMLettersBeforeAndNLettersAfter(
+          i,
+          j,
+          m,
+          arr.length - m,
+          arr,
+          1,
+          0
+        );
+
+      if (wordAndCoordinates) {
+        const word = wordAndCoordinates.word;
+        if (localDictionary.has(word)) {
+          result = wordAndCoordinates;
           break;
         }
       }
@@ -489,57 +535,65 @@ const ScrabbleBoard2 = () => {
     return result;
   };
 
-  const placeLettersMLettersBeforeAndNLettersAfterHorizontally = (i, j, m, n, arr ) =>{
+  const placeLettersMLettersBeforeAndNLettersAfter = (
+    i,
+    j,
+    m,
+    n,
+    arr,
+    dx,
+    dy
+  ) => {
     let word = boardValues[i][j];
     let count = 0;
     let x = i;
     let y = j;
     let arrIdx = m - 1;
-    let coordinates = []
-    while(count < m){
-      if(!isOnBoard(x, y - 1 )) break
-      y--
-      if(!boardValues[x][y] ){
-        coordinates.unshift([x, y])
-        word = arr[arrIdx] + word
-        arrIdx--
-        count++
+    let coordinates = [];
+    while (count < m) {
+      if (!isOnBoard(x - dx, y - dy)) break;
+      y -= dy;
+      x -= dx;
+      if (!boardValues[x][y]) {
+        coordinates.unshift([x, y]);
+        word = arr[arrIdx] + word;
+        arrIdx--;
+        count++;
       } else {
-        word = boardValues[x][y] + word
+        word = boardValues[x][y] + word;
       }
     }
-    if(count < m) return undefined;
-    while(isOnBoard(x, y - 1) && boardValues[x][y - 1]){
-      y--
+    if (count < m) return undefined;
+    while (isOnBoard(x - dx, y - dy) && boardValues[x][y - dy]) {
+      y -= dy;
+      x -= dx;
       word = boardValues[x][y] + word;
     }
-
 
     x = i;
     y = j;
     arrIdx = m;
     count = 0;
-    while(count < n){
-      if(!isOnBoard(x, y + 1 )) break
-      y++
-      if(!boardValues[x][y] ){
-        coordinates.push([x, y])
-        word += arr[arrIdx]
-        arrIdx++
-        count++
+    while (count < n) {
+      if (!isOnBoard(x + dx, y + dy)) break;
+      y += dy;
+      x += dx;
+      if (!boardValues[x][y]) {
+        coordinates.push([x, y]);
+        word += arr[arrIdx];
+        arrIdx++;
+        count++;
       } else {
-        word += boardValues[x][y]
+        word += boardValues[x][y];
       }
     }
-    if(count < n) return undefined;
-    while(isOnBoard(x, y + 1) && boardValues[x][y + 1]){
-      y++
+    if (count < n) return undefined;
+    while (isOnBoard(x + dx, y + dy) && boardValues[x + dx][y + dy]) {
+      y++;
       word += boardValues[x][y];
     }
-    return {word, coordinates}
-
-  }
-
+    return { word, coordinates };
+  };
 
   const handleFirstComputerStep = () => {
     let lettersToPlay = MAX_LETTERS;
@@ -563,24 +617,23 @@ const ScrabbleBoard2 = () => {
               })
             );
           }
-          result = word
+          result = word;
           break;
         }
       }
       lettersToPlay--;
       if (result) break;
     }
-    setTurns(turns+1)
+    setTurns(turns + 1);
   };
 
   return (
     <div id="js-board">
-      <button onClick={submitWord}>press here</button>
+      <button onClick={() => submitWord(undefined)}>press here</button>
       <p />
       <button onClick={handleFirstComputerStep}>computer first step</button>
-      <p/>
+      <p />
       <button onClick={handleComputerStep}>computer play</button>
-
       <div className="board">
         {arr.map((elem, i) => {
           return (
