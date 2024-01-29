@@ -5,6 +5,7 @@ export const scoreSlice = createSlice({
   initialState: 0,
   reducers: {
     updateScore: (state, action) => {
+      console.log(action)
        return action.payload;
     },
   },
