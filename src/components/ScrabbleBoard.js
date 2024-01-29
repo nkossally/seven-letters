@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { BOARD_SIZE, LETTER_TO_SCORE } from "../consts";
+import { BOARD_SIZE, LETTER_TO_SCORE, VOWELS } from "../consts";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Letter from "./Letter";
@@ -19,7 +19,8 @@ import { modifyHand } from "../reducers/handSlice";
 import { modifyComputerHand } from "../reducers/computerHandSlice";
 import { modifyLettersLeft } from "../reducers/lettersLeftSlice";
 import { updateScore } from "../reducers/scoreSlice";
-import AllWords from "../words.txt"
+import AllWords from "../words.txt";
+import { add } from "lodash";
 
 const DIRS = [
   [0, 1],
@@ -28,15 +29,15 @@ const DIRS = [
   [-1, 0],
 ];
 const MID_IDX = 7;
-const delay = ms => new Promise(res => setTimeout(res, ms));
-
+const MAX_LETTERS = 7;
+const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 const ScrabbleBoard2 = () => {
   const [turns, setTurns] = useState(1);
   const [currScore, setCurrScore] = useState(0);
   const [placedLettersArr, setPlacedLettersArr] = useState([]);
   const [placedTempLettersArr, setPlacedTempLettersArr] = useState([]);
-  const [localDictionary, setLocalDictionary] = useState(new Set())
+  const [localDictionary, setLocalDictionary] = useState(new Set());
 
   const boardValues = useSelector((state) => state.boardValues);
   const tempBoardValues = useSelector((state) => state.tempBoardValues);
@@ -44,7 +45,7 @@ const ScrabbleBoard2 = () => {
   const hand = useSelector((state) => state.hand);
   const computerHand = useSelector((state) => state.computerHand);
   const score = useSelector((state) => state.score);
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
   const dispatch = useDispatch();
 
   var boardSize = BOARD_SIZE - 1;
@@ -53,7 +54,7 @@ const ScrabbleBoard2 = () => {
     startGame();
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     // let file = "./words.text";
     // const handleFileRead = e => {
     //   let content = fileReader.result;
@@ -66,16 +67,14 @@ const ScrabbleBoard2 = () => {
     // fileReader.onloadend = handleFileRead;
     // console.log(typeof  "./words.text")
     // fileReader.readAsText( "./words.text");
-    const blarg = async ()=>{
-      const result = await fetch(AllWords)
-      const text = await result.text()
-      const dict = text.split("\n").map(elem => elem.toUpperCase());
-      setLocalDictionary(new Set(dict))
-    }
-    blarg()
-  
-  
-  }, [])
+    const blarg = async () => {
+      const result = await fetch(AllWords);
+      const text = await result.text();
+      const dict = text.split("\n").map((elem) => elem.toUpperCase());
+      setLocalDictionary(new Set(dict));
+    };
+    blarg();
+  }, []);
 
   useEffect(() => {
     const placedLetters = [];
@@ -174,11 +173,8 @@ const ScrabbleBoard2 = () => {
     return null;
   };
 
-  const submitWord = async () => {
-    if(count > 500) return;
-    setCount(count + 1)
+  const submitWord = () => {
     const rowsAndCols = getPlacedLettersRowsAndCols();
-    console.log("rowsAndCols", rowsAndCols)
     let rows = rowsAndCols.rows;
     let cols = rowsAndCols.cols;
     if (rows.length > 1 && cols.length > 1) return;
@@ -190,45 +186,36 @@ const ScrabbleBoard2 = () => {
 
     let allWordsInDict = true;
 
-    console.log("we here")
-
     if (rows.length > 1) {
       word = getVerticalWordAtCoordinate(rows[0], cols[0]);
       if (word.length > 1) {
-        // await delay(50)
-        // const definition = await lookUpWord(word);
-        const definition = localDictionary.has(word)
+        const definition = localDictionary.has(word);
         console.log(word);
         if (!definition) allWordsInDict = false;
       }
-      rows.forEach(async (row) => {
+      rows.forEach((row) => {
         const word = getHorizontalWordAtCoordinate(row, cols[0]);
         if (word.length > 1) {
           console.log(word);
-          // await delay(50)
-          // const definition = await lookUpWord(word);
-          const definition = localDictionary.has(word)
+          const definition = localDictionary.has(word);
 
           if (!definition) allWordsInDict = false;
         }
       });
     } else {
       word = getHorizontalWordAtCoordinate(rows[0], cols[0]);
+      console.log(word)
       if (word.length > 1) {
-        // await delay(50)
-        // const definition = await lookUpWord(word);
-        const definition = localDictionary.has(word)
+        const definition = localDictionary.has(word);
 
         console.log(word);
         if (!definition) allWordsInDict = false;
       }
-      rows.forEach(async (row) => {
+      rows.forEach((row) => {
         const word = getVerticalWordAtCoordinate(row, cols[0]);
         if (word.length > 1) {
           console.log(word);
-          // await delay(50)
-          // const definition = await lookUpWord(word);
-          const definition = localDictionary.has(word)
+          const definition = localDictionary.has(word);
 
           if (!definition) allWordsInDict = false;
         }
@@ -239,7 +226,6 @@ const ScrabbleBoard2 = () => {
       dispatch(updateScore(score + currScore));
     }
     setCurrScore(0);
-            // await delay(80)
 
     return true;
   };
@@ -451,126 +437,150 @@ const ScrabbleBoard2 = () => {
     return { letterPoints, wordMultiplier };
   };
 
-  const handleComputerStep = async () => {
+  const handleComputerStep = () => {
     let result;
-    let n = 4;
+    let n = Math.max(MAX_LETTERS, computerHand.length);
 
     while (n > 1) {
       const perms = getAllPermutationsOfSizeN(computerHand, n);
 
       for (let i = 0; i < perms.length; i++) {
-        result = await tryToPlaceComputerLetters(perms[i]);
+        result = tryToPlaceComputerLetters(perms[i]);
         if (result) break;
       }
       if (result) break;
       n--;
     }
 
-    return result;
   };
 
-  const tryToPlaceComputerLetters = async (arr) => {
-    let result;
+  const tryToPlaceComputerLetters = (arr) => {
+    let wordAndCoordinates;
     for (let i = 0; i < placedLettersArr.length; i++) {
       const boardLetterObj = placedLettersArr[i];
       const row = boardLetterObj.row;
       const col = boardLetterObj.col;
-      result = await placeLettersAroundSpot(row, col, arr);
+      wordAndCoordinates = placeLettersAroundSpot(row, col, arr);
 
-      if (result) break;
+      if (wordAndCoordinates) break;
     }
-    return result;
+    if(wordAndCoordinates){
+      const coordinates = wordAndCoordinates.coordinates;
+      coordinates.forEach((coords, i) =>{
+        dispatch(addLetterToBoard({letter: arr[i], row: coords[0], col: coords[1]}))
+      })
+    }
+    return wordAndCoordinates
   };
 
-  const placeLettersAroundSpot = async (i, j, arr) => {
+  const placeLettersAroundSpot = (i, j, arr) => {
     let result;
-    // horizontal
-    for (let num = -arr.length; num < arr.length; num++) {
-      if (num === 0) return;
-      if (result) break;
-      let didPlaceLetter = true;
-      for (let idx = 0; idx < arr.length; idx++) {
-        let stepsAway = num + idx !== 0 ? num + idx : 1;
-        const dx = 0;
-        const dy = stepsAway < 0 ? -1 : 1;
-        const n = Math.abs(stepsAway);
-        const position = getEmptyBlockNSpacesFromCoordinate(i, j, n, dx, dy);
-        console.log("getEmptyBlockNSpacesFromCoordinate", i, j, n, dx, dy)
-        if (position) {
-          const row = position.row;
-          const col = position.col;
-          dispatch(addTempLetterToBoard({ row, col, letter: arr[idx] }));
-        } else {
-          didPlaceLetter = false;
+    for(let m = 0; m <= arr.length; m++){
+      const wordAndCoordinates = placeLettersMLettersBeforeAndNLettersAfterHorizontally(i, j, m, arr.length - m, arr)
+      if(wordAndCoordinates){
+        const word = wordAndCoordinates.word
+        if(localDictionary.has(word)){
+          console.log(word, wordAndCoordinates.coordinates)
+          result = wordAndCoordinates
+          break;
         }
       }
-      if (didPlaceLetter) {
-        result = await submitWord();
-      }
-      removeAllTempLettersFromBoard();
     }
-    // vertical
-    for (let num = 0; num < 2 * arr.length; num++) {}
-
     return result;
   };
 
-  const getEmptyBlockNSpacesFromCoordinate = (i, j, n, dx, dy) => {
+  const placeLettersMLettersBeforeAndNLettersAfterHorizontally = (i, j, m, n, arr ) =>{
+    let word = boardValues[i][j];
+    let count = 0;
     let x = i;
     let y = j;
-    let result;
-    let count = 0;
-    while (isOnBoard(x + dx, y + dy)) {
-      x += dx;
-      y += dy;
-      if (!getLetterAtCoordinate(x, y) && !getTempLetterAtCoordinate(x, y)) {
-        count++;
-      }
-      if (count === n) {
-        result = { row: x, col: y };
-        break;
-      }
-    }
-    return result;
-  };
-
-  const removeAllTempLettersFromBoard = () => {
-    for (let i = 0; i < BOARD_SIZE; i++) {
-      for (let j = 0; j < BOARD_SIZE; j++) {
-        const letter = getTempLetterAtCoordinate(i, j);
-        // if (letter) {
-          dispatch(removeTempLetterFromBoard({ row: i, col: j }));
-        // }
+    let arrIdx = m - 1;
+    let coordinates = []
+    while(count < m){
+      if(!isOnBoard(x, y - 1 )) break
+      y--
+      if(!boardValues[x][y] ){
+        coordinates.unshift([x, y])
+        word = arr[arrIdx] + word
+        arrIdx--
+        count++
+      } else {
+        word = boardValues[x][y] + word
       }
     }
-  };
+    if(count < m) return undefined;
+    while(isOnBoard(x, y - 1) && boardValues[x][y - 1]){
+      y--
+      word = boardValues[x][y] + word;
+    }
 
-  const handleFirstComputerStep = async () =>{
-    const perms = getAllPermutationsOfSizeN(computerHand, 5);
-    let result;
-    for(let i = 0; i < perms.length; i++){
-      const perm = perms[i]
-      const word = perm.join("");
-      await delay(30)
-      // const definition = await lookUpWord(word);
-      const definition = localDictionary.has(word)
 
-      if(definition){
-        for(let i = 0; i < perm.length; i++){
-          dispatch(addTempLetterToBoard({ row: 4 + i, col: 7, letter: perm[i] }));
-          await submitWord()
-        }
-        break
+    x = i;
+    y = j;
+    arrIdx = m;
+    count = 0;
+    while(count < n){
+      if(!isOnBoard(x, y + 1 )) break
+      y++
+      if(!boardValues[x][y] ){
+        coordinates.push([x, y])
+        word += arr[arrIdx]
+        arrIdx++
+        count++
+      } else {
+        word += boardValues[x][y]
       }
     }
+    if(count < n) return undefined;
+    while(isOnBoard(x, y + 1) && boardValues[x][y + 1]){
+      y++
+      word += boardValues[x][y];
+    }
+    return {word, coordinates}
 
   }
+
+
+  const handleFirstComputerStep = () => {
+    let lettersToPlay = MAX_LETTERS;
+
+    let result;
+    while (lettersToPlay > 2) {
+      const perms = getAllPermutationsOfSizeN(computerHand, lettersToPlay);
+
+      for (let i = 0; i < perms.length; i++) {
+        const perm = perms[i];
+        const word = perm.join("");
+        const definition = localDictionary.has(word);
+
+        if (definition) {
+          for (let j = 0; j < perm.length; j++) {
+            dispatch(
+              addLetterToBoard({
+                row: MID_IDX - 2 + j,
+                col: 7,
+                letter: perm[j],
+              })
+            );
+          }
+          result = word
+          break;
+        }
+      }
+      lettersToPlay--;
+      if (result) break;
+    }
+    setTurns(turns+1)
+  };
 
   return (
     <div id="js-board">
       <button onClick={submitWord}>press here</button>
       <p />
+      <button onClick={handleFirstComputerStep}>computer first step</button>
+      <p/>
       <button onClick={handleComputerStep}>computer play</button>
+
       <div className="board">
         {arr.map((elem, i) => {
           return (

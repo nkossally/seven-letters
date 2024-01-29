@@ -1,6 +1,8 @@
 export const BOARD_SIZE = 15;
 export const HAND_SIZE = 7;
 
+export const VOWELS = new Set(["A", "E", "I", "O", "U", "Y"])
+
 export const LETTER_TO_SCORE = {
     "A": 1,
     "B": 3,

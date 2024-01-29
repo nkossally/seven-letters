@@ -14,3 +14,6 @@ You may also see any lint errors in the console.
 
 https://codepen.io/iamogbz/pen/pwyEVm
 
+
+aspell -d en dump master | aspell -l en expand > words.txt
+
