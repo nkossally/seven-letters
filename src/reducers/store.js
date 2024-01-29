@@ -6,6 +6,8 @@ import computerHandReducer from "./computerHandSlice";
 import lettersLeftReducer from "./lettersLeftSlice"
 import scoreSliceReducer from "./scoreSlice";
 import computerScoreSliceReducer from "./computerScoreSlice";
+import isComputersTurnSliceReducer from "./isComputersTurn.slice";
+
 
 export default configureStore({
   reducer: {
@@ -16,5 +18,6 @@ export default configureStore({
     lettersLeft: lettersLeftReducer,
     score: scoreSliceReducer, 
     computerScore: computerScoreSliceReducer,
+    isComputersTurn: isComputersTurnSliceReducer,
   },
 });
