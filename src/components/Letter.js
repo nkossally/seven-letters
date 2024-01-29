@@ -2,10 +2,6 @@ import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { modifyHand } from "../reducers/handSlice";
 import {
-  addLetterToBoard,
-  removeLetterFromBoard,
-} from "../reducers/boardValuesSlice";
-import {
   addTempLetterToBoard,
   removeTempLetterFromBoard,
 } from "../reducers/tempBoardValuesSlice";
@@ -22,6 +18,7 @@ const Letter = ({
   boardRow,
   boardCol,
   permanentlyOnBoard,
+  isInComputerHand,
 }) => {
   const hand = useSelector((state) => state.hand);
 
@@ -84,8 +81,13 @@ const Letter = ({
       }
     }
   };
-  if (permanentlyOnBoard)
-    return <div className="hand-tile-permanent">{letter}</div>;
+  if (permanentlyOnBoard || isInComputerHand)
+    return (
+      <div className="hand-tile-permanent">
+        {letter}{" "}
+        <span className="score-in-tile">{LETTER_TO_SCORE[letter]}</span>
+      </div>
+    );
   return (
     <Draggable onStop={onStop}>
       <div className="hand-tile">

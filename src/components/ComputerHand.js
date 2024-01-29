@@ -2,18 +2,18 @@ import { useSelector } from "react-redux";
 import Letter from "./Letter";
 import _ from "lodash";
 
-const Hand = () => {
-  const hand = useSelector((state) => state.hand);
+const ComputerHand = () => {
+  const computerHand = useSelector((state) => state.computerHand);
 
   return (
     <div className="hand">
-      {hand.map((letter, i) => {
+      {computerHand.map((letter, i) => {
         return (
           <Letter
             letter={letter}
             key={`draggable-${i}.${letter}`}
             handIdx={i}
-            isInHand={true}
+            isInComputerHand={true}
           />
         );
       })}
@@ -21,4 +21,4 @@ const Hand = () => {
   );
 };
 
-export default Hand;
+export default ComputerHand;

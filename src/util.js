@@ -95,7 +95,7 @@ export const LETTER_COUNTS = {
   // "": 2,
 };
 
-export   const shuffle = (array) => {
+export const shuffle = (array) => {
   let currentIndex = array.length,
     randomIndex;
 
@@ -114,4 +114,22 @@ export   const shuffle = (array) => {
 
   return array;
 };
+
+export const getAllPermutationsOfSizeN = (arr, n) =>{
+  const result = [];
+
+  const helper = (selections, leftovers) =>{
+    if(selections.length === n){
+      result.push(selections)
+      return;
+    }
+
+    for(let i = 0; i < leftovers.length; i++){
+      helper([...selections, leftovers[i]], leftovers.slice(0, i).concat(leftovers.slice(i + 1)))
+    }
+  }
+
+  helper([], arr)
+  return result;
+}
 
