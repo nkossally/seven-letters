@@ -367,6 +367,31 @@ button:focus {
   animation-name: slideRight;
 }
 
+@keyframes fadeInAndOut {
+  0% { opacity: 0; }
+  30% {opacity: 1}
+  100% { opacity: 0; }
+}
+
+.fade-in-and-out { animation: fadeInAndOut 1s; }
+
+.computer-passes {
+  height: 0px;
+  font-size: 20px;
+  color: #00e0ff;
+  margin-bottom: 20px;
+  text-align: center;
+  text-transform: uppercase;
+
+  text-shadow: 0 1px 0 #ccc, 0 2px 0 #ccc,
+  0 .3px 0 #ccc, 0 .4px 0 #ccc,
+  0 .5px 0 #ccc, 0 .6px 0 #ccc,
+  0 .7px 0 #ccc, 0 .8px 0 #ccc,
+  0 .9px 0 #ccc, 0 1.0px 0 #ccc,
+  0 1.1px 0 #ccc, 0 1.2px 0 #ccc,
+  0 2.0px 3.0px rgba(0, 0, 0, 0.5);
+}
+
 .blarg{
   margin-left: 180px;
 }

@@ -20,10 +20,15 @@ import { modifyLettersLeft } from "./reducers/lettersLeftSlice";
 import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
 import { updateScore } from "./reducers/scoreSlice";
 import { updateComputerScore } from "./reducers/computerScoreSlice";
-import { addLetterToBoard, removeLetterFromBoard } from "./reducers/boardValuesSlice";
+import {
+  addLetterToBoard,
+  removeLetterFromBoard,
+} from "./reducers/boardValuesSlice";
 import { removeTempLetterFromBoard } from "./reducers/tempBoardValuesSlice";
+import classNames from "classnames";
 
 import "./styles.scss";
+import { set } from "lodash";
 
 const resetButtonStyle = {
   position: "absolute",
@@ -46,11 +51,12 @@ const DIRS = [
   [-1, 0],
 ];
 
-const delay = ms => new Promise(res => setTimeout(res, ms));
+const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 const App = () => {
   const [localDictionary, setLocalDictionary] = useState(new Set());
-  const [selectedComputerTiles, setSelectedComputerTiles] = useState([])
+  const [selectedComputerTiles, setSelectedComputerTiles] = useState([]);
+  const [computerPasses, setComputerPasses] = useState(false);
   const boardValues = useSelector((state) => state.boardValues);
   const tempBoardValues = useSelector((state) => state.tempBoardValues);
   const lettersLeft = useSelector((state) => state.lettersLeft);
@@ -111,7 +117,6 @@ const App = () => {
     dispatch(modifyHand(letters.slice(0, 7)));
     dispatch(modifyComputerHand(letters.slice(7, 14)));
     dispatch(modifyLettersLeft(letters.slice(14)));
-
   };
 
   const buildEmptyBoard = () => {
@@ -138,13 +143,13 @@ const App = () => {
     const allWordsInDict = checkAllWordsOnBoard(virtualBoard);
 
     if (isComputersTurn) {
-      if(allWordsInDict){
-        setSelectedComputerTiles(indices)
-        await delay(1000)
+      if (allWordsInDict) {
+        setSelectedComputerTiles(indices);
+        await delay(1000);
         permanentlyPlaceLetters(virtualBoard);
         dispatch(setIsComputersTurn(false));
-        setSelectedComputerTiles([])
-        return true
+        setSelectedComputerTiles([]);
+        return true;
       } else {
         dispatch(setIsComputersTurn(false));
         return false;
@@ -175,7 +180,7 @@ const App = () => {
         virtualBoard
       );
       word = wordAndScore.word;
-      maxWordLength = Math.max(maxWordLength, word.length)
+      maxWordLength = Math.max(maxWordLength, word.length);
       if (word.length > 1) {
         score += wordAndScore.wordScore;
         const definition = localDictionary.has(word);
@@ -190,7 +195,7 @@ const App = () => {
         );
         if (wordAndScore) {
           const word = wordAndScore.word;
-          maxWordLength = Math.max(maxWordLength, word.length)
+          maxWordLength = Math.max(maxWordLength, word.length);
           if (word.length > 1) {
             score += wordAndScore.wordScore;
             const definition = localDictionary.has(word);
@@ -208,7 +213,7 @@ const App = () => {
         virtualBoard
       );
       word = wordAndScore.word;
-      maxWordLength = Math.max(maxWordLength, word.length)
+      maxWordLength = Math.max(maxWordLength, word.length);
       if (word.length > 1) {
         score += wordAndScore.wordScore;
         const definition = localDictionary.has(word);
@@ -223,7 +228,7 @@ const App = () => {
         );
         if (wordAndScore) {
           const word = wordAndScore.word;
-          maxWordLength = Math.max(maxWordLength, word.length)
+          maxWordLength = Math.max(maxWordLength, word.length);
           if (word.length > 1) {
             const definition = localDictionary.has(word);
             score += wordAndScore.wordScore;
@@ -233,7 +238,7 @@ const App = () => {
       });
     }
     // don't submit any one letter words
-    if(maxWordLength < 2) return false;
+    if (maxWordLength < 2) return false;
     if (allWordsInDict) {
       const tempLetterArr = getAllTempLetters();
       const maybeFifty = tempLetterArr.length === 7 ? 50 : 0;
@@ -525,21 +530,26 @@ const App = () => {
     }
     let result;
     let n = computerHand.length;
-    n = Math.min(4, computerHand.length)
 
     while (n > 1) {
       const permsWithIndices = getAllPermutationsOfSizeN(computerHand, n);
 
       for (let i = 0; i < permsWithIndices.length; i++) {
         const permWithIndices = permsWithIndices[i];
-        const perm = permWithIndices.map(elem => elem.letter);
+        const perm = permWithIndices.map((elem) => elem.letter);
 
-        const indices = permWithIndices.map(elem => elem.idx);
+        const indices = permWithIndices.map((elem) => elem.idx);
         result = await tryToPlaceComputerLetters(perm, indices);
         if (result) break;
       }
       if (result) break;
       n--;
+    }
+    if(!result){
+      setComputerPasses(true);
+      setTimeout(() => {
+        setComputerPasses(false);
+      }, 1000);
     }
     dispatch(setIsComputersTurn(false));
   };
@@ -682,20 +692,23 @@ const App = () => {
     let result;
     const computerHandCopy = Array.from(computerHand);
     while (lettersToPlay > 2) {
-      const permsWithIndices = getAllPermutationsOfSizeN(computerHand, lettersToPlay);
+      const permsWithIndices = getAllPermutationsOfSizeN(
+        computerHand,
+        lettersToPlay
+      );
       for (let i = 0; i < permsWithIndices.length; i++) {
         const permWithIndices = permsWithIndices[i];
-        const perm = permWithIndices.map(elem => elem.letter);
-        const indices = permWithIndices.map(elem => elem.idx);
+        const perm = permWithIndices.map((elem) => elem.letter);
+        const indices = permWithIndices.map((elem) => elem.idx);
         const word = perm.join("");
         const definition = localDictionary.has(word);
 
         if (definition) {
           let wordScore = 0;
           let multiplier = 1;
-          setSelectedComputerTiles(indices)
-          await delay(1000)
-          setSelectedComputerTiles([])
+          setSelectedComputerTiles(indices);
+          await delay(1000);
+          setSelectedComputerTiles([]);
           for (let j = 0; j < perm.length; j++) {
             const k = computerHandCopy.indexOf(perm[j]);
             computerHandCopy.splice(k, 1);
@@ -769,25 +782,26 @@ const App = () => {
             {" "}
             Submit{" "}
           </button>
-          <button className="pass-button" disabled={isComputersTurn} onClick={pass}>
+          <button
+            className="pass-button"
+            disabled={isComputersTurn}
+            onClick={pass}
+          >
             {" "}
             Pass{" "}
           </button>
         </div>
       </div>
+      <div
+        className={classNames(
+          "computer-passes",
+          computerPasses ? "fade-in-and-out" : ""
+        )}
+      >
+        {computerPasses && <>Computer passes</>}
+      </div>
       <div className="board-and-computer-hand">
-        <ComputerHand selectedTiles={selectedComputerTiles}/>
-        <p/>
-        <p/>
-        <p/>
-        <div className="blarg">
-        {isComputersTurn}ssssssss
-
-        </div>
-
-        <p/>
-        <p/>
-
+        <ComputerHand selectedTiles={selectedComputerTiles} />
         <ScrabbleBoard />
       </div>
     </>
