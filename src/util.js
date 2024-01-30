@@ -133,3 +133,36 @@ export const getAllPermutationsOfSizeN = (arr, n) =>{
   return result;
 }
 
+const tileScoreIdx = {
+  ct: [112],
+  tw: [0, 7, 14, 105, 119, 210, 217, 224],
+  tl: [20, 24, 76, 80, 84, 88, 136, 140, 144, 148, 200, 204],
+  dw: [
+    16, 28, 32, 42, 48, 56, 64, 70, 154, 160, 168, 176, 182, 192, 196, 208,
+  ],
+  dl: [
+    3, 11, 36, 38, 45, 52, 59, 88, 92, 96, 98, 102, 108, 116, 122, 126, 128,
+    132, 165, 172, 179, 186, 188, 213, 221,
+  ],
+};
+
+const toTileIndex = (row, column) => {
+  if (row < BOARD_SIZE && row >= 0 && column < BOARD_SIZE && column >= 0) {
+    return row * BOARD_SIZE + column;
+  } else {
+    return -1;
+  }
+};
+
+export const getSpecialTileScoreIdx = (i, j) => {
+  var ti = toTileIndex(i, j);
+  let result = "";
+  for (var t in tileScoreIdx) {
+    var idx = tileScoreIdx[t].indexOf(ti);
+    if (idx >= 0) {
+      result = t;
+      break;
+    }
+  }
+  return result;
+};

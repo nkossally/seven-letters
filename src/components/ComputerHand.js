@@ -6,7 +6,7 @@ const ComputerHand = () => {
   const computerHand = useSelector((state) => state.computerHand);
 
   return (
-    <div className="hand">
+    <div className="computer-hand">
       {computerHand.map((letter, i) => {
         return (
           <Letter

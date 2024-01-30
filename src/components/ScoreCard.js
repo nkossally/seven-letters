@@ -7,9 +7,9 @@ const ScoreCard = () => {
 
   return (
     <div className="score-card">
-      <div>P{score}</div>
+      <div>Player Score:<p/>{score}</div>
       <p/>
-      <div >C{computerScore}</div>
+      <div >Computer Score: <p/>{computerScore}</div>
     </div>
   );
 };
