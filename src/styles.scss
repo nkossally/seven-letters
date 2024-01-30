@@ -279,20 +279,25 @@ button:focus {
   display: inline-flex; 
   flex-direction: row;
   z-index: 1000;
+
+  position: relative;
+  top: -$tile-border-width * 2;
+
+
 }
 
 .hand-tile-permanent{
-  @include coloredSquare($tile-size, $tile-color);
-  border: solid $tile-border-color $tile-border-width;
-  border: 2px solid green;
-  color: $decal-font-color;
-  color: purple;
+  // @include coloredSquare($tile-size, $tile-color);
+  // border: solid $tile-border-color $tile-border-width;
+  // border: 2px solid green;
+  // color: $decal-font-color;
+  // color: purple;
   font-size: 30px;
   font-weight: 900;
-  text-align: center;
-  display: inline-flex; 
-  flex-direction: row;
-  z-index: 1000;
+  // text-align: center;
+  // display: inline-flex; 
+  // flex-direction: row;
+  // z-index: 1000;
 }
 
 .score-in-tile{

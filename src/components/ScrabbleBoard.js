@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { BOARD_SIZE } from "../consts";
 import Letter from "./Letter";
 import { getSpecialTileScoreIdx } from "../util";
+import { LETTER_TO_SCORE } from "../consts";
 
 const ScrabbleBoard2 = () => {
   const boardValues = useSelector((state) => state.boardValues);
@@ -34,6 +35,21 @@ const ScrabbleBoard2 = () => {
                           permanentlyOnBoard={true}
                           key={`tile${i}.${j}.boardVal`}
                         />
+
+                      //   <div
+                      //   className={classNames(
+                      //     "tile"
+                         
+                      //   )}
+                      //   data-row={i}
+                      //   data-col={j}
+                      //   key={`tile${i}.${j}`}
+                      // >
+                      //   <div className={classNames("decal", "hand-tile-permanent")} data-row={i} data-col={j}>
+                      //     {boardValues[i][j]}
+                      //     <span className="score-in-tile">{LETTER_TO_SCORE[boardValues[i][j]]}</span>
+                      //   </div>
+                      // </div>
                       )}
                       {typeof tempBoardValues[i][j] === "string" && (
                         <Letter

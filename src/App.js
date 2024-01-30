@@ -219,6 +219,7 @@ const App = () => {
         }
       });
     }
+    // don't submit any one letter words
     if(maxWordLength < 2) return false;
     if (allWordsInDict) {
       const tempLetterArr = getAllTempLetters();

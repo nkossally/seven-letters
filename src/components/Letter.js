@@ -83,7 +83,7 @@ const Letter = ({
   };
   if (permanentlyOnBoard || isInComputerHand)
     return (
-      <div className="hand-tile-permanent">
+      <div className="hand-tile">
         {letter}{" "}
         <span className="score-in-tile">{LETTER_TO_SCORE[letter]}</span>
       </div>
