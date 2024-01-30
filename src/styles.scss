@@ -256,54 +256,43 @@ button:focus {
   margin-left: 10px;
 }
 
-// .hand-tile {
-//   display: flex;
-//   flex-direction: column;
-//   justify-content: center;
-//   text-transform: uppercase;
-//   font-size: 35px;
-//   height: 40px;
-//   width: 35px;
-//   margin: 10px 10px;
-//   border: 2px solid black;
-//   z-index: 1000;
-// }
 .hand-tile{
   @include coloredSquare($tile-size, $tile-color);
   border: solid $tile-border-color $tile-border-width;
-  // display: inline-block;
   color: $decal-font-color;
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 900;
   text-align: center;
   display: inline-flex; 
   flex-direction: row;
   z-index: 1000;
-
   position: relative;
-  top: -$tile-border-width * 2;
+  top: -$tile-border-width * 4;
 
 
 }
 
 .hand-tile-permanent{
-  // @include coloredSquare($tile-size, $tile-color);
-  // border: solid $tile-border-color $tile-border-width;
-  // border: 2px solid green;
-  // color: $decal-font-color;
-  // color: purple;
-  font-size: 30px;
+  @include coloredSquare($tile-size, $tile-color);
+  border: solid $tile-border-color $tile-border-width;
+  color: $decal-font-color;
+  font-size: 28px;
   font-weight: 900;
-  // text-align: center;
-  // display: inline-flex; 
-  // flex-direction: row;
-  // z-index: 1000;
+  text-align: center;
+  display: inline-flex; 
+  flex-direction: row;
+  z-index: 1000;
+  position: relative;
+  top: -$tile-border-width * 4;
+  border: 2px solid #626258
 }
 
 .score-in-tile{
   font-size: 10px;
+  position: absolute;
+  right: 1px;
+  bottom: 1px;
 }
-
 
 .letter-val{
   margin-top: 2px;

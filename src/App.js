@@ -20,7 +20,7 @@ import { modifyLettersLeft } from "./reducers/lettersLeftSlice";
 import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
 import { updateScore } from "./reducers/scoreSlice";
 import { updateComputerScore } from "./reducers/computerScoreSlice";
-import { addLetterToBoard } from "./reducers/boardValuesSlice";
+import { addLetterToBoard, removeLetterFromBoard } from "./reducers/boardValuesSlice";
 import { removeTempLetterFromBoard } from "./reducers/tempBoardValuesSlice";
 
 import "./styles.scss";
@@ -33,6 +33,7 @@ const resetButtonStyle = {
   color: "#00e0ff",
   "font-size": 20,
   "border-color": "#00e0ff",
+  "z-index": 1,
 };
 
 const MID_IDX = 7;
@@ -63,7 +64,7 @@ const App = () => {
       const result = await fetch(AllWords);
       const text = await result.text();
       const dict = text.split("\r\n").map((elem) => elem.toUpperCase());
-      // console.log(dict.includes("ZO"));
+      console.log(dict.includes("MM"));
 
       setLocalDictionary(new Set(dict));
     };
@@ -101,9 +102,12 @@ const App = () => {
       }
     });
     letters = shuffle(letters);
+    removeAllTempLetters();
+    removeAllLetters();
     dispatch(modifyHand(letters.slice(0, 7)));
     dispatch(modifyComputerHand(letters.slice(7, 14)));
     dispatch(modifyLettersLeft(letters.slice(14)));
+
   };
 
   const buildEmptyBoard = () => {
@@ -277,6 +281,16 @@ const App = () => {
       for (let j = 0; j < BOARD_SIZE; j++) {
         if (getTempLetterAtCoordinate(i, j)) {
           dispatch(removeTempLetterFromBoard({ row: i, col: j }));
+        }
+      }
+    }
+  };
+
+  const removeAllLetters = () => {
+    for (let i = 0; i < BOARD_SIZE; i++) {
+      for (let j = 0; j < BOARD_SIZE; j++) {
+        if (getLetterAtCoordinate(i, j)) {
+          dispatch(removeLetterFromBoard({ row: i, col: j }));
         }
       }
     }
