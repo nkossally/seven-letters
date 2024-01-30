@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { Button } from "@mui/material";
 import ScrabbleBoard from "./components/ScrabbleBoard";
 import InstructionsModal from "./components/InstructionsModal";
 import Hand from "./components/Hand";
@@ -23,6 +24,16 @@ import { addLetterToBoard } from "./reducers/boardValuesSlice";
 import { removeTempLetterFromBoard } from "./reducers/tempBoardValuesSlice";
 
 import "./styles.scss";
+
+const resetButtonStyle = {
+  position: "absolute",
+  top: 5,
+  left: 5,
+  "text-transform": "uppercase",
+  color: "#00e0ff",
+  "font-size": 20,
+  "border-color": "#00e0ff",
+};
 
 const MID_IDX = 7;
 const MAX_LETTERS = 7;
@@ -52,9 +63,7 @@ const App = () => {
       const result = await fetch(AllWords);
       const text = await result.text();
       const dict = text.split("\r\n").map((elem) => elem.toUpperCase());
-      console.log(dict.includes("ZO"));
-      console.log(dict.includes("ANILINS"));
-      console.log(dict.includes("RE"));
+      // console.log(dict.includes("ZO"));
 
       setLocalDictionary(new Set(dict));
     };
@@ -142,30 +151,33 @@ const App = () => {
     let score = 0;
 
     let word = "";
+    let maxWordLength = 0;
     let allWordsInDict = true;
+    // if the word is vertical
     if (rows.length > 1) {
+      const col = cols[0];
       const wordAndScore = getVerticalWordAtCoordinate(
         rows[0],
-        cols[0],
+        col,
         virtualBoard
       );
       word = wordAndScore.word;
+      maxWordLength = Math.max(maxWordLength, word.length)
       if (word.length > 1) {
         score += wordAndScore.wordScore;
         const definition = localDictionary.has(word);
         if (!definition) allWordsInDict = false;
       }
+      // check if any of the letters in a vertical word adjoin an already placed horizontal words.
       rows.forEach((row) => {
-        if (
-          getVerticalWordAtCoordinate(row, cols[0]) ||
-          (virtualBoard && virtualBoard[row][cols[0]])
-        ) {
-          const wordAndScore = getHorizontalWordAtCoordinate(
-            row,
-            cols[0],
-            virtualBoard
-          );
+        const wordAndScore = getHorizontalWordAtCoordinate(
+          row,
+          col,
+          virtualBoard
+        );
+        if (wordAndScore) {
           const word = wordAndScore.word;
+          maxWordLength = Math.max(maxWordLength, word.length)
           if (word.length > 1) {
             score += wordAndScore.wordScore;
             const definition = localDictionary.has(word);
@@ -175,12 +187,15 @@ const App = () => {
         }
       });
     } else {
+      // word is horizontal
+      const row = rows[0];
       const wordAndScore = getHorizontalWordAtCoordinate(
-        rows[0],
+        row,
         cols[0],
         virtualBoard
       );
       word = wordAndScore.word;
+      maxWordLength = Math.max(maxWordLength, word.length)
       if (word.length > 1) {
         score += wordAndScore.wordScore;
         const definition = localDictionary.has(word);
@@ -188,17 +203,14 @@ const App = () => {
         if (!definition) allWordsInDict = false;
       }
       cols.forEach((col) => {
-        if (
-          getVerticalWordAtCoordinate(rows[0], col) ||
-          (virtualBoard && virtualBoard[rows[0]][col])
-        ) {
-          const wordAndScore = getVerticalWordAtCoordinate(
-            rows[0],
-            col,
-            virtualBoard
-          );
+        const wordAndScore = getVerticalWordAtCoordinate(
+          row,
+          col,
+          virtualBoard
+        );
+        if (wordAndScore) {
           const word = wordAndScore.word;
-
+          maxWordLength = Math.max(maxWordLength, word.length)
           if (word.length > 1) {
             const definition = localDictionary.has(word);
             score += wordAndScore.wordScore;
@@ -207,10 +219,10 @@ const App = () => {
         }
       });
     }
+    if(maxWordLength < 2) return false;
     if (allWordsInDict) {
       const tempLetterArr = getAllTempLetters();
       const maybeFifty = tempLetterArr.length === 7 ? 50 : 0;
-      console.log(score);
       if (virtualBoard) {
         dispatch(updateComputerScore(computerScore + score + maybeFifty));
       } else {
@@ -699,6 +711,9 @@ const App = () => {
         const letter =
           (virtualBoard && virtualBoard[i][j]) ||
           getTempLetterAtCoordinate(i, j);
+        if (letter) {
+          arr.push(letter);
+        }
       }
     }
     return arr;
@@ -708,6 +723,9 @@ const App = () => {
     <>
       <InstructionsModal />
       <ScoreCard />
+      <Button variant="outlined" sx={resetButtonStyle} onClick={startGame}>
+        New Game
+      </Button>
       <div className="player-row">
         <Hand />
         <div>

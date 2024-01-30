@@ -8,7 +8,6 @@ import infoIcon from "../images/info icon.png";
 export default function InstructionsModal({ onCloseCallback }) {
   const [open, setOpen] = React.useState(true);
   const handleOpen = () => {
-    console.log("pizza")
     setOpen(true);
   }
   const handleClose = () => {

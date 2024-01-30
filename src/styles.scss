@@ -320,12 +320,15 @@ button:focus {
 
 .score-card{
   position: absolute;
-  left : 20px;
-  top: 10px;
+  left : 10px;
+  top: 60px;
   width: 200px;
   height: 70px;
   font-size: 20px;
 }
+.score-card-num{
+}
+
 
 .player-row{
   display: flex;
