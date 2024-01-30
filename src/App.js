@@ -516,7 +516,7 @@ const App = () => {
     return { letterPoints, wordMultiplier };
   };
 
-  const handleComputerStep = () => {
+  const handleComputerStep = async () => {
     const lettersOnBoard = getPermanentlyPlacedLetters();
 
     if (lettersOnBoard.length === 0) {
@@ -525,16 +525,17 @@ const App = () => {
     }
     let result;
     let n = computerHand.length;
+    n = Math.min(4, computerHand.length)
 
     while (n > 1) {
       const permsWithIndices = getAllPermutationsOfSizeN(computerHand, n);
 
-
       for (let i = 0; i < permsWithIndices.length; i++) {
         const permWithIndices = permsWithIndices[i];
         const perm = permWithIndices.map(elem => elem.letter);
+
         const indices = permWithIndices.map(elem => elem.idx);
-        result = tryToPlaceComputerLetters(perm, indices);
+        result = await tryToPlaceComputerLetters(perm, indices);
         if (result) break;
       }
       if (result) break;
@@ -543,7 +544,7 @@ const App = () => {
     dispatch(setIsComputersTurn(false));
   };
 
-  const tryToPlaceComputerLetters = (arr, indices) => {
+  const tryToPlaceComputerLetters = async (arr, indices) => {
     let result;
     let virtualBoard;
     const lettersOnBoard = getPermanentlyPlacedLetters();
@@ -552,14 +553,13 @@ const App = () => {
       const row = boardLetterObj.row;
       const col = boardLetterObj.col;
       const wordAndCoordinates = placeLettersAroundSpot(row, col, arr);
-
       if (wordAndCoordinates) {
         const coordinates = wordAndCoordinates.coordinates;
         virtualBoard = buildEmptyBoard();
         coordinates.forEach((coords, i) => {
           virtualBoard[coords[0]][coords[1]] = arr[i];
         });
-        result = submitWord(virtualBoard, indices);
+        result = await submitWord(virtualBoard, indices);
       }
       if (result) break;
     }
@@ -777,6 +777,17 @@ const App = () => {
       </div>
       <div className="board-and-computer-hand">
         <ComputerHand selectedTiles={selectedComputerTiles}/>
+        <p/>
+        <p/>
+        <p/>
+        <div className="blarg">
+        {isComputersTurn}ssssssss
+
+        </div>
+
+        <p/>
+        <p/>
+
         <ScrabbleBoard />
       </div>
     </>

@@ -1,9 +1,9 @@
 import { BOARD_SIZE } from "./consts";
-const DICTIONARY_ENDPOINT = "https://api.dictionaryapi.dev/api/v2/entries/en/"
+const DICTIONARY_ENDPOINT = "https://api.dictionaryapi.dev/api/v2/entries/en/";
 const HUNDRED_THOUSAND = 100000;
 
 // Ranges calculated from data found at
-  // http://en.wikipedia.org/wiki/Letter_frequency
+// http://en.wikipedia.org/wiki/Letter_frequency
 var LETTER_FREQUENCIES = {
   A: 8167,
   B: 9659,
@@ -53,17 +53,16 @@ export const lookUpWord = async (word) => {
     const resp = await fetch(`${DICTIONARY_ENDPOINT}${word}`);
     const responseJson = await resp.json();
     return responseJson[0]["meanings"][0]["definitions"][0]["definition"];
-  } catch (e) {
-  }
+  } catch (e) {}
 };
 
-export const createEmptyBoard = () =>{
+export const createEmptyBoard = () => {
   const arr = [];
-  for(let i = 0; i < BOARD_SIZE; i++){
-    arr.push([])
+  for (let i = 0; i < BOARD_SIZE; i++) {
+    arr.push([]);
   }
   return arr;
-}
+};
 
 export const LETTER_COUNTS = {
   A: 9,
@@ -115,31 +114,34 @@ export const shuffle = (array) => {
   return array;
 };
 
-export const getAllPermutationsOfSizeN = (arr, n) =>{
+export const getAllPermutationsOfSizeN = (arr, n) => {
   const result = [];
-  const elemsAndIndices = arr.map((letter, idx) =>{ return {letter, idx}})
+  const elemsAndIndices = arr.map((letter, idx) => {
+    return { letter, idx };
+  });
   const helper = (selections, leftovers) => {
-    if(selections.length === n){
-      result.push(selections)
+    if (selections.length === n) {
+      result.push(selections);
       return;
     }
 
-    for(let i = 0; i < leftovers.length; i++){
-      helper([...selections, leftovers[i]], leftovers.slice(0, i).concat(leftovers.slice(i + 1)))
+    for (let i = 0; i < leftovers.length; i++) {
+      helper(
+        [...selections, leftovers[i]],
+        leftovers.slice(0, i).concat(leftovers.slice(i + 1))
+      );
     }
-  }
+  };
 
-  helper([], elemsAndIndices)
+  helper([], elemsAndIndices);
   return result;
-}
+};
 
 const tileScoreIdx = {
   ct: [112],
   tw: [0, 7, 14, 105, 119, 210, 217, 224],
   tl: [20, 24, 76, 80, 84, 88, 136, 140, 144, 148, 200, 204],
-  dw: [
-    16, 28, 32, 42, 48, 56, 64, 70, 154, 160, 168, 176, 182, 192, 196, 208,
-  ],
+  dw: [16, 28, 32, 42, 48, 56, 64, 70, 154, 160, 168, 176, 182, 192, 196, 208],
   dl: [
     3, 11, 36, 38, 45, 52, 59, 88, 92, 96, 98, 102, 108, 116, 122, 126, 128,
     132, 165, 172, 179, 186, 188, 213, 221,

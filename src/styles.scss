@@ -260,7 +260,7 @@ button:focus {
   @include coloredSquare($tile-size, $tile-color);
   border: solid $tile-border-color $tile-border-width;
   color: $decal-font-color;
-  font-size: 28px;
+  font-size: 27px;
   font-weight: 900;
   text-align: center;
   display: inline-flex; 
@@ -276,7 +276,7 @@ button:focus {
   @include coloredSquare($tile-size, $tile-color);
   border: solid $tile-border-color $tile-border-width;
   color: $decal-font-color;
-  font-size: 28px;
+  font-size: 27px;
   font-weight: 900;
   text-align: center;
   display: inline-flex; 
@@ -365,4 +365,8 @@ button:focus {
 .slide-right {
   animation-duration: 1s;
   animation-name: slideRight;
+}
+
+.blarg{
+  margin-left: 180px;
 }
