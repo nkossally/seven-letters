@@ -117,8 +117,8 @@ export const shuffle = (array) => {
 
 export const getAllPermutationsOfSizeN = (arr, n) =>{
   const result = [];
-
-  const helper = (selections, leftovers) =>{
+  const elemsAndIndices = arr.map((letter, idx) =>{ return {letter, idx}})
+  const helper = (selections, leftovers) => {
     if(selections.length === n){
       result.push(selections)
       return;
@@ -129,7 +129,7 @@ export const getAllPermutationsOfSizeN = (arr, n) =>{
     }
   }
 
-  helper([], arr)
+  helper([], elemsAndIndices)
   return result;
 }
 

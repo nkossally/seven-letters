@@ -10,6 +10,7 @@ import { LETTER_TO_SCORE } from "../consts";
 import Draggable from "react-draggable";
 import $ from "jquery";
 import _ from "lodash";
+import classNames from "classnames";
 
 const Letter = ({
   letter,
@@ -19,6 +20,7 @@ const Letter = ({
   boardCol,
   permanentlyOnBoard,
   isInComputerHand,
+  selected
 }) => {
   const hand = useSelector((state) => state.hand);
 
@@ -81,14 +83,21 @@ const Letter = ({
       }
     }
   };
-  if (permanentlyOnBoard || isInComputerHand)
+  if ( permanentlyOnBoard)
     return (
       <div className="hand-tile-permanent">
         {letter}{" "}
         <span className="score-in-tile">{LETTER_TO_SCORE[letter]}</span>
       </div>
-    );
-  return (
+    )
+    if ( isInComputerHand)
+    return (
+      <div className={classNames("hand-tile", selected ? "slide-right" : "")}>
+        {selected && letter}
+        {selected && <span className="score-in-tile">{LETTER_TO_SCORE[letter]}</span>}
+      </div>
+    )
+      return (
     <Draggable onStop={onStop}>
       <div className="hand-tile">
         <div>{letter}</div>

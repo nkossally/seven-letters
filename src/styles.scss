@@ -351,3 +351,18 @@ button:focus {
 
 
 }
+
+@keyframes slideRight {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(60px);
+  }
+}
+
+.slide-right {
+  animation-duration: 1s;
+  animation-name: slideRight;
+}
