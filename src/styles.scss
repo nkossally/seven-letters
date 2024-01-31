@@ -218,25 +218,10 @@ body {
 }
 
 .App {
-  // background-color:#585862;
-  // background-color:#5e5862;
-
-  // background-color:#626258;
-  // background-color:#586262;
-  // background-color:#58625a;
-  // background-color: #282c34;
-  // background-color: #F5EBED;
-  // background-color: #ebf5f3;
-  // background-color: #ebedf5;
   min-height: 100vh;
   min-width: 100vw;
-  // display: flex;
-  // flex-direction: column;
-  // align-items: center;
-  // justify-content: center;
-  // font-size: calc(10px + 2vmin);
-  // color: white;
-  // text-align: center;
+  display: flex;
+  flex-direction: column;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -264,6 +249,7 @@ body {
   flex-direction: row;
   justify-content: center;
   text-align: center;
+  min-height: $tile-size + 5;
 }
 
 .computer-hand {
@@ -271,20 +257,7 @@ body {
   flex-direction: column;
   justify-content: center;
   text-align: center;
-  margin-right: 400px;
-
-  @media (max-width: 2000px) {
-    margin-right: 400px;
-  }
-
-  @media (max-width: 1500px) {
-    margin-right: 300px;
-  }
-
-  @media (max-width: 750px) {
-    margin-right: 100px;
-
-  }
+  margin-left: 20px;
 }
 
 .hand-tile {
@@ -304,7 +277,6 @@ body {
 
 .computer-tile {
   cursor: auto;
-
 }
 
 .hand-tile-permanent {
@@ -368,9 +340,6 @@ body {
   text-align: center;
   border-radius: 5px;
 }
-
-.score-card-num {}
-
 
 .player-row {
   display: flex;
@@ -451,4 +420,16 @@ body {
     0 .9px 0 #ccc, 0 1.0px 0 #ccc,
     0 1.1px 0 #ccc, 0 1.2px 0 #ccc,
     0 2.0px 3.0px rgba(0, 0, 0, 0.5);
+}
+
+.board-and-computer-hand {
+  display: flex;
+  flex-direction: row;
+}
+
+.board-and-computer-hand-container {
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  justify-content: center;
 }

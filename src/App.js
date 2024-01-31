@@ -597,6 +597,7 @@ const App = () => {
 
     while (n > 0) {
       const permsWithIndices = getAllPermutationsOfSizeN(computerHand, n);
+      // console.log(permsWithIndices)
 
       for (let i = 0; i < permsWithIndices.length; i++) {
         const permWithIndices = permsWithIndices[i];
@@ -627,6 +628,7 @@ const App = () => {
       const row = boardLetterObj.row;
       const col = boardLetterObj.col;
       const wordAndCoordinates = placeLettersAroundSpot(row, col, arr);
+      // console.log("wordAndCoordinates", wordAndCoordinates)
       if (wordAndCoordinates) {
         const coordinates = wordAndCoordinates.coordinates;
         virtualBoard = buildEmptyBoard();
@@ -889,8 +891,7 @@ const App = () => {
         {invalidWords && <>{invalidWords}</>}
       </div>
       <div className="board-and-computer-hand">
-        <ScrabbleBoard />
-        <ComputerHand selectedTiles={selectedComputerTiles} />
+        <ScrabbleBoard selectedTiles={selectedComputerTiles} />
       </div>
     </div>
   );
