@@ -9,7 +9,7 @@ export default function InstructionsModal({ onCloseCallback }) {
   const [open, setOpen] = React.useState(true);
   const handleOpen = () => {
     setOpen(true);
-  }
+  };
   const handleClose = () => {
     setOpen(false);
     if (onCloseCallback) {
@@ -51,7 +51,7 @@ export default function InstructionsModal({ onCloseCallback }) {
     outline: "none",
     boxShadow: 24,
     p: 4,
-    "overflow-y":"scroll",
+    "overflow-y": "scroll",
   };
 
   return (
@@ -67,17 +67,20 @@ export default function InstructionsModal({ onCloseCallback }) {
       >
         <Box sx={style}>
           <Typography id="modal-modal-description" sx={{ mt: -1 }}>
+            Drag and drop letters from your hand onto the board in order to form
+            words.
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
             Different letters in the game will have various point values and
             this will depend on how rare the letter is and how difficult it may
             be to lay that letter.
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Extra Point Values -
-            When looking at the board, players will see that
-            some squares offer multipliers. Should a tile be placed on these
-            squares, the value of the tile will be multiplied by 2x or 3x. Some
-            squares will also multiply the total value of the word and not just
-            the single point value of one tile.
+            Extra Point Values - When looking at the board, players will see
+            that some squares offer multipliers. Should a tile be placed on
+            these squares, the value of the tile will be multiplied by 2x or 3x.
+            Some squares will also multiply the total value of the word and not
+            just the single point value of one tile.
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
             Double Letter Scores - The light blue cells in the board are
@@ -112,32 +115,26 @@ export default function InstructionsModal({ onCloseCallback }) {
             You can pass.
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            When the game begins, the player will
-            place their word on the star in the centre of the board. The
-            star is a double square and will offer a double word score. All
-            players following will build their words off of this word, extending
-            the game to other squares on the board.
+            When the game begins, the player will place their word on the star
+            in the centre of the board. The star is a double square and will
+            offer a double word score. All players following will build their
+            words off of this word, extending the game to other squares on the
+            board.
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Replacing Scrabble Tiles -
-            Once tiles are played on the board, players will be dealt new tiles to
-            replace those. Players will always have seven tiles during the game.
+            Replacing Scrabble Tiles - Once tiles are played on the board,
+            players will be dealt new tiles to replace those. Players will
+            always have seven tiles during the game.
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            The Fifty Point Bonus - 
-            
-            When players use all seven tiles to create
-            a word on the board, players will receive a 50
-            point bonus, in addition to the value of the word.
+            The Fifty Point Bonus - When players use all seven tiles to create a
+            word on the board, players will receive a 50 point bonus, in
+            addition to the value of the word.
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            The End of a Scrabble Game -
-            Once all tiles are gone from the bag and a single player has placed
-            all of their tiles, the game will end and the player with the
-            highest score wins.
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Accepted Scrabble Words
+            The End of a Scrabble Game - Once all tiles are gone from the bag
+            and a single player has placed all of their tiles, the game will end
+            and the player with the highest score wins.
           </Typography>
 
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
