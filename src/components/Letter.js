@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { modifyHand } from "../reducers/handSlice";
 import {
@@ -92,7 +91,7 @@ const Letter = ({
     )
     if ( isInComputerHand)
     return (
-      <div className={classNames("hand-tile", selected ? "slide-right" : "")}>
+      <div className={classNames("hand-tile", selected ? "slide-left" : "")}>
         {selected && letter}
         {selected && <span className="score-in-tile">{LETTER_TO_SCORE[letter]}</span>}
       </div>

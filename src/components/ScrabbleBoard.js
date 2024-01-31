@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import { BOARD_SIZE } from "../consts";
 import Letter from "./Letter";
 import { getSpecialTileScoreIdx } from "../util";
-import { LETTER_TO_SCORE } from "../consts";
 
 const ScrabbleBoard2 = () => {
   const boardValues = useSelector((state) => state.boardValues);

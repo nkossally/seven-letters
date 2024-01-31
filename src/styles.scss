@@ -263,7 +263,20 @@ button:focus {
   flex-direction: column;
   justify-content: center;
   text-align: center;
-  margin-left: 10px;
+  margin-right: 400px;
+
+  @media (max-width: 2000px) {
+    margin-right: 400px;
+  }
+
+  @media (max-width: 1500px) {
+    margin-right: 300px;
+  }
+
+  @media (max-width: 750px) {
+    margin-right: 100px;
+
+  }
 }
 
 .hand-tile{
@@ -278,8 +291,6 @@ button:focus {
   z-index: 1000;
   position: relative;
   top: -$tile-border-width * 4;
-
-
 }
 
 .hand-tile-permanent{
@@ -323,12 +334,27 @@ button:focus {
 }
 
 .score-card{
+  //   background-color:#585862;
+  // background-color:#5e5862;
+
+  // background-color:#626258;
+  // background-color:#586262;
+  // background-color:#58625a;
+  // background-color: #282c34;
+  background-color: #F5EBED;
+  // background-color: #ebf5f3;
+  // background-color: #ebedf5;
   position: absolute;
   left : 10px;
   top: 60px;
-  width: 200px;
+  width: 250px;
   height: 70px;
   font-size: 20px;
+  font-weight: 700;
+  color: #626258;
+  text-transform: uppercase;
+  text-align:center;
+  border-radius: 5px;
 }
 .score-card-num{
 }
@@ -358,23 +384,22 @@ button:focus {
 
 .board-and-computer-hand{
   display: flex;
-
-
+  flex-direction: row;
 }
 
-@keyframes slideRight {
+@keyframes slideLeft {
   from {
     transform: translateX(0);
   }
 
   to {
-    transform: translateX(60px);
+    transform: translateX(-60px);
   }
 }
 
-.slide-right {
+.slide-left {
   animation-duration: 1s;
-  animation-name: slideRight;
+  animation-name: slideLeft;
 }
 
 @keyframes fadeInAndOut {

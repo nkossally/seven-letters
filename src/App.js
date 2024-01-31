@@ -29,7 +29,6 @@ import { removeTempLetterFromBoard } from "./reducers/tempBoardValuesSlice";
 import classNames from "classnames";
 
 import "./styles.scss";
-import { set } from "lodash";
 
 const resetButtonStyle = {
   position: "absolute",
@@ -41,6 +40,17 @@ const resetButtonStyle = {
   "border-color": "#00e0ff",
   "z-index": 1,
 };
+
+const buttonStyle = {
+  "text-transform": "uppercase",
+  color: "#00e0ff",
+  "font-size": 20,
+  "font-weight": 900,
+  "border-color": "#00e0ff",
+  "margin": "0 10px",
+  // "z-index": 1,
+};
+
 
 const MID_IDX = 7;
 const MAX_LETTERS = 7;
@@ -834,22 +844,24 @@ const App = () => {
       <div className="player-row">
         <Hand />
         <div>
-          <button
-            className="submit-button"
+          <Button
+          variant="outlined"
+            sx={buttonStyle}
             disabled={isComputersTurn}
             onClick={() => submitWord(undefined)}
           >
             {" "}
             Submit{" "}
-          </button>
-          <button
-            className="pass-button"
+          </Button>
+          <Button
+          variant="outlined"
+            sx={buttonStyle}
             disabled={isComputersTurn}
             onClick={pass}
           >
             {" "}
             Pass{" "}
-          </button>
+          </Button>
         </div>
       </div>
       <div
@@ -862,8 +874,9 @@ const App = () => {
         {invalidWords && <>{invalidWords}</>}
       </div>
       <div className="board-and-computer-hand">
-        <ComputerHand selectedTiles={selectedComputerTiles} />
         <ScrabbleBoard />
+        <ComputerHand selectedTiles={selectedComputerTiles} />
+
       </div>
     </div>
   );
