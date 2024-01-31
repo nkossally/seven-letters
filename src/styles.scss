@@ -291,6 +291,7 @@ button:focus {
   z-index: 1000;
   position: relative;
   top: -$tile-border-width * 4;
+  cursor: pointer;
 }
 
 .hand-tile-permanent{
@@ -334,23 +335,12 @@ button:focus {
 }
 
 .score-card{
-    background-color:#585862;
-  background-color:#5e5862;
-
-  background-color:#626258;
-  background-color:#586262;
-  background-color:#58625a;
-  background-color: #282c34;
-
   background-color: #F5EBED;
-
-  background-color: #ebf5f3;
-  background-color: #ebedf5;
   position: absolute;
   left : 10px;
   top: 60px;
   width: 250px;
-  height: 70px;
+  height: 73px;
   font-size: 20px;
   font-weight: 700;
   color: #626258;
