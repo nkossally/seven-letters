@@ -74,11 +74,11 @@ const App = () => {
   const dispatch = useDispatch();
 
   useEffect(() =>{
-    if(gameStarted && lettersLeft.length === 0){
+    if(gameStarted && lettersLeft.length === 0 && (computerHand.length === 0 || hand.length === 0)){
       console.log(lettersLeft)
       setIsGameOver(true)
     }
-  }, lettersLeft?.length)
+  }, [lettersLeft])
 
   useEffect(() => {
     const getSetOfDictionaryWords = async () => {
@@ -391,7 +391,7 @@ const App = () => {
       if (
         !getLetterAtCoordinate(x, y) &&
         !getTempLetterAtCoordinate(x, y) &&
-        !(virtualBoard && virtualBoard[x][y])
+        !(getTempLetterOnVirtualBoard(x, y, virtualBoard))
       ) {
         result = false;
         break;
@@ -408,6 +408,12 @@ const App = () => {
   const getTempLetterAtCoordinate = (x, y) => {
     if(!tempBoardValues) return;
     return isOnBoard(x, y) ? tempBoardValues[x][y] : undefined;
+  };
+
+  const getTempLetterOnVirtualBoard = (x, y, virtualBoard) => {
+    if(!virtualBoard) return;
+    if(!virtualBoard[x]) return
+    return isOnBoard(x, y) ? virtualBoard[x][y] : undefined;
   };
 
   const getIsConnectedToPrevWord = (rows, cols) => {
@@ -492,12 +498,12 @@ const App = () => {
     while (
       getTempLetterAtCoordinate(x, currY) ||
       getLetterAtCoordinate(x, currY) ||
-      (virtualBoard && virtualBoard[x][currY])
+      (getTempLetterOnVirtualBoard(x, currY, virtualBoard))
     ) {
       word +=
         getTempLetterAtCoordinate(x, currY) ||
         getLetterAtCoordinate(x, currY) ||
-        (virtualBoard && virtualBoard[x][currY]);
+        getTempLetterOnVirtualBoard(x, currY, virtualBoard);
       const letterScoreObj = calculateScoreFromLetter(x, currY, virtualBoard);
       wordScore += letterScoreObj.letterPoints;
       multiplier *= letterScoreObj.wordMultiplier;
@@ -507,12 +513,12 @@ const App = () => {
     while (
       getTempLetterAtCoordinate(x, currY) ||
       getLetterAtCoordinate(x, currY) ||
-      (virtualBoard && virtualBoard[x][currY])
+      (getTempLetterOnVirtualBoard(x, currY, virtualBoard))
     ) {
       word =
         getTempLetterAtCoordinate(x, currY) ||
         getLetterAtCoordinate(x, currY) ||
-        (virtualBoard && virtualBoard[x][currY]) + word;
+        getTempLetterOnVirtualBoard(x, currY, virtualBoard) + word;
       const letterScoreObj = calculateScoreFromLetter(x, currY, virtualBoard);
       wordScore += letterScoreObj.letterPoints;
       multiplier *= letterScoreObj.wordMultiplier;
