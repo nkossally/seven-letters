@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+import classNames from "classnames";
 
 const ScoreCard = () => {
   const score = useSelector((state) => state.score);
@@ -6,7 +7,7 @@ const ScoreCard = () => {
   const lettersLeftCount = useSelector((state) => state.lettersLeft.length);
 
   return (
-    <div className="score-card">
+    <div className={classNames("score-card", "look-3d")}>
       <div>Player Score: &nbsp; {score}</div>
     
       <div >Computer Score:&nbsp; {computerScore}</div>

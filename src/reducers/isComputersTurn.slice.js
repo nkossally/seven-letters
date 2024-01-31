@@ -5,7 +5,6 @@ export const isComputersTurnSlice = createSlice({
   initialState: 0,
   reducers: {
     setIsComputersTurn: (state, action) => {
-      console.log("action", action.payload)
        return action.payload;
     },
   },

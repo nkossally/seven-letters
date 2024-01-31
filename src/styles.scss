@@ -10,7 +10,7 @@ $tile-color: beige;
 $tile-border-color: white;
 $tile-border-width: 2px;
 $tile-font: bold 70%/1.5 "Open Sans", sans-serif;
-$decal-font-color: rgba(0,0,0,.6);
+$decal-font-color: rgba(0, 0, 0, .6);
 
 $bg-color: white;
 $board-color: maroon;
@@ -28,24 +28,30 @@ $board-size-adj: $board-size + $tile-border-width * ($tile-num * 2 + 1);
 }
 
 @mixin tripleBorder($color) {
-  background: linear-gradient(-45deg, transparent 50%, $color 0), 
-    linear-gradient(45deg, transparent 50%, $color 0), 
-    linear-gradient(-135deg, transparent 50%, $color 0), 
+  background: linear-gradient(-45deg, transparent 50%, $color 0),
+    linear-gradient(45deg, transparent 50%, $color 0),
+    linear-gradient(-135deg, transparent 50%, $color 0),
     linear-gradient(135deg, transparent 50%, $color 0);
   background-repeat: repeat-x;
-  background-position: 25% calc(100% + #{$tile-border-width}), 25% calc(100% + #{$tile-border-width}), 25% -#{$tile-border-width}, 25% -#{$tile-border-width};
+  background-position: 25% calc(100% + #{$tile-border-width}),
+  25% calc(100% + #{$tile-border-width}),
+  25% -#{$tile-border-width},
+  25% -#{$tile-border-width};
   background-size: (100% / 3) ($tile-border-width * 6);
   width: 78%;
   left: 11%;
 }
 
 @mixin doubleBorder($color) {
-  background: linear-gradient(-45deg, transparent 50%, $color 0), 
-    linear-gradient(45deg, transparent 50%, $color 0), 
-    linear-gradient(-135deg, transparent 50%, $color 0), 
+  background: linear-gradient(-45deg, transparent 50%, $color 0),
+    linear-gradient(45deg, transparent 50%, $color 0),
+    linear-gradient(-135deg, transparent 50%, $color 0),
     linear-gradient(135deg, transparent 50%, $color 0);
   background-repeat: repeat-x;
-  background-position: 50% calc(100% + #{$tile-border-width}), 50% calc(100% + #{$tile-border-width}), 50% -#{$tile-border-width}, 50% -#{$tile-border-width};
+  background-position: 50% calc(100% + #{$tile-border-width}),
+  50% calc(100% + #{$tile-border-width}),
+  50% -#{$tile-border-width},
+  50% -#{$tile-border-width};
   background-size: (100% / 2) ($tile-border-width * 6);
   width: 52%;
   left: 24%;
@@ -57,32 +63,10 @@ $board-size-adj: $board-size + $tile-border-width * ($tile-num * 2 + 1);
   border: none;
   position: relative;
 }
+
 body {
   height: 100vh;
   background: $bg-color;
-}
-
-button {
-  border: none;
-  margin: 0;
-  text-decoration: none;
-  font-size: 1rem;
-  cursor: pointer;
-  text-align: center;
-  transition: background 250ms ease-in-out, 
-              transform 150ms ease;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-}
-
-// button:hover,
-// button:focus {
-//   background: #b3b7bd;
-// }
-
-button:focus {
-  outline: 1px solid #fff;
-  outline-offset: -4px;
 }
 
 #js-board {
@@ -91,21 +75,21 @@ button:focus {
   min-height: $board-size-adj;
   border: outset $board-border-color $board-border-width;
   margin: 40px auto;
-  
+
   .board {
     background-color: $tile-border-color;
     padding: $tile-border-width / 2;
-    
+
     .row {
       height: $row-height-adj;
-      
+
       .tile {
         @include coloredSquare($tile-size, $tile-color);
         border: solid $tile-border-color $tile-border-width;
         display: inline-block;
         font: $tile-font;
         color: $decal-font-color;
-      
+
         &::after {
           @include coloredSquare(33%, transparent);
           content: '0';
@@ -118,18 +102,24 @@ button:focus {
           text-align: right;
           z-index: 999;
         }
-        
+
         &.tile-ct {
           background-color: $ct-color;
+
           .decal::before {
             content: '\2605';
             font-size: 200%;
           }
         }
-        
-        &.tile-dl, &.tile-dw, &.tile-tw, &.tile-tl {
+
+        &.tile-dl,
+        &.tile-dw,
+        &.tile-tw,
+        &.tile-tl {
           .decal {
-            &::before, &::after {
+
+            &::before,
+            &::after {
               content: '';
               position: absolute;
               top: -$tile-border-width * 2;
@@ -137,45 +127,61 @@ button:focus {
               z-index: 999;
               transform: scaleX(0.7);
             }
+
             &::after {
               transform: scaleY(0.7) rotate(90deg);
             }
           }
         }
-        
+
         &.tile-dl {
           background-color: $dl-color;
+
           .decal {
-            &::before, &::after {
+
+            &::before,
+            &::after {
               @include tripleBorder($dl-color);
             }
           }
         }
+
         &.tile-dw {
           background-color: $dw-color;
+
           .decal {
-            &::before, &::after {
+
+            &::before,
+            &::after {
               @include tripleBorder($dw-color);
             }
           }
         }
+
         &.tile-tw {
           background-color: $tw-color;
+
           .decal {
-            &::before, &::after {
+
+            &::before,
+            &::after {
               @include tripleBorder($tw-color);
             }
           }
         }
+
         &.tile-tl {
           background-color: $tl-color;
+
           .decal {
-            &::before, &::after {
+
+            &::before,
+            &::after {
               @include tripleBorder($tl-color);
             }
           }
         }
-        
+
         .decal {
           @include coloredSquare(100%, transparent);
           position: absolute;
@@ -186,7 +192,7 @@ button:focus {
           overflow: visible;
           cursor: pointer;
         }
-        
+
         input {
           @extend .decal;
           font-size: 150%;
@@ -194,17 +200,19 @@ button:focus {
           text-indent: 25%;
           z-index: 999;
           color: transparent;
+
           &:focus {
-            background: repeating-linear-gradient(45deg, rgba(0,0,0,.1),
-              rgba(0,0,0,.1) 10px, rgba(0,0,0,0) 10px, rgba(0,0,0,0) 20px);
+            background: repeating-linear-gradient(45deg, rgba(0, 0, 0, .1),
+                rgba(0, 0, 0, .1) 10px, rgba(0, 0, 0, 0) 10px, rgba(0, 0, 0, 0) 20px);
           }
+
           &.filled {
             background-color: goldenrod;
             text-shadow: 0px -1px 0px $decal-font-color;
           }
         }
       }
-      
+
     }
   }
 }
@@ -279,14 +287,14 @@ button:focus {
   }
 }
 
-.hand-tile{
+.hand-tile {
   @include coloredSquare($tile-size, $tile-color);
   border: solid $tile-border-color $tile-border-width;
   color: $decal-font-color;
   font-size: 27px;
   font-weight: 900;
   text-align: center;
-  display: inline-flex; 
+  display: inline-flex;
   flex-direction: row;
   z-index: 1001;
   position: relative;
@@ -294,28 +302,44 @@ button:focus {
   cursor: pointer;
 }
 
-.hand-tile-permanent{
+.computer-tile {
+  cursor: auto;
+
+}
+
+.hand-tile-permanent {
   z-index: 1000;
   border: 2px solid #626258
 }
 
-.hand-tile-temporary{
+.hand-tile-temporary {
   border: 2px solid yellow;
 }
 
-.score-in-tile{
+.score-in-tile {
   font-size: 10px;
   position: absolute;
   right: 1px;
   bottom: 1px;
 }
 
-.letter-val{
+.look-3d {
+  transform:
+    perspective(800px) rotateY(-8deg);
+  border-radius: 4px;
+  box-shadow:
+    rgba(16, 179, 220, 0.024) 0px 0px 0px 1px,
+    rgba(15, 124, 214, 0.05) 0px 1px 0px 0px,
+    rgba(11, 144, 239, 0.03) 0px 0px 8px 0px,
+    rgba(23, 124, 213, 0.1) 0px 20px 30px 0px;
+}
+
+.letter-val {
   margin-top: 2px;
   font-size: 20px;
 }
 
-.score{
+.score {
   font-size: 25px;
 }
 
@@ -324,14 +348,16 @@ button:focus {
 }
 
 .info-icon {
-  width: 20px;
+  width: 30px;
+  background-color: #F5EBED;
+  border-radius: 15px;
   z-index: 1;
 }
 
-.score-card{
-  background-color: #F5EBED;
+.score-card {
+  background-color: #EBECD5;
   position: absolute;
-  left : 10px;
+  left: 5px;
   top: 60px;
   width: 250px;
   height: 73px;
@@ -339,28 +365,28 @@ button:focus {
   font-weight: 700;
   color: #626258;
   text-transform: uppercase;
-  text-align:center;
+  text-align: center;
   border-radius: 5px;
 }
-.score-card-num{
-}
+
+.score-card-num {}
 
 
-.player-row{
+.player-row {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 10px;
 }
 
-.submit-button{
+.submit-button {
   text-transform: uppercase;
   margin: 10px 10px;
   width: 100px;
   height: 50px;
 }
 
-.pass-button{
+.pass-button {
   text-transform: uppercase;
   margin: 10px 10px;
   color: red;
@@ -368,7 +394,7 @@ button:focus {
   height: 50px;
 }
 
-.board-and-computer-hand{
+.board-and-computer-hand {
   display: flex;
   flex-direction: row;
 }
@@ -389,13 +415,26 @@ button:focus {
 }
 
 @keyframes fadeInAndOut {
-  0% { opacity: 0; }
-  30% {opacity: 1}
-  70% {opacity: 1}
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+  }
+
+  30% {
+    opacity: 1
+  }
+
+  70% {
+    opacity: 1
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
 
-.fade-in-and-out { animation: fadeInAndOut 2s; }
+.fade-in-and-out {
+  animation: fadeInAndOut 2s;
+}
 
 .notification-text {
   height: 0px;
@@ -406,14 +445,10 @@ button:focus {
   text-transform: uppercase;
 
   text-shadow: 0 1px 0 #ccc, 0 2px 0 #ccc,
-  0 .3px 0 #ccc, 0 .4px 0 #ccc,
-  0 .5px 0 #ccc, 0 .6px 0 #ccc,
-  0 .7px 0 #ccc, 0 .8px 0 #ccc,
-  0 .9px 0 #ccc, 0 1.0px 0 #ccc,
-  0 1.1px 0 #ccc, 0 1.2px 0 #ccc,
-  0 2.0px 3.0px rgba(0, 0, 0, 0.5);
-}
-
-.blarg{
-  margin-left: 180px;
+    0 .3px 0 #ccc, 0 .4px 0 #ccc,
+    0 .5px 0 #ccc, 0 .6px 0 #ccc,
+    0 .7px 0 #ccc, 0 .8px 0 #ccc,
+    0 .9px 0 #ccc, 0 1.0px 0 #ccc,
+    0 1.1px 0 #ccc, 0 1.2px 0 #ccc,
+    0 2.0px 3.0px rgba(0, 0, 0, 0.5);
 }

@@ -20,7 +20,7 @@ const Letter = ({
   permanentlyOnBoard,
   isInComputerHand,
   temporary,
-  selected
+  selected,
 }) => {
   const hand = useSelector((state) => state.hand);
 
@@ -83,23 +83,37 @@ const Letter = ({
       }
     }
   };
-  if ( permanentlyOnBoard)
+  if (permanentlyOnBoard)
     return (
       <div className={classNames("hand-tile", "hand-tile-permanent")}>
         {letter}{" "}
         <span className="score-in-tile">{LETTER_TO_SCORE[letter]}</span>
       </div>
-    )
-    if ( isInComputerHand)
+    );
+  if (isInComputerHand)
     return (
-      <div className={classNames("hand-tile", selected ? "slide-left" : "")}>
+      <div
+        className={classNames(
+          "hand-tile",
+          "computer-tile",
+          "look-3d",
+          selected ? "slide-left" : ""
+        )}
+      >
         {selected && letter}
-        {selected && <span className="score-in-tile">{LETTER_TO_SCORE[letter]}</span>}
+        {selected && (
+          <span className="score-in-tile">{LETTER_TO_SCORE[letter]}</span>
+        )}
       </div>
-    )
-      return (
+    );
+  return (
     <Draggable onStop={onStop}>
-      <div className={classNames("hand-tile", temporary ? "hand-tile-temporary" : "")}>
+      <div
+        className={classNames(
+          "hand-tile",
+          temporary ? "hand-tile-temporary" : "look-3d"
+        )}
+      >
         <div>{letter}</div>
         <span className="score-in-tile">{LETTER_TO_SCORE[letter]}</span>
       </div>

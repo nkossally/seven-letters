@@ -38,6 +38,7 @@ const resetButtonStyle = {
   color: "#00e0ff",
   "font-size": 20,
   "border-color": "#00e0ff",
+  "background-color": "#F5EBED",
   "z-index": 1,
 };
 
@@ -48,7 +49,7 @@ const buttonStyle = {
   "font-weight": 900,
   "border-color": "#00e0ff",
   margin: "0 10px",
-  // "z-index": 1,
+  "background-color": "#F5EBED",
 };
 
 const MID_IDX = 7;
@@ -237,9 +238,9 @@ const App = () => {
       maxWordLength = Math.max(maxWordLength, word.length);
       if (word.length > 1) {
         score += wordAndScore.wordScore;
-        const definition = localDictionary.has(word);
-        // console.log("word", word, definition)
-        if (!definition) allWordsInDict = false;
+        const isValidWord = localDictionary.has(word);
+        // console.log("word", word, isValidWord)
+        if (!isValidWord) allWordsInDict = false;
       }
       // check if any of the letters in a vertical word adjoin an already placed horizontal words.
       rows.forEach((row) => {
@@ -253,9 +254,9 @@ const App = () => {
           maxWordLength = Math.max(maxWordLength, word.length);
           if (word.length > 1) {
             score += wordAndScore.wordScore;
-            const definition = localDictionary.has(word);
-            // console.log("word", word, definition)
-            if (!definition) allWordsInDict = false;
+            const isValidWord = localDictionary.has(word);
+            // console.log("word", word, isValidWord)
+            if (!isValidWord) allWordsInDict = false;
           }
         }
       });
@@ -271,10 +272,10 @@ const App = () => {
       maxWordLength = Math.max(maxWordLength, word.length);
       if (word.length > 1) {
         score += wordAndScore.wordScore;
-        const definition = localDictionary.has(word);
-        // console.log("word", word, definition)
+        const isValidWord = localDictionary.has(word);
+        // console.log("word", word, isValidWord)
 
-        if (!definition) allWordsInDict = false;
+        if (!isValidWord) allWordsInDict = false;
       }
       cols.forEach((col) => {
         const wordAndScore = getVerticalWordAtCoordinate(
@@ -286,10 +287,10 @@ const App = () => {
           const word = wordAndScore.word;
           maxWordLength = Math.max(maxWordLength, word.length);
           if (word.length > 1) {
-            const definition = localDictionary.has(word);
-            // console.log("word", word, definition)
+            const isValidWord = localDictionary.has(word);
+            // console.log("word", word, isValidWord)
             score += wordAndScore.wordScore;
-            if (!definition) allWordsInDict = false;
+            if (!isValidWord) allWordsInDict = false;
           }
         }
       });
@@ -594,7 +595,7 @@ const App = () => {
     let result;
     let n = computerHand.length;
 
-    while (n > 1) {
+    while (n > 0) {
       const permsWithIndices = getAllPermutationsOfSizeN(computerHand, n);
 
       for (let i = 0; i < permsWithIndices.length; i++) {
@@ -765,10 +766,10 @@ const App = () => {
         const perm = permWithIndices.map((elem) => elem.letter);
         const indices = permWithIndices.map((elem) => elem.idx);
         const word = perm.join("");
-        const definition = localDictionary.has(word);
-        // console.log("word", word, definition)
+        const isValidWord = localDictionary.has(word);
+        // console.log("word", word, isValidWord)
 
-        if (definition) {
+        if (isValidWord) {
           let wordScore = 0;
           let multiplier = 1;
           setSelectedComputerTiles(indices);

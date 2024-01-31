@@ -15,7 +15,7 @@ const ScrabbleBoard2 = () => {
   return (
     <>
       <div id="js-board">
-        <div className="board">
+        <div className={classNames("board")}>
           {arr.map((elem, i) => {
             return (
               <div className="row" key={`row${i}`}>
