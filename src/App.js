@@ -535,15 +535,14 @@ const App = () => {
       getTempLetterOnVirtualBoard(x, currY, virtualBoard)
     ) {
       word =
-        getTempLetterAtCoordinate(x, currY) ||
+        (getTempLetterAtCoordinate(x, currY) ||
         getLetterAtCoordinate(x, currY) ||
-        getTempLetterOnVirtualBoard(x, currY, virtualBoard) + word;
+        getTempLetterOnVirtualBoard(x, currY, virtualBoard)) + word;
       const letterScoreObj = calculateScoreFromLetter(x, currY, virtualBoard);
       wordScore += letterScoreObj.letterPoints;
       multiplier *= letterScoreObj.wordMultiplier;
       currY--;
     }
-
     wordScore *= multiplier;
     return { word, wordScore };
   };
@@ -597,7 +596,6 @@ const App = () => {
 
     while (n > 0) {
       const permsWithIndices = getAllPermutationsOfSizeN(computerHand, n);
-      // console.log(permsWithIndices)
 
       for (let i = 0; i < permsWithIndices.length; i++) {
         const permWithIndices = permsWithIndices[i];
@@ -628,7 +626,6 @@ const App = () => {
       const row = boardLetterObj.row;
       const col = boardLetterObj.col;
       const wordAndCoordinates = placeLettersAroundSpot(row, col, arr);
-      // console.log("wordAndCoordinates", wordAndCoordinates)
       if (wordAndCoordinates) {
         const coordinates = wordAndCoordinates.coordinates;
         virtualBoard = buildEmptyBoard();
@@ -683,7 +680,6 @@ const App = () => {
 
       if (wordAndCoordinates) {
         const word = wordAndCoordinates.word;
-        // console.log("word", word, localDictionary.has(word))
         if (localDictionary.has(word)) {
           result = wordAndCoordinates;
           break;
