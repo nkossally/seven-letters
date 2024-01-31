@@ -41,6 +41,7 @@ const ScrabbleBoard2 = () => {
                           boardRow={i}
                           boardCol={j}
                           key={`tile${i}.${j}.tempBoardVal`}
+                          temporary={true}
                         />
                       )}
                       {typeof tempBoardValues[i][j] !== "string" &&

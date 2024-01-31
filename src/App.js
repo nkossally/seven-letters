@@ -88,7 +88,6 @@ const App = () => {
       lettersLeft.length === 0 &&
       (computerHand.length === 0 || hand.length === 0)
     ) {
-      console.log(lettersLeft);
       setIsGameOver(true);
     }
   }, [lettersLeft]);
@@ -98,7 +97,6 @@ const App = () => {
       const result = await fetch(AllWords);
       const text = await result.text();
       const dict = text.split("\r\n").map((elem) => elem.toUpperCase());
-      // console.log(dict.includes("ER"));
 
       setLocalDictionary(new Set(dict));
     };
@@ -106,12 +104,14 @@ const App = () => {
   }, []);
 
   useEffect(() => {}, [
-    JSON.stringify(tempBoardValues),
-    JSON.stringify(boardValues),
-    tempBoardValues.length,
-    boardValues.length,
+    tempBoardValues,
+    boardValues,
     isComputersTurn,
     selectedComputerTiles,
+    lettersLeft,
+    isGameOver,
+    hand,
+    computerHand
   ]);
 
   useEffect(() => {
@@ -143,6 +143,8 @@ const App = () => {
     dispatch(modifyHand(letters.slice(0, 7)));
     dispatch(modifyComputerHand(letters.slice(7, 14)));
     dispatch(modifyLettersLeft(letters.slice(14)));
+    dispatch(updateComputerScore(0));
+    dispatch(updateScore(0));
   };
 
   const buildEmptyBoard = () => {
@@ -236,6 +238,7 @@ const App = () => {
       if (word.length > 1) {
         score += wordAndScore.wordScore;
         const definition = localDictionary.has(word);
+        // console.log("word", word, definition)
         if (!definition) allWordsInDict = false;
       }
       // check if any of the letters in a vertical word adjoin an already placed horizontal words.
@@ -251,7 +254,7 @@ const App = () => {
           if (word.length > 1) {
             score += wordAndScore.wordScore;
             const definition = localDictionary.has(word);
-
+            // console.log("word", word, definition)
             if (!definition) allWordsInDict = false;
           }
         }
@@ -269,6 +272,7 @@ const App = () => {
       if (word.length > 1) {
         score += wordAndScore.wordScore;
         const definition = localDictionary.has(word);
+        // console.log("word", word, definition)
 
         if (!definition) allWordsInDict = false;
       }
@@ -283,6 +287,7 @@ const App = () => {
           maxWordLength = Math.max(maxWordLength, word.length);
           if (word.length > 1) {
             const definition = localDictionary.has(word);
+            // console.log("word", word, definition)
             score += wordAndScore.wordScore;
             if (!definition) allWordsInDict = false;
           }
@@ -675,6 +680,7 @@ const App = () => {
 
       if (wordAndCoordinates) {
         const word = wordAndCoordinates.word;
+        // console.log("word", word, localDictionary.has(word))
         if (localDictionary.has(word)) {
           result = wordAndCoordinates;
           break;
@@ -760,6 +766,7 @@ const App = () => {
         const indices = permWithIndices.map((elem) => elem.idx);
         const word = perm.join("");
         const definition = localDictionary.has(word);
+        // console.log("word", word, definition)
 
         if (definition) {
           let wordScore = 0;

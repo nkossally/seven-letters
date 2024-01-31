@@ -19,6 +19,7 @@ const Letter = ({
   boardCol,
   permanentlyOnBoard,
   isInComputerHand,
+  temporary,
   selected
 }) => {
   const hand = useSelector((state) => state.hand);
@@ -84,7 +85,7 @@ const Letter = ({
   };
   if ( permanentlyOnBoard)
     return (
-      <div className="hand-tile-permanent">
+      <div className={classNames("hand-tile", "hand-tile-permanent")}>
         {letter}{" "}
         <span className="score-in-tile">{LETTER_TO_SCORE[letter]}</span>
       </div>
@@ -98,7 +99,7 @@ const Letter = ({
     )
       return (
     <Draggable onStop={onStop}>
-      <div className="hand-tile">
+      <div className={classNames("hand-tile", temporary ? "hand-tile-temporary" : "")}>
         <div>{letter}</div>
         <span className="score-in-tile">{LETTER_TO_SCORE[letter]}</span>
       </div>

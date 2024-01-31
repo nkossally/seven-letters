@@ -288,25 +288,19 @@ button:focus {
   text-align: center;
   display: inline-flex; 
   flex-direction: row;
-  z-index: 1000;
+  z-index: 1001;
   position: relative;
   top: -$tile-border-width * 4;
   cursor: pointer;
 }
 
 .hand-tile-permanent{
-  @include coloredSquare($tile-size, $tile-color);
-  border: solid $tile-border-color $tile-border-width;
-  color: $decal-font-color;
-  font-size: 27px;
-  font-weight: 900;
-  text-align: center;
-  display: inline-flex; 
-  flex-direction: row;
   z-index: 1000;
-  position: relative;
-  top: -$tile-border-width * 4;
   border: 2px solid #626258
+}
+
+.hand-tile-temporary{
+  border: 2px solid yellow;
 }
 
 .score-in-tile{
