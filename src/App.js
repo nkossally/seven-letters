@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Button } from "@mui/material";
 import ScrabbleBoard from "./components/ScrabbleBoard";
 import InstructionsModal from "./components/InstructionsModal";
-import GameOverModal from "./components/GameOverModal"
+import GameOverModal from "./components/GameOverModal";
 import Hand from "./components/Hand";
 import ComputerHand from "./components/ComputerHand";
 import ScoreCard from "./components/ScoreCard";
@@ -47,10 +47,9 @@ const buttonStyle = {
   "font-size": 20,
   "font-weight": 900,
   "border-color": "#00e0ff",
-  "margin": "0 10px",
+  margin: "0 10px",
   // "z-index": 1,
 };
-
 
 const MID_IDX = 7;
 const MAX_LETTERS = 7;
@@ -69,7 +68,7 @@ const App = () => {
   const [localDictionary, setLocalDictionary] = useState(new Set());
   const [selectedComputerTiles, setSelectedComputerTiles] = useState([]);
   const [isGameOver, setIsGameOver] = useState(false);
-  const [gameStarted, setGameStarted] = useState(false)
+  const [gameStarted, setGameStarted] = useState(false);
   const [invalidWords, setInvalidWords] = useState(false);
   const [computerPasses, setComputerPasses] = useState(false);
   const boardValues = useSelector((state) => state.boardValues);
@@ -83,12 +82,16 @@ const App = () => {
 
   const dispatch = useDispatch();
 
-  useEffect(() =>{
-    if(gameStarted && lettersLeft.length === 0 && (computerHand.length === 0 || hand.length === 0)){
-      console.log(lettersLeft)
-      setIsGameOver(true)
+  useEffect(() => {
+    if (
+      gameStarted &&
+      lettersLeft.length === 0 &&
+      (computerHand.length === 0 || hand.length === 0)
+    ) {
+      console.log(lettersLeft);
+      setIsGameOver(true);
     }
-  }, [lettersLeft])
+  }, [lettersLeft]);
 
   useEffect(() => {
     const getSetOfDictionaryWords = async () => {
@@ -113,7 +116,7 @@ const App = () => {
 
   useEffect(() => {
     startGame();
-    setGameStarted(true)
+    setGameStarted(true);
   }, []);
 
   useEffect(() => {
@@ -150,12 +153,12 @@ const App = () => {
     return arr;
   };
 
-  const handleSetInvalidWords = (text) =>{
-    setInvalidWords(text)
-    setTimeout(()=>{
-      setInvalidWords("")
-    }, ANIMATION_DURATION)
-  }
+  const handleSetInvalidWords = (text) => {
+    setInvalidWords(text);
+    setTimeout(() => {
+      setInvalidWords("");
+    }, ANIMATION_DURATION);
+  };
 
   const submitWord = async (virtualBoard, indices) => {
     const lettersOnBoard = getPermanentlyPlacedLetters();
@@ -164,25 +167,27 @@ const App = () => {
     const rowsAndCols = getPlacedLettersRowsAndCols(virtualBoard);
     let rows = rowsAndCols.rows;
     let cols = rowsAndCols.cols;
-    if (rows.length === 0 && cols.length === 0){
-      handleSetInvalidWords("Place letters on the board to form a word.")
-      return
+    if (rows.length === 0 && cols.length === 0) {
+      handleSetInvalidWords("Place letters on the board to form a word.");
+      return;
     }
-    if (rows.length > 1 && cols.length > 1){
-      handleSetInvalidWords("Letters should be in same row or column.")
-      return
+    if (rows.length > 1 && cols.length > 1) {
+      handleSetInvalidWords("Letters should be in same row or column.");
+      return;
     }
-    if (!getIsContinuousWord(rows, cols, virtualBoard)){
+    if (!getIsContinuousWord(rows, cols, virtualBoard)) {
       handleSetInvalidWords("Letters must form a continuous word.");
       return;
     }
-    if (!isFirstPlay && !getIsConnectedToPrevWord(rows, cols)){
-      handleSetInvalidWords("Words must connect to previous words.")
+    if (!isFirstPlay && !getIsConnectedToPrevWord(rows, cols)) {
+      handleSetInvalidWords("Words must connect to previous words.");
       return;
     }
-    if (isFirstPlay && (!rows.includes(MID_IDX) || !cols.includes(MID_IDX))){
-      handleSetInvalidWords("First word must have a tile in the center of board.")
-      return
+    if (isFirstPlay && (!rows.includes(MID_IDX) || !cols.includes(MID_IDX))) {
+      handleSetInvalidWords(
+        "First word must have a tile in the center of board."
+      );
+      return;
     }
 
     const allWordsInDict = checkAllWordsOnBoard(virtualBoard);
@@ -204,7 +209,7 @@ const App = () => {
         permanentlyPlaceLetters();
         dispatch(setIsComputersTurn(true));
       } else {
-        handleSetInvalidWords("Word(s) not found in dictionary.")
+        handleSetInvalidWords("Word(s) not found in dictionary.");
       }
     }
   };
@@ -306,7 +311,7 @@ const App = () => {
       for (let j = 0; j < BOARD_SIZE; j++) {
         const letter =
           getTempLetterAtCoordinate(i, j) ||
-          (virtualBoard && virtualBoard[i][j]);
+          getTempLetterOnVirtualBoard(i, j, virtualBoard);
         if (letter) {
           dispatch(addLetterToBoard({ row: i, col: j, letter }));
           letterCount++;
@@ -362,11 +367,9 @@ const App = () => {
     const cols = new Set();
     for (let i = 0; i < BOARD_SIZE; i++) {
       for (let j = 0; j < BOARD_SIZE; j++) {
-        if (virtualBoard) {
-          if (virtualBoard[i][j]) {
-            rows.add(i);
-            cols.add(j);
-          }
+        if (getTempLetterOnVirtualBoard(i, j, virtualBoard)) {
+          rows.add(i);
+          cols.add(j);
         } else if (getTempLetterAtCoordinate(i, j)) {
           rows.add(i);
           cols.add(j);
@@ -401,7 +404,7 @@ const App = () => {
       if (
         !getLetterAtCoordinate(x, y) &&
         !getTempLetterAtCoordinate(x, y) &&
-        !(getTempLetterOnVirtualBoard(x, y, virtualBoard))
+        !getTempLetterOnVirtualBoard(x, y, virtualBoard)
       ) {
         result = false;
         break;
@@ -411,18 +414,18 @@ const App = () => {
   };
 
   const getLetterAtCoordinate = (x, y) => {
-    if(!boardValues) return;
+    if (!boardValues) return;
     return isOnBoard(x, y) ? boardValues[x][y] : undefined;
   };
 
   const getTempLetterAtCoordinate = (x, y) => {
-    if(!tempBoardValues) return;
+    if (!tempBoardValues) return;
     return isOnBoard(x, y) ? tempBoardValues[x][y] : undefined;
   };
 
   const getTempLetterOnVirtualBoard = (x, y, virtualBoard) => {
-    if(!virtualBoard) return;
-    if(!virtualBoard[x]) return
+    if (!virtualBoard) return;
+    if (!virtualBoard[x]) return;
     return isOnBoard(x, y) ? virtualBoard[x][y] : undefined;
   };
 
@@ -470,12 +473,12 @@ const App = () => {
     while (
       getTempLetterAtCoordinate(currX, y) ||
       getLetterAtCoordinate(currX, y) ||
-      (virtualBoard && virtualBoard[currX][y])
+      getTempLetterOnVirtualBoard(currX, y, virtualBoard)
     ) {
       word +=
         getTempLetterAtCoordinate(currX, y) ||
         getLetterAtCoordinate(currX, y) ||
-        (virtualBoard && virtualBoard[currX][y]);
+        getTempLetterOnVirtualBoard(currX, y, virtualBoard);
       const letterScoreObj = calculateScoreFromLetter(currX, y, virtualBoard);
       wordScore += letterScoreObj.letterPoints;
       multiplier *= letterScoreObj.wordMultiplier;
@@ -485,12 +488,12 @@ const App = () => {
     while (
       getTempLetterAtCoordinate(currX, y) ||
       getLetterAtCoordinate(currX, y) ||
-      (virtualBoard && virtualBoard[currX][y])
+      getTempLetterOnVirtualBoard(currX, y, virtualBoard)
     ) {
       word =
         (getTempLetterAtCoordinate(currX, y) ||
           getLetterAtCoordinate(currX, y) ||
-          (virtualBoard && virtualBoard[currX][y])) + word;
+          getTempLetterOnVirtualBoard(currX, y, virtualBoard)) + word;
       const letterScoreObj = calculateScoreFromLetter(currX, y, virtualBoard);
       wordScore += letterScoreObj.letterPoints;
       multiplier *= letterScoreObj.wordMultiplier;
@@ -508,7 +511,7 @@ const App = () => {
     while (
       getTempLetterAtCoordinate(x, currY) ||
       getLetterAtCoordinate(x, currY) ||
-      (getTempLetterOnVirtualBoard(x, currY, virtualBoard))
+      getTempLetterOnVirtualBoard(x, currY, virtualBoard)
     ) {
       word +=
         getTempLetterAtCoordinate(x, currY) ||
@@ -523,7 +526,7 @@ const App = () => {
     while (
       getTempLetterAtCoordinate(x, currY) ||
       getLetterAtCoordinate(x, currY) ||
-      (getTempLetterOnVirtualBoard(x, currY, virtualBoard))
+      getTempLetterOnVirtualBoard(x, currY, virtualBoard)
     ) {
       word =
         getTempLetterAtCoordinate(x, currY) ||
@@ -544,14 +547,14 @@ const App = () => {
       letterArg ||
       getTempLetterAtCoordinate(i, j) ||
       getLetterAtCoordinate(i, j) ||
-      (virtualBoard && virtualBoard[i][j]);
+      getTempLetterOnVirtualBoard(i, j, virtualBoard);
     let letterPoints = LETTER_TO_SCORE[letter];
     let wordMultiplier = 1;
 
     if (
       letterArg ||
       getTempLetterAtCoordinate(i, j) ||
-      (virtualBoard && virtualBoard[i][j])
+      getTempLetterOnVirtualBoard(i, j, virtualBoard)
     ) {
       const specialScore = getSpecialTileScoreIdx(i, j);
 
@@ -600,7 +603,7 @@ const App = () => {
       if (result) break;
       n--;
     }
-    if(!result){
+    if (!result) {
       setComputerPasses(true);
       setTimeout(() => {
         setComputerPasses(false);
@@ -809,7 +812,7 @@ const App = () => {
     for (let i = 0; i < BOARD_SIZE; i++) {
       for (let j = 0; j < BOARD_SIZE; j++) {
         const letter =
-          (virtualBoard && virtualBoard[i][j]) ||
+          getTempLetterOnVirtualBoard(i, j, virtualBoard) ||
           getTempLetterAtCoordinate(i, j);
         if (letter) {
           arr.push(letter);
@@ -828,24 +831,28 @@ const App = () => {
     gameOverText = "It's a tie";
   }
 
-  const handleNewGameClick = ()=>{
-    setGameStarted(false)
-    startGame()
-  }
+  const handleNewGameClick = () => {
+    setGameStarted(false);
+    startGame();
+  };
 
   return (
     <div className="App">
       <InstructionsModal />
       {isGameOver ? <GameOverModal text={gameOverText} /> : ""}
       <ScoreCard />
-      <Button variant="outlined" sx={resetButtonStyle} onClick={handleNewGameClick}>
+      <Button
+        variant="outlined"
+        sx={resetButtonStyle}
+        onClick={handleNewGameClick}
+      >
         New Game
       </Button>
       <div className="player-row">
         <Hand />
         <div>
           <Button
-          variant="outlined"
+            variant="outlined"
             sx={buttonStyle}
             disabled={isComputersTurn}
             onClick={() => submitWord(undefined)}
@@ -854,7 +861,7 @@ const App = () => {
             Submit{" "}
           </Button>
           <Button
-          variant="outlined"
+            variant="outlined"
             sx={buttonStyle}
             disabled={isComputersTurn}
             onClick={pass}
@@ -867,7 +874,7 @@ const App = () => {
       <div
         className={classNames(
           "notification-text",
-          (invalidWords || computerPasses) ? "fade-in-and-out" : ""
+          invalidWords || computerPasses ? "fade-in-and-out" : ""
         )}
       >
         {computerPasses && <>Computer passes</>}
@@ -876,7 +883,6 @@ const App = () => {
       <div className="board-and-computer-hand">
         <ScrabbleBoard />
         <ComputerHand selectedTiles={selectedComputerTiles} />
-
       </div>
     </div>
   );
