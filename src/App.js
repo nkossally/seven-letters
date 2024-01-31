@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Button } from "@mui/material";
 import ScrabbleBoard from "./components/ScrabbleBoard";
 import InstructionsModal from "./components/InstructionsModal";
+import GameOverModal from "./components/GameOverModal"
 import Hand from "./components/Hand";
 import ComputerHand from "./components/ComputerHand";
 import ScoreCard from "./components/ScoreCard";
@@ -43,6 +44,7 @@ const resetButtonStyle = {
 
 const MID_IDX = 7;
 const MAX_LETTERS = 7;
+const ANIMATION_DURATION = 2000;
 
 const DIRS = [
   [0, 1],
@@ -56,6 +58,9 @@ const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 const App = () => {
   const [localDictionary, setLocalDictionary] = useState(new Set());
   const [selectedComputerTiles, setSelectedComputerTiles] = useState([]);
+  const [isGameOver, setIsGameOver] = useState(false);
+  const [gameStarted, setGameStarted] = useState(false)
+  const [invalidWords, setInvalidWords] = useState(false);
   const [computerPasses, setComputerPasses] = useState(false);
   const boardValues = useSelector((state) => state.boardValues);
   const tempBoardValues = useSelector((state) => state.tempBoardValues);
@@ -67,6 +72,13 @@ const App = () => {
   const isComputersTurn = useSelector((state) => state.isComputersTurn);
 
   const dispatch = useDispatch();
+
+  useEffect(() =>{
+    if(gameStarted && lettersLeft.length === 0){
+      console.log(lettersLeft)
+      setIsGameOver(true)
+    }
+  }, lettersLeft?.length)
 
   useEffect(() => {
     const getSetOfDictionaryWords = async () => {
@@ -91,6 +103,7 @@ const App = () => {
 
   useEffect(() => {
     startGame();
+    setGameStarted(true)
   }, []);
 
   useEffect(() => {
@@ -127,6 +140,13 @@ const App = () => {
     return arr;
   };
 
+  const handleSetInvalidWords = (text) =>{
+    setInvalidWords(text)
+    setTimeout(()=>{
+      setInvalidWords("")
+    }, ANIMATION_DURATION)
+  }
+
   const submitWord = async (virtualBoard, indices) => {
     const lettersOnBoard = getPermanentlyPlacedLetters();
     const isFirstPlay = lettersOnBoard.length === 0;
@@ -134,11 +154,26 @@ const App = () => {
     const rowsAndCols = getPlacedLettersRowsAndCols(virtualBoard);
     let rows = rowsAndCols.rows;
     let cols = rowsAndCols.cols;
-    if (rows.length > 1 && cols.length > 1) return;
-    if (!getIsContinuousWord(rows, cols, virtualBoard)) return;
-    if (!isFirstPlay && !getIsConnectedToPrevWord(rows, cols)) return;
-    if (isFirstPlay && (!rows.includes(MID_IDX) || !cols.includes(MID_IDX)))
+    if (rows.length === 0 && cols.length === 0){
+      handleSetInvalidWords("Place letters on the board to form a word.")
+      return
+    }
+    if (rows.length > 1 && cols.length > 1){
+      handleSetInvalidWords("Letters should be in same row or column.")
+      return
+    }
+    if (!getIsContinuousWord(rows, cols, virtualBoard)){
+      handleSetInvalidWords("Letters must form a continuous word.");
       return;
+    }
+    if (!isFirstPlay && !getIsConnectedToPrevWord(rows, cols)){
+      handleSetInvalidWords("Words must connect to previous words.")
+      return;
+    }
+    if (isFirstPlay && (!rows.includes(MID_IDX) || !cols.includes(MID_IDX))){
+      handleSetInvalidWords("First word must have a tile in the center of board.")
+      return
+    }
 
     const allWordsInDict = checkAllWordsOnBoard(virtualBoard);
 
@@ -158,6 +193,8 @@ const App = () => {
       if (allWordsInDict) {
         permanentlyPlaceLetters();
         dispatch(setIsComputersTurn(true));
+      } else {
+        handleSetInvalidWords("Word(s) not found in dictionary.")
       }
     }
   };
@@ -364,10 +401,12 @@ const App = () => {
   };
 
   const getLetterAtCoordinate = (x, y) => {
+    if(!boardValues) return;
     return isOnBoard(x, y) ? boardValues[x][y] : undefined;
   };
 
   const getTempLetterAtCoordinate = (x, y) => {
+    if(!tempBoardValues) return;
     return isOnBoard(x, y) ? tempBoardValues[x][y] : undefined;
   };
 
@@ -549,7 +588,7 @@ const App = () => {
       setComputerPasses(true);
       setTimeout(() => {
         setComputerPasses(false);
-      }, 1000);
+      }, ANIMATION_DURATION);
     }
     dispatch(setIsComputersTurn(false));
   };
@@ -764,11 +803,26 @@ const App = () => {
     return arr;
   };
 
+  let gameOverText = "";
+  if (computerScore < playerScore) {
+    gameOverText = "You Win";
+  } else if (computerScore > playerScore) {
+    gameOverText = "Computer Wins";
+  } else {
+    gameOverText = "It's a tie";
+  }
+
+  const handleNewGameClick = ()=>{
+    setGameStarted(false)
+    startGame()
+  }
+
   return (
-    <>
+    <div className="App">
       <InstructionsModal />
+      {isGameOver ? <GameOverModal text={gameOverText} /> : ""}
       <ScoreCard />
-      <Button variant="outlined" sx={resetButtonStyle} onClick={startGame}>
+      <Button variant="outlined" sx={resetButtonStyle} onClick={handleNewGameClick}>
         New Game
       </Button>
       <div className="player-row">
@@ -794,17 +848,18 @@ const App = () => {
       </div>
       <div
         className={classNames(
-          "computer-passes",
-          computerPasses ? "fade-in-and-out" : ""
+          "notification-text",
+          (invalidWords || computerPasses) ? "fade-in-and-out" : ""
         )}
       >
         {computerPasses && <>Computer passes</>}
+        {invalidWords && <>{invalidWords}</>}
       </div>
       <div className="board-and-computer-hand">
         <ComputerHand selectedTiles={selectedComputerTiles} />
         <ScrabbleBoard />
       </div>
-    </>
+    </div>
   );
 };
 

@@ -210,15 +210,25 @@ button:focus {
 }
 
 .App {
-  background-color: #282c34;
+  // background-color:#585862;
+  // background-color:#5e5862;
+
+  // background-color:#626258;
+  // background-color:#586262;
+  // background-color:#58625a;
+  // background-color: #282c34;
+  // background-color: #F5EBED;
+  // background-color: #ebf5f3;
+  // background-color: #ebedf5;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-  text-align: center;
+  min-width: 100vw;
+  // display: flex;
+  // flex-direction: column;
+  // align-items: center;
+  // justify-content: center;
+  // font-size: calc(10px + 2vmin);
+  // color: white;
+  // text-align: center;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -370,12 +380,13 @@ button:focus {
 @keyframes fadeInAndOut {
   0% { opacity: 0; }
   30% {opacity: 1}
+  70% {opacity: 1}
   100% { opacity: 0; }
 }
 
-.fade-in-and-out { animation: fadeInAndOut 1s; }
+.fade-in-and-out { animation: fadeInAndOut 2s; }
 
-.computer-passes {
+.notification-text {
   height: 0px;
   font-size: 20px;
   color: #00e0ff;
