@@ -74,7 +74,7 @@ body {
   min-width: $board-size-adj;
   min-height: $board-size-adj;
   border: outset $board-border-color $board-border-width;
-  margin: 40px auto;
+  margin: 30px auto;
 
   .board {
     background-color: $tile-border-color;
@@ -411,7 +411,7 @@ body {
   height: 0px;
   font-size: 20px;
   color: #00e0ff;
-  margin-bottom: 20px;
+  margin: 10px 0px;
   text-align: center;
   text-transform: uppercase;
 
