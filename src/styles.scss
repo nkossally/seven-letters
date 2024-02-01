@@ -260,6 +260,12 @@ body {
   margin-left: 20px;
 }
 
+.invisible-left {
+  margin-left: 0px;
+  margin-right: 20px;
+  opacity: 0;
+}
+
 .hand-tile {
   @include coloredSquare($tile-size, $tile-color);
   border: solid $tile-border-color $tile-border-width;

@@ -16,6 +16,7 @@ const ScrabbleBoard2 = ({ selectedTiles }) => {
   return (
     <div className="board-and-computer-hand-container">
       <div className="board-and-computer-hand">
+        <ComputerHand selectedTiles={selectedTiles} invisibleLeft={true} />
         <div id="js-board">
           <div className={classNames("board")}>
             {arr.map((elem, i) => {

@@ -1,13 +1,13 @@
 import { useSelector } from "react-redux";
+import classNames from "classnames";
 import Letter from "./Letter";
 import _ from "lodash";
 
-const ComputerHand = ({selectedTiles}) => {
+const ComputerHand = ({selectedTiles, invisibleLeft}) => {
   const computerHand = useSelector((state) => state.computerHand);
 
-
   return (
-    <div className="computer-hand">
+    <div className={classNames("computer-hand", invisibleLeft ? "invisible-left" : "")}>
       {computerHand.map((letter, i) => {
         return (
           <Letter
