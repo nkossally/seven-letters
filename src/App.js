@@ -5,7 +5,6 @@ import ScrabbleBoard from "./components/ScrabbleBoard";
 import InstructionsModal from "./components/InstructionsModal";
 import GameOverModal from "./components/GameOverModal";
 import Hand from "./components/Hand";
-import ComputerHand from "./components/ComputerHand";
 import ScoreCard from "./components/ScoreCard";
 import { BOARD_SIZE, LETTER_TO_SCORE } from "./consts";
 import AllWords from "./words.txt";
@@ -31,9 +30,6 @@ import classNames from "classnames";
 import "./styles.scss";
 
 const resetButtonStyle = {
-  position: "absolute",
-  top: 5,
-  left: 5,
   "text-transform": "uppercase",
   color: "#00e0ff",
   "font-size": 20,
@@ -112,7 +108,7 @@ const App = () => {
     lettersLeft,
     isGameOver,
     hand,
-    computerHand
+    computerHand,
   ]);
 
   useEffect(() => {
@@ -536,8 +532,8 @@ const App = () => {
     ) {
       word =
         (getTempLetterAtCoordinate(x, currY) ||
-        getLetterAtCoordinate(x, currY) ||
-        getTempLetterOnVirtualBoard(x, currY, virtualBoard)) + word;
+          getLetterAtCoordinate(x, currY) ||
+          getTempLetterOnVirtualBoard(x, currY, virtualBoard)) + word;
       const letterScoreObj = calculateScoreFromLetter(x, currY, virtualBoard);
       wordScore += letterScoreObj.letterPoints;
       multiplier *= letterScoreObj.wordMultiplier;
@@ -844,16 +840,21 @@ const App = () => {
 
   return (
     <div className="App">
-      <InstructionsModal />
+      <div className="top-row">
+        <Button
+          variant="outlined"
+          sx={resetButtonStyle}
+          onClick={handleNewGameClick}
+        >
+          New Game
+        </Button>
+        <InstructionsModal />
+      </div>
+      <div className="second-row">
+        {" "}
+        <ScoreCard />
+      </div>
       {isGameOver ? <GameOverModal text={gameOverText} /> : ""}
-      <ScoreCard />
-      <Button
-        variant="outlined"
-        sx={resetButtonStyle}
-        onClick={handleNewGameClick}
-      >
-        New Game
-      </Button>
       <div className="player-row">
         <Hand />
         <div>

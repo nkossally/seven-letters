@@ -328,11 +328,7 @@ body {
 
 .score-card {
   background-color: #EBECD5;
-  position: absolute;
-  left: 5px;
-  top: 60px;
-  width: 250px;
-  height: 73px;
+  padding: 5px;
   font-size: 20px;
   font-weight: 700;
   color: #626258;
@@ -432,4 +428,21 @@ body {
   flex-direction: row;
   width: 100vw;
   justify-content: center;
+}
+
+.top-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 10px;
+}
+
+.second-row {
+  display: flex;
+  justify-content: center;
+  margin-top: -50px;
+  margin-bottom: 20px;
+
+  @media(max-width: 550px) {
+    margin-top: 10px;
+  }
 }
