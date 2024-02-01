@@ -123,7 +123,7 @@ const App = () => {
   }, [isComputersTurn]);
 
   const pass = () => {
-    removeAllTempLetters();
+    removeAllTempLetters(/** putBackInHand */ true);
     dispatch(setIsComputersTurn(true));
   };
 
@@ -235,7 +235,6 @@ const App = () => {
       if (word.length > 1) {
         score += wordAndScore.wordScore;
         const isValidWord = localDictionary.has(word);
-        // console.log("word", word, isValidWord)
         if (!isValidWord) allWordsInDict = false;
       }
       // check if any of the letters in a vertical word adjoin an already placed horizontal words.
@@ -251,7 +250,6 @@ const App = () => {
           if (word.length > 1) {
             score += wordAndScore.wordScore;
             const isValidWord = localDictionary.has(word);
-            // console.log("word", word, isValidWord)
             if (!isValidWord) allWordsInDict = false;
           }
         }
@@ -269,7 +267,6 @@ const App = () => {
       if (word.length > 1) {
         score += wordAndScore.wordScore;
         const isValidWord = localDictionary.has(word);
-        // console.log("word", word, isValidWord)
 
         if (!isValidWord) allWordsInDict = false;
       }
@@ -284,7 +281,6 @@ const App = () => {
           maxWordLength = Math.max(maxWordLength, word.length);
           if (word.length > 1) {
             const isValidWord = localDictionary.has(word);
-            // console.log("word", word, isValidWord)
             score += wordAndScore.wordScore;
             if (!isValidWord) allWordsInDict = false;
           }
@@ -344,13 +340,19 @@ const App = () => {
     dispatch(modifyLettersLeft(lettersLeft.slice(letterCount)));
   };
 
-  const removeAllTempLetters = () => {
+  const removeAllTempLetters = (putBackInHand) => {
+    const tempLetters = [];
     for (let i = 0; i < BOARD_SIZE; i++) {
       for (let j = 0; j < BOARD_SIZE; j++) {
-        if (getTempLetterAtCoordinate(i, j)) {
+        const letter = getTempLetterAtCoordinate(i, j);
+        if (letter) {
+          tempLetters.push(letter);
           dispatch(removeTempLetterFromBoard({ row: i, col: j }));
         }
       }
+    }
+    if (putBackInHand) {
+      dispatch(modifyHand(hand.concat(tempLetters)));
     }
   };
 
@@ -761,7 +763,6 @@ const App = () => {
         const indices = permWithIndices.map((elem) => elem.idx);
         const word = perm.join("");
         const isValidWord = localDictionary.has(word);
-        // console.log("word", word, isValidWord)
 
         if (isValidWord) {
           let wordScore = 0;
@@ -861,7 +862,7 @@ const App = () => {
           <Button
             variant="outlined"
             sx={buttonStyle}
-            disabled={isComputersTurn}
+            disabled={isComputersTurn || isGameOver}
             onClick={() => submitWord(undefined)}
           >
             {" "}
@@ -870,7 +871,7 @@ const App = () => {
           <Button
             variant="outlined"
             sx={buttonStyle}
-            disabled={isComputersTurn}
+            disabled={isComputersTurn || isGameOver}
             onClick={pass}
           >
             {" "}
