@@ -836,6 +836,7 @@ const App = () => {
 
   const handleNewGameClick = () => {
     setGameStarted(false);
+    setIsGameOver(false)
     startGame();
   };
 
