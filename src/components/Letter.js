@@ -118,7 +118,7 @@ const Letter = ({
       </div>
     );
   return (
-    <Draggable onStop={onStop} onMouseDown={handleMouseDown}>
+    <Draggable onStop={onStop}>
       <div
         className={classNames(
           "hand-tile",

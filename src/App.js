@@ -900,7 +900,7 @@ const App = () => {
             {" "}
             Submit{" "}
           </Button>
-          <Button
+          {/* <Button
             variant="outlined"
             sx={buttonStyle}
             disabled={isComputersTurn || isGameOver}
@@ -908,7 +908,7 @@ const App = () => {
           >
             {" "}
             Dump{" "}
-          </Button>
+          </Button> */}
           <Button
             variant="outlined"
             sx={buttonStyle}
