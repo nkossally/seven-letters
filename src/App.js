@@ -841,6 +841,7 @@ const App = () => {
   const handleNewGameClick = () => {
     setGameStarted(false);
     setIsGameOver(false);
+    dispatch(removeDumpSelections())
     startGame();
   };
 
