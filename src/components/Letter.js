@@ -5,7 +5,7 @@ import {
   addTempLetterToBoard,
   removeTempLetterFromBoard,
 } from "../reducers/tempBoardValuesSlice";
-import { toggleSelection } from "../reducers/selectedForDumpingHandIndicesSlice";
+import { removeDumpSelections, toggleSelection } from "../reducers/selectedForDumpingHandIndicesSlice";
 import { LETTER_TO_SCORE } from "../consts";
 
 import Draggable from "react-draggable";
@@ -54,8 +54,8 @@ const Letter = ({
     return hitElements;
   };
 
-  const handleMouseDown = (e) => {
-    dispatch(toggleSelection(handIdx))
+  const handleToggle = () => {
+    dispatch(toggleSelection(handIdx));
   };
 
   const onStop = (e) => {
@@ -82,6 +82,7 @@ const Letter = ({
     }
     if (!(!isNaN(row) && !isNaN(col))) {
       if (isInHand) {
+        handleToggle();
         // If the letter tile was not dragged to a spot on the board
         // trigger a re-render that snaps the letter back to the original hand placement.
         dispatch(modifyHand(hand.map((elem) => elem.toLowerCase())));
@@ -89,6 +90,7 @@ const Letter = ({
           dispatch(modifyHand(hand));
         }, 0);
       } else {
+        dispatch(removeDumpSelections())
         dispatch(modifyHand(hand.concat([letter])));
         dispatch(removeTempLetterFromBoard({ row: boardRow, col: boardCol }));
       }

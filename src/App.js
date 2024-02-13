@@ -127,6 +127,7 @@ const App = () => {
   }, [isComputersTurn]);
 
   const pass = () => {
+    dispatch(removeDumpSelections())
     removeAllTempLetters(/** putBackInHand */ true);
     dispatch(setIsComputersTurn(true));
   };
@@ -164,6 +165,7 @@ const App = () => {
   };
 
   const submitWord = async (virtualBoard, indices) => {
+    dispatch(removeDumpSelections())
     const lettersOnBoard = getPermanentlyPlacedLetters();
     const isFirstPlay = lettersOnBoard.length === 0;
 
@@ -845,16 +847,22 @@ const App = () => {
     startGame();
   };
 
-  const handleDump = () => {
+  const handleDump = () => {    
     const dumpNum = selectedForDumpingHandIndices.length;
-    console.log("dumpNum", dumpNum)
     if (dumpNum > 0) {
       let newHand = [];
+      for(let i = 0; i< 15; i++){
+        for(let j = 0; j< 15; j++){
+          if(tempBoardValues[i][j]){
+            newHand.push(tempBoardValues[i][j])
+          }
+        }
+      }
       const dumpedLetters = [];
       for(let i = 0; i < 7; i++){
         if(selectedForDumpingHandIndices.includes(i)){
           dumpedLetters.push(hand[i])
-        } else{
+        } else if(hand[i]){
           newHand.push(hand[i])
         }
       }
@@ -862,6 +870,7 @@ const App = () => {
       const newLettersLeft = shuffle(
         lettersLeft.slice(dumpNum).concat(dumpedLetters)
       );
+      removeAllTempLetters(/** putBackInHand */ false);
       dispatch(modifyHand(newHand));
       dispatch(modifyLettersLeft(newLettersLeft));
       dispatch(removeDumpSelections());
@@ -900,7 +909,7 @@ const App = () => {
             {" "}
             Submit{" "}
           </Button>
-          {/* <Button
+          <Button
             variant="outlined"
             sx={buttonStyle}
             disabled={isComputersTurn || isGameOver}
@@ -908,7 +917,7 @@ const App = () => {
           >
             {" "}
             Dump{" "}
-          </Button> */}
+          </Button>
           <Button
             variant="outlined"
             sx={buttonStyle}
