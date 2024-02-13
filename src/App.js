@@ -25,6 +25,7 @@ import {
   removeLetterFromBoard,
 } from "./reducers/boardValuesSlice";
 import { removeTempLetterFromBoard } from "./reducers/tempBoardValuesSlice";
+import { removeDumpSelections } from "./reducers/selectedForDumpingHandIndicesSlice";
 import classNames from "classnames";
 
 import "./styles.scss";
@@ -76,6 +77,9 @@ const App = () => {
   const playerScore = useSelector((state) => state.score);
   const computerScore = useSelector((state) => state.computerScore);
   const isComputersTurn = useSelector((state) => state.isComputersTurn);
+  const selectedForDumpingHandIndices = useSelector(
+    (state) => state.selectedForDumpingHandIndices
+  );
 
   const dispatch = useDispatch();
 
@@ -836,8 +840,30 @@ const App = () => {
 
   const handleNewGameClick = () => {
     setGameStarted(false);
-    setIsGameOver(false)
+    setIsGameOver(false);
     startGame();
+  };
+
+  const handleDump = () => {
+    const dumpNum = selectedForDumpingHandIndices.length;
+    if (dumpNum > 0) {
+      let newHand = [...hand];
+      const dumpedLetters = [];
+      selectedForDumpingHandIndices.forEach((idx) => {
+        dumpedLetters.push(hand[idx]);
+        newHand.splice(idx, 1);
+      });
+      newHand = newHand.concat(lettersLeft.slice(0, dumpNum));
+      const newLettersLeft = shuffle(
+        lettersLeft.slice(dumpNum).concat(dumpedLetters)
+      );
+      dispatch(modifyHand(newHand));
+      dispatch(modifyLettersLeft(newLettersLeft));
+      dispatch(removeDumpSelections());
+      setTimeout(() => {
+        dispatch(setIsComputersTurn(true));
+      }, 30);
+    }
   };
 
   return (
@@ -868,6 +894,15 @@ const App = () => {
           >
             {" "}
             Submit{" "}
+          </Button>
+          <Button
+            variant="outlined"
+            sx={buttonStyle}
+            disabled={isComputersTurn || isGameOver}
+            onClick={handleDump}
+          >
+            {" "}
+            Dump{" "}
           </Button>
           <Button
             variant="outlined"

@@ -1,9 +1,11 @@
 import { useSelector, useDispatch } from "react-redux";
+import { useState, useEffect } from "react";
 import { modifyHand } from "../reducers/handSlice";
 import {
   addTempLetterToBoard,
   removeTempLetterFromBoard,
 } from "../reducers/tempBoardValuesSlice";
+import { toggleSelection } from "../reducers/selectedForDumpingHandIndicesSlice";
 import { LETTER_TO_SCORE } from "../consts";
 
 import Draggable from "react-draggable";
@@ -22,7 +24,12 @@ const Letter = ({
   temporary,
   selected,
 }) => {
+  const [clickCount, setClickCount] = useState(0);
+
   const hand = useSelector((state) => state.hand);
+  const selectedForDumpingHandIndices = useSelector(
+    (state) => state.selectedForDumpingHandIndices
+  );
 
   const dispatch = useDispatch();
 
@@ -45,6 +52,10 @@ const Letter = ({
     });
 
     return hitElements;
+  };
+
+  const handleMouseDown = (e) => {
+    dispatch(toggleSelection(handIdx))
   };
 
   const onStop = (e) => {
@@ -107,10 +118,13 @@ const Letter = ({
       </div>
     );
   return (
-    <Draggable onStop={onStop}>
+    <Draggable onStop={onStop} onMouseDown={handleMouseDown}>
       <div
         className={classNames(
           "hand-tile",
+          selectedForDumpingHandIndices.includes(handIdx)
+            ? "hand-tile-selected"
+            : "",
           temporary ? "hand-tile-temporary" : "look-3d"
         )}
       >
