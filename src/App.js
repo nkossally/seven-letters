@@ -846,13 +846,17 @@ const App = () => {
 
   const handleDump = () => {
     const dumpNum = selectedForDumpingHandIndices.length;
+    console.log("dumpNum", dumpNum)
     if (dumpNum > 0) {
-      let newHand = [...hand];
+      let newHand = [];
       const dumpedLetters = [];
-      selectedForDumpingHandIndices.forEach((idx) => {
-        dumpedLetters.push(hand[idx]);
-        newHand.splice(idx, 1);
-      });
+      for(let i = 0; i < 7; i++){
+        if(selectedForDumpingHandIndices.includes(i)){
+          dumpedLetters.push(hand[i])
+        } else{
+          newHand.push(hand[i])
+        }
+      }
       newHand = newHand.concat(lettersLeft.slice(0, dumpNum));
       const newLettersLeft = shuffle(
         lettersLeft.slice(dumpNum).concat(dumpedLetters)
