@@ -79,14 +79,6 @@ export const lookUpWord = async (word) => {
   } catch (e) {}
 };
 
-export const createEmptyBoard = () => {
-  const arr = [];
-  for (let i = 0; i < BOARD_SIZE; i++) {
-    arr.push([]);
-  }
-  return arr;
-};
-
 const LETTER_COUNTS = {
   A: 9,
   B: 2,
@@ -241,122 +233,129 @@ const handleSetInvalidWords = (text, setInvalidWords) => {
   }, ANIMATION_DURATION);
 };
 
-export const submitWord = (
-  virtualBoard,
-  indices,
-  setInvalidWords,
-  dispatch,
-  isComputersTurn,
-  setSelectedComputerTiles,
-  setIsComputersTurn,
-  localDictionary,
-  computerScore,
-  playerScore,
-  computerHand,
-  lettersLeft,
-  hand,
-  boardValues,
-  tempBoardValues
-) =>async () => {
-  dispatch(removeDumpSelections());
-  const lettersOnBoard = getPermanentlyPlacedLetters(boardValues);
-  const isFirstPlay = lettersOnBoard.length === 0;
-
-  const rowsAndCols = getPlacedLettersRowsAndCols(
+export const submitWord =
+  (
     virtualBoard,
-    tempBoardValues
-  );
-  console.log("boardValues",boardValues )
-  console.log("tempBoardValues",tempBoardValues )
-
-  let rows = rowsAndCols.rows;
-  let cols = rowsAndCols.cols;
-  console.log("rows", rows)
-  console.log("cols", cols)
-
-  if (rows.length === 0 && cols.length === 0) {
-    handleSetInvalidWords(
-      "Place letters on the board to form a word.",
-      setInvalidWords
-    );
-    return;
-  }
-  if (rows.length > 1 && cols.length > 1) {
-    handleSetInvalidWords(
-      "Letters should be in same row or column.",
-      setInvalidWords
-    );
-    return;
-  }
-  if (
-    !getIsContinuousWord(rows, cols, virtualBoard, boardValues, tempBoardValues)
-  ) {
-    handleSetInvalidWords(
-      "Letters must form a continuous word.",
-      setInvalidWords
-    );
-    return;
-  }
-  if (!isFirstPlay && !getIsConnectedToPrevWord(rows, cols, boardValues)) {
-    handleSetInvalidWords(
-      "Words must connect to previous words.",
-      setInvalidWords
-    );
-    return;
-  }
-  if (isFirstPlay && (!rows.includes(MID_IDX) || !cols.includes(MID_IDX))) {
-    handleSetInvalidWords(
-      "First word must have a tile in the center of board.",
-      setInvalidWords
-    );
-    return;
-  }
-
-  const allWordsInDict = checkAllWordsOnBoard(
-    virtualBoard,
-    localDictionary,
+    indices,
+    setInvalidWords,
     dispatch,
+    isComputersTurn,
+    setSelectedComputerTiles,
+    setIsComputersTurn,
+    localDictionary,
     computerScore,
     playerScore,
+    computerHand,
+    lettersLeft,
+    hand,
     boardValues,
     tempBoardValues
-  );
+  ) =>
+  async () => {
+    dispatch(removeDumpSelections());
+    const lettersOnBoard = getPermanentlyPlacedLetters(boardValues);
+    const isFirstPlay = lettersOnBoard.length === 0;
 
-  if (isComputersTurn) {
-    if (allWordsInDict) {
-      setSelectedComputerTiles(indices);
-      await delay(1000);
-      permanentlyPlaceLetters(
-        virtualBoard,
-        computerHand,
-        dispatch,
-        lettersLeft,
-        hand,
-        tempBoardValues
+    const rowsAndCols = getPlacedLettersRowsAndCols(
+      virtualBoard,
+      tempBoardValues
+    );
+
+    let rows = rowsAndCols.rows;
+    let cols = rowsAndCols.cols;
+
+    if (rows.length === 0 && cols.length === 0) {
+      handleSetInvalidWords(
+        "Place letters on the board to form a word.",
+        setInvalidWords
       );
-      dispatch(setIsComputersTurn(false));
-      setSelectedComputerTiles([]);
-      return true;
-    } else {
-      dispatch(setIsComputersTurn(false));
-      return false;
+      return;
     }
-  } else {
-    if (allWordsInDict) {
-      permanentlyPlaceLetters(
-        virtualBoard,
-        computerHand,
-        dispatch,
-        lettersLeft,
-        hand,
-        tempBoardValues
+    if (rows.length > 1 && cols.length > 1) {
+      handleSetInvalidWords(
+        "Letters should be in same row or column.",
+        setInvalidWords
       );
-      dispatch(setIsComputersTurn(true));
-    } else {
-      handleSetInvalidWords("Word(s) not found in dictionary.", setInvalidWords);
+      return;
     }
-  }
-};
+    if (
+      !getIsContinuousWord(
+        rows,
+        cols,
+        virtualBoard,
+        boardValues,
+        tempBoardValues
+      )
+    ) {
+      handleSetInvalidWords(
+        "Letters must form a continuous word.",
+        setInvalidWords
+      );
+      return;
+    }
+    if (!isFirstPlay && !getIsConnectedToPrevWord(rows, cols, boardValues)) {
+      handleSetInvalidWords(
+        "Words must connect to previous words.",
+        setInvalidWords
+      );
+      return;
+    }
+    if (isFirstPlay && (!rows.includes(MID_IDX) || !cols.includes(MID_IDX))) {
+      handleSetInvalidWords(
+        "First word must have a tile in the center of board.",
+        setInvalidWords
+      );
+      return;
+    }
+
+    const allWordsInDict = checkAllWordsOnBoard(
+      virtualBoard,
+      localDictionary,
+      dispatch,
+      computerScore,
+      playerScore,
+      boardValues,
+      tempBoardValues
+    );
+
+    if (isComputersTurn) {
+      if (allWordsInDict) {
+        setSelectedComputerTiles(indices);
+        await delay(1000);
+        permanentlyPlaceLetters(
+          virtualBoard,
+          computerHand,
+          dispatch,
+          lettersLeft,
+          hand,
+          tempBoardValues
+        );
+        dispatch(setIsComputersTurn(false));
+        setSelectedComputerTiles([]);
+        return true;
+      } else {
+        dispatch(setIsComputersTurn(false));
+        return false;
+      }
+    } else {
+      if (allWordsInDict) {
+        permanentlyPlaceLetters(
+          virtualBoard,
+          computerHand,
+          dispatch,
+          lettersLeft,
+          hand,
+          tempBoardValues
+        );
+        dispatch(setIsComputersTurn(true));
+      } else {
+        handleSetInvalidWords(
+          "Word(s) not found in dictionary.",
+          setInvalidWords
+        );
+      }
+    }
+  };
 
 const checkAllWordsOnBoard = (
   virtualBoard,
@@ -830,7 +829,15 @@ export const handleComputerStep = async (
   const lettersOnBoard = getPermanentlyPlacedLetters(boardValues);
 
   if (lettersOnBoard.length === 0) {
-    handleComputerStepOnEmptyBoard(boardValues, tempBoardValues, computerHand, localDictionary, setSelectedComputerTiles, dispatch, lettersLeft);
+    handleComputerStepOnEmptyBoard(
+      boardValues,
+      tempBoardValues,
+      computerHand,
+      localDictionary,
+      setSelectedComputerTiles,
+      dispatch,
+      lettersLeft
+    );
     return;
   }
   let result;
@@ -859,7 +866,7 @@ export const handleComputerStep = async (
         hand,
         boardValues,
         tempBoardValues,
-        playerScore,
+        playerScore
       );
       if (result) break;
     }
@@ -890,7 +897,7 @@ const tryToPlaceComputerLetters = async (
   hand,
   boardValues,
   tempBoardValues,
-  playerScore,
+  playerScore
 ) => {
   let result;
   let virtualBoard;
@@ -899,7 +906,13 @@ const tryToPlaceComputerLetters = async (
     const boardLetterObj = lettersOnBoard[i];
     const row = boardLetterObj.row;
     const col = boardLetterObj.col;
-    const wordAndCoordinates = placeLettersAroundSpot(row, col, arr, localDictionary, boardValues);
+    const wordAndCoordinates = placeLettersAroundSpot(
+      row,
+      col,
+      arr,
+      localDictionary,
+      boardValues
+    );
     if (wordAndCoordinates) {
       const coordinates = wordAndCoordinates.coordinates;
       virtualBoard = buildEmptyBoard();
@@ -1042,7 +1055,15 @@ const placeLettersMLettersBeforeAndNLettersAfter = (
   return { word, coordinates };
 };
 
-const handleComputerStepOnEmptyBoard = async (boardValues, tempBoardValues, computerHand, localDictionary, setSelectedComputerTiles, dispatch, lettersLeft) => {
+const handleComputerStepOnEmptyBoard = async (
+  boardValues,
+  tempBoardValues,
+  computerHand,
+  localDictionary,
+  setSelectedComputerTiles,
+  dispatch,
+  lettersLeft
+) => {
   let lettersToPlay = MAX_LETTERS;
 
   let result;
@@ -1125,47 +1146,63 @@ const getAllTempLetters = (virtualBoard, tempBoardValues) => {
 };
 
 export const handleNewGameClick =
-  (dispatch, hand, boardValues, tempBoardValues, setGameStarted, setIsGameOver) => () => {
+  (
+    dispatch,
+    hand,
+    boardValues,
+    tempBoardValues,
+    setGameStarted,
+    setIsGameOver
+  ) =>
+  () => {
     setGameStarted(false);
     setIsGameOver(false);
     dispatch(removeDumpSelections());
     startGame(dispatch, hand, boardValues, tempBoardValues);
   };
 
-export const handleDump = (dispatch, hand, tempBoardValues, selectedForDumpingHandIndices, lettersLeft) => () => {
-  const dumpNum = selectedForDumpingHandIndices.length;
-  if (dumpNum > 0) {
-    let newHand = [];
-    for (let i = 0; i < 15; i++) {
-      for (let j = 0; j < 15; j++) {
-        if (tempBoardValues[i][j]) {
-          newHand.push(tempBoardValues[i][j]);
+export const handleDump =
+  (
+    dispatch,
+    hand,
+    tempBoardValues,
+    selectedForDumpingHandIndices,
+    lettersLeft
+  ) =>
+  () => {
+    const dumpNum = selectedForDumpingHandIndices.length;
+    if (dumpNum > 0) {
+      let newHand = [];
+      for (let i = 0; i < 15; i++) {
+        for (let j = 0; j < 15; j++) {
+          if (tempBoardValues[i][j]) {
+            newHand.push(tempBoardValues[i][j]);
+          }
         }
       }
-    }
-    const dumpedLetters = [];
-    for (let i = 0; i < 7; i++) {
-      if (selectedForDumpingHandIndices.includes(i)) {
-        dumpedLetters.push(hand[i]);
-      } else if (hand[i]) {
-        newHand.push(hand[i]);
+      const dumpedLetters = [];
+      for (let i = 0; i < 7; i++) {
+        if (selectedForDumpingHandIndices.includes(i)) {
+          dumpedLetters.push(hand[i]);
+        } else if (hand[i]) {
+          newHand.push(hand[i]);
+        }
       }
+      newHand = newHand.concat(lettersLeft.slice(0, dumpNum));
+      const newLettersLeft = shuffle(
+        lettersLeft.slice(dumpNum).concat(dumpedLetters)
+      );
+      removeAllTempLetters(
+        /** putBackInHand */ false,
+        dispatch,
+        hand,
+        tempBoardValues
+      );
+      dispatch(modifyHand(newHand));
+      dispatch(modifyLettersLeft(newLettersLeft));
+      dispatch(removeDumpSelections());
+      setTimeout(() => {
+        dispatch(setIsComputersTurn(true));
+      }, 30);
     }
-    newHand = newHand.concat(lettersLeft.slice(0, dumpNum));
-    const newLettersLeft = shuffle(
-      lettersLeft.slice(dumpNum).concat(dumpedLetters)
-    );
-    removeAllTempLetters(
-      /** putBackInHand */ false,
-      dispatch,
-      hand,
-      tempBoardValues
-    );
-    dispatch(modifyHand(newHand));
-    dispatch(modifyLettersLeft(newLettersLeft));
-    dispatch(removeDumpSelections());
-    setTimeout(() => {
-      dispatch(setIsComputersTurn(true));
-    }, 30);
-  }
-};
+  };

@@ -18,6 +18,7 @@ export const tempBoardValuesSlice = createSlice({
   },
 });
 
-export const { addTempLetterToBoard, removeTempLetterFromBoard } = tempBoardValuesSlice.actions;
+export const { addTempLetterToBoard, removeTempLetterFromBoard } =
+  tempBoardValuesSlice.actions;
 
 export default tempBoardValuesSlice.reducer;

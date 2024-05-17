@@ -115,7 +115,7 @@ const App = () => {
         computerHand,
         hand,
         setComputerPasses,
-        playerScore,
+        playerScore
       );
     }
   }, [isComputersTurn]);
@@ -134,9 +134,14 @@ const App = () => {
         <Button
           variant="outlined"
           sx={resetButtonStyle}
-          onClick={
-            handleNewGameClick(dispatch, hand, boardValues, tempBoardValues, setGameStarted, setIsGameOver)
-          }
+          onClick={handleNewGameClick(
+            dispatch,
+            hand,
+            boardValues,
+            tempBoardValues,
+            setGameStarted,
+            setIsGameOver
+          )}
         >
           New Game
         </Button>
@@ -154,25 +159,23 @@ const App = () => {
             variant="outlined"
             sx={buttonStyle}
             disabled={isComputersTurn || isGameOver}
-            onClick={
-              submitWord(
-                undefined,
-                undefined,
-                setInvalidWords,
-                dispatch,
-                isComputersTurn,
-                setSelectedComputerTiles,
-                setIsComputersTurn,
-                localDictionary,
-                computerScore,
-                playerScore,
-                computerHand,
-                lettersLeft,
-                hand,
-                boardValues,
-                tempBoardValues
-              )
-            }
+            onClick={submitWord(
+              undefined,
+              undefined,
+              setInvalidWords,
+              dispatch,
+              isComputersTurn,
+              setSelectedComputerTiles,
+              setIsComputersTurn,
+              localDictionary,
+              computerScore,
+              playerScore,
+              computerHand,
+              lettersLeft,
+              hand,
+              boardValues,
+              tempBoardValues
+            )}
           >
             {" "}
             Submit{" "}
@@ -181,7 +184,13 @@ const App = () => {
             variant="outlined"
             sx={buttonStyle}
             disabled={isComputersTurn || isGameOver}
-            onClick={handleDump(dispatch, hand, tempBoardValues,selectedForDumpingHandIndices, lettersLeft )}
+            onClick={handleDump(
+              dispatch,
+              hand,
+              tempBoardValues,
+              selectedForDumpingHandIndices,
+              lettersLeft
+            )}
           >
             {" "}
             Dump{" "}

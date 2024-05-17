@@ -18,6 +18,7 @@ export const boardValuesSlice = createSlice({
   },
 });
 
-export const { addLetterToBoard, removeLetterFromBoard } = boardValuesSlice.actions;
+export const { addLetterToBoard, removeLetterFromBoard } =
+  boardValuesSlice.actions;
 
 export default boardValuesSlice.reducer;
