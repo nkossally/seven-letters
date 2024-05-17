@@ -1,14 +1,5 @@
-import { createSlice, current } from "@reduxjs/toolkit";
-// import { createEmptyBoard } from "../util";
-
-const BOARD_SIZE = 15;
- const createEmptyBoard = () => {
-  const arr = [];
-  for (let i = 0; i < BOARD_SIZE; i++) {
-    arr.push([]);
-  }
-  return arr;
-};
+import { createSlice } from "@reduxjs/toolkit";
+import { createEmptyBoard } from "./reducersUtil";
 
 export const tempBoardValuesSlice = createSlice({
   name: "tempBoardValues",
