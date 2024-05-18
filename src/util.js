@@ -1,4 +1,4 @@
-import { BOARD_SIZE, LETTER_TO_SCORE } from "./consts";
+import { BOARD_SIZE, LETTER_TO_SCORE, DICTIONARY_ENDPOINT, HUNDRED_THOUSAND, MID_IDX, MAX_LETTERS, ANIMATION_DURATION, LETTER_FREQUENCIES, DIRS, LETTER_COUNTS } from "./consts";
 import { removeDumpSelections } from "./reducers/selectedForDumpingHandIndicesSlice";
 import { modifyHand } from "./reducers/handSlice";
 import { modifyComputerHand } from "./reducers/computerHandSlice";
@@ -12,101 +12,13 @@ import {
 import { removeTempLetterFromBoard } from "./reducers/tempBoardValuesSlice";
 import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
 
-const DICTIONARY_ENDPOINT = "https://api.dictionaryapi.dev/api/v2/entries/en/";
-const HUNDRED_THOUSAND = 100000;
-const MID_IDX = 7;
-const MAX_LETTERS = 7;
-const ANIMATION_DURATION = 2000;
-
-// Ranges calculated from data found at
-// http://en.wikipedia.org/wiki/Letter_frequency
-var LETTER_FREQUENCIES = {
-  A: 8167,
-  B: 9659,
-  C: 12441,
-  D: 16694,
-  E: 29396,
-  F: 31624,
-  G: 33639,
-  H: 39733,
-  I: 46699,
-  J: 46852,
-  K: 47624,
-  L: 51649,
-  M: 54055,
-  N: 60804,
-  O: 68311,
-  P: 70240,
-  Q: 70335,
-  R: 76322,
-  S: 82649,
-  T: 91705,
-  U: 94463,
-  V: 95441,
-  W: 97801,
-  X: 97951,
-  Y: 99925,
-  Z: HUNDRED_THOUSAND,
-};
-
-const DIRS = [
-  [0, 1],
-  [0, -1],
-  [1, 0],
-  [-1, 0],
-];
-
-export const randomAtoZ = () => {
-  var random = Math.random() * HUNDRED_THOUSAND;
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-
-  let result;
-  for (let i = 0; i < letters.length; i++) {
-    const letter = letters[i];
-    if (LETTER_FREQUENCIES[letter] > random) {
-      result = letter;
-      break;
-    }
-  }
-  return result;
-};
-
+// Deprecated. No longer using this endpoint.
 export const lookUpWord = async (word) => {
   try {
     const resp = await fetch(`${DICTIONARY_ENDPOINT}${word}`);
     const responseJson = await resp.json();
     return responseJson[0]["meanings"][0]["definitions"][0]["definition"];
   } catch (e) {}
-};
-
-const LETTER_COUNTS = {
-  A: 9,
-  B: 2,
-  C: 2,
-  D: 4,
-  E: 12,
-  F: 2,
-  G: 3,
-  H: 2,
-  I: 9,
-  J: 1,
-  K: 1,
-  L: 4,
-  M: 2,
-  N: 6,
-  O: 8,
-  P: 2,
-  Q: 1,
-  R: 6,
-  S: 4,
-  T: 6,
-  U: 4,
-  V: 2,
-  W: 2,
-  X: 1,
-  Y: 2,
-  Z: 1,
-  // "": 2,
 };
 
 const shuffle = (array) => {
