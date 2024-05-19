@@ -27,6 +27,7 @@ const ScrabbleBoard2 = ({ selectedTiles }) => {
                     const addLetters =
                       specialScore &&
                       (i !== boardSize / 2 || j !== boardSize / 2);
+                    const isTempBlank = tempBoardValues[i][j] === "-";
                     return (
                       <>
                         {typeof boardValues[i][j] === "string" && (

@@ -10,6 +10,7 @@ import scoreSliceReducer from "./scoreSlice";
 import computerScoreSliceReducer from "./computerScoreSlice";
 import isComputersTurnSliceReducer from "./isComputersTurn.slice";
 import selectedForDumpingHandIndicesReducer from "./selectedForDumpingHandIndicesSlice";
+import resolvedWordReducer from "./resolvedWordSlice";
 
 const persistConfig = {
   key: "root",
@@ -23,6 +24,7 @@ const persistConfig = {
     "score",
     "computerScore",
     "isComputersTurn",
+    "resolvedWord"
   ],
 };
 
@@ -36,6 +38,8 @@ const rootReducer = combineReducers({
   computerScore: computerScoreSliceReducer,
   isComputersTurn: isComputersTurnSliceReducer,
   selectedForDumpingHandIndices: selectedForDumpingHandIndicesReducer,
+  selectedForDumpingHandIndices: selectedForDumpingHandIndicesReducer,
+  resolvedWord: resolvedWordReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

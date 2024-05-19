@@ -7,8 +7,6 @@ export const MID_IDX = 7;
 export const MAX_LETTERS = 7;
 export const ANIMATION_DURATION = 2000;
 
-export const VOWELS = new Set(["A", "E", "I", "O", "U", "Y"]);
-
 export const LETTER_TO_SCORE = {
   A: 1,
   B: 3,
@@ -36,6 +34,7 @@ export const LETTER_TO_SCORE = {
   X: 8,
   Y: 4,
   Z: 10,
+  "-": 0,
 };
 
 // Ranges calculated from data found at
@@ -103,5 +102,5 @@ export const LETTER_COUNTS = {
   X: 1,
   Y: 2,
   Z: 1,
-  // "": 2,
+  "-": 0,
 };

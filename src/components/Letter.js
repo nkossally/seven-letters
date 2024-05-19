@@ -5,7 +5,10 @@ import {
   addTempLetterToBoard,
   removeTempLetterFromBoard,
 } from "../reducers/tempBoardValuesSlice";
-import { removeDumpSelections, toggleSelection } from "../reducers/selectedForDumpingHandIndicesSlice";
+import {
+  removeDumpSelections,
+  toggleSelection,
+} from "../reducers/selectedForDumpingHandIndicesSlice";
 import { LETTER_TO_SCORE } from "../consts";
 
 import Draggable from "react-draggable";
@@ -90,7 +93,7 @@ const Letter = ({
           dispatch(modifyHand(hand));
         }, 0);
       } else {
-        dispatch(removeDumpSelections())
+        dispatch(removeDumpSelections());
         dispatch(modifyHand(hand.concat([letter])));
         dispatch(removeTempLetterFromBoard({ row: boardRow, col: boardCol }));
       }
@@ -99,7 +102,11 @@ const Letter = ({
   if (permanentlyOnBoard)
     return (
       <div className={classNames("hand-tile", "hand-tile-permanent")}>
-        {letter}{" "}
+        {
+          <span className={letter === "-" ? "invisible-letter" : ""}>
+            {letter}
+          </span>
+        }
         <span className="score-in-tile">{LETTER_TO_SCORE[letter]}</span>
       </div>
     );
@@ -110,6 +117,7 @@ const Letter = ({
           "hand-tile",
           "computer-tile",
           "look-3d",
+          letter === "-" ? "invisible-letter" : "",
           selected ? "slide-left" : ""
         )}
       >
@@ -130,7 +138,7 @@ const Letter = ({
           temporary ? "hand-tile-temporary" : "look-3d"
         )}
       >
-        <div>{letter}</div>
+        <div className={letter === "-" ? "invisible-letter" : ""}>{letter}</div>
         <span className="score-in-tile">{LETTER_TO_SCORE[letter]}</span>
       </div>
     </Draggable>

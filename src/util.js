@@ -1,4 +1,15 @@
-import { BOARD_SIZE, LETTER_TO_SCORE, DICTIONARY_ENDPOINT, HUNDRED_THOUSAND, MID_IDX, MAX_LETTERS, ANIMATION_DURATION, LETTER_FREQUENCIES, DIRS, LETTER_COUNTS } from "./consts";
+import {
+  BOARD_SIZE,
+  LETTER_TO_SCORE,
+  DICTIONARY_ENDPOINT,
+  HUNDRED_THOUSAND,
+  MID_IDX,
+  MAX_LETTERS,
+  ANIMATION_DURATION,
+  LETTER_FREQUENCIES,
+  DIRS,
+  LETTER_COUNTS,
+} from "./consts";
 import { removeDumpSelections } from "./reducers/selectedForDumpingHandIndicesSlice";
 import { modifyHand } from "./reducers/handSlice";
 import { modifyComputerHand } from "./reducers/computerHandSlice";
@@ -11,7 +22,9 @@ import {
 } from "./reducers/boardValuesSlice";
 import { removeTempLetterFromBoard } from "./reducers/tempBoardValuesSlice";
 import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
+import { setResolvedWord } from "./reducers/resolvedWordSlice";
 
+let blarg
 // Deprecated. No longer using this endpoint.
 export const lookUpWord = async (word) => {
   try {
@@ -303,7 +316,7 @@ const checkAllWordsOnBoard = (
     maxWordLength = Math.max(maxWordLength, word.length);
     if (word.length > 1) {
       score += wordAndScore.wordScore;
-      const isValidWord = localDictionary.has(word);
+      const isValidWord = getIsValidWord(word, localDictionary);
       if (!isValidWord) allWordsInDict = false;
     }
     // check if any of the letters in a vertical word adjoin an already placed horizontal words.
@@ -320,7 +333,7 @@ const checkAllWordsOnBoard = (
         maxWordLength = Math.max(maxWordLength, word.length);
         if (word.length > 1) {
           score += wordAndScore.wordScore;
-          const isValidWord = localDictionary.has(word);
+          const isValidWord = getIsValidWord(word, localDictionary);
           if (!isValidWord) allWordsInDict = false;
         }
       }
@@ -339,7 +352,7 @@ const checkAllWordsOnBoard = (
     maxWordLength = Math.max(maxWordLength, word.length);
     if (word.length > 1) {
       score += wordAndScore.wordScore;
-      const isValidWord = localDictionary.has(word);
+      const isValidWord = getIsValidWord(word, localDictionary);
 
       if (!isValidWord) allWordsInDict = false;
     }
@@ -355,7 +368,7 @@ const checkAllWordsOnBoard = (
         const word = wordAndScore.word;
         maxWordLength = Math.max(maxWordLength, word.length);
         if (word.length > 1) {
-          const isValidWord = localDictionary.has(word);
+          const isValidWord = getIsValidWord(word, localDictionary);
           score += wordAndScore.wordScore;
           if (!isValidWord) allWordsInDict = false;
         }
@@ -868,7 +881,7 @@ const getPermanentlyPlacedLetters = (boardValues) => {
   return arr;
 };
 
-const placeLettersAroundSpot = (i, j, arr, localDictionary, boardValues) => {
+const placeLettersAroundSpot = (i, j, arr, localDictionary, boardValues, dispatch) => {
   let result;
   for (let m = 0; m <= arr.length; m++) {
     // place horizontally
@@ -897,7 +910,7 @@ const placeLettersAroundSpot = (i, j, arr, localDictionary, boardValues) => {
 
     if (wordAndCoordinates) {
       const word = wordAndCoordinates.word;
-      if (localDictionary.has(word)) {
+      if (getIsValidWord(word, localDictionary)) {
         result = wordAndCoordinates;
         break;
       }
@@ -990,7 +1003,7 @@ const handleComputerStepOnEmptyBoard = async (
       const perm = permWithIndices.map((elem) => elem.letter);
       const indices = permWithIndices.map((elem) => elem.idx);
       const word = perm.join("");
-      const isValidWord = localDictionary.has(word);
+      const isValidWord = getIsValidWord(word, localDictionary);
 
       if (isValidWord) {
         let wordScore = 0;
@@ -1038,6 +1051,37 @@ const handleComputerStepOnEmptyBoard = async (
   );
   dispatch(modifyLettersLeft(lettersLeft.slice(result.length)));
   dispatch(setIsComputersTurn(false));
+};
+
+const getIsValidWord = (word, localDictionary, dispatch) => {
+  if (localDictionary.has(word)) return word;
+
+  let resolvedWord = false;
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+  if (word.includes("-")) {
+    const buildWord = (prefix, idx) => {
+      if(resolvedWord) return;
+      if (idx === word.length) {
+        if (localDictionary.has(prefix)) {
+          resolvedWord = prefix;
+          // dispatch(setResolvedWord(resolvedWord))
+          blarg = resolvedWord
+        }
+        return;
+      }
+      if (word[idx] === "-") {
+        alphabet.forEach((letter) => {
+          buildWord(prefix + letter, idx + 1);
+        });
+      } else {
+        buildWord(prefix + word[idx], idx + 1);
+      }
+    };
+    buildWord("", 0);
+  }
+  // console.log("resolvedWord",word, resolvedWord )
+  return resolvedWord;
 };
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
