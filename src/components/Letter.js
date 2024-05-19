@@ -103,7 +103,7 @@ const Letter = ({
   };
   if (permanentlyOnBoard)
     return (
-      <div className={classNames("hand-tile", "hand-tile-permanent")}>
+      <div className={classNames("hand-tile", "hand-tile-permanent", points === 0 ? "zero-points" : "")}>
         {
           <span className={letter === "-" ? "invisible-letter" : ""}>
             {letter}
