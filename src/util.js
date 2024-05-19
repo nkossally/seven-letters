@@ -23,6 +23,8 @@ import {
 import { removeTempLetterFromBoard } from "./reducers/tempBoardValuesSlice";
 import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
 import { setResolvedWord } from "./reducers/resolvedWordSlice";
+import { addCoordinates } from "./reducers/zeroPointCoordinatesSlice";
+import { add } from "lodash";
 
 let blarg
 // Deprecated. No longer using this endpoint.
@@ -402,9 +404,13 @@ const permanentlyPlaceLetters = (
   const computerHandCopy = Array.from(computerHand);
   for (let i = 0; i < BOARD_SIZE; i++) {
     for (let j = 0; j < BOARD_SIZE; j++) {
-      const letter =
+      let letter =
         getTempLetterAtCoordinate(i, j, tempBoardValues) ||
         getTempLetterOnVirtualBoard(i, j, virtualBoard);
+      if(letter === "-"){
+        letter = blarg[letterCount]
+        dispatch(addCoordinates(JSON.stringify([i, j])))
+      } 
       if (letter) {
         dispatch(addLetterToBoard({ row: i, col: j, letter }));
         letterCount++;

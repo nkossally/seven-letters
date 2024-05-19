@@ -33,6 +33,8 @@ const Letter = ({
   const selectedForDumpingHandIndices = useSelector(
     (state) => state.selectedForDumpingHandIndices
   );
+  const zeroPointCoordinates = useSelector((state) => state.zeroPointCoordinates);
+  const points = zeroPointCoordinates[JSON.stringify([boardRow, boardCol])] === true ? 0 : LETTER_TO_SCORE[letter]
 
   const dispatch = useDispatch();
 
@@ -107,7 +109,7 @@ const Letter = ({
             {letter}
           </span>
         }
-        <span className="score-in-tile">{LETTER_TO_SCORE[letter]}</span>
+        <span className="score-in-tile">{points}</span>
       </div>
     );
   if (isInComputerHand)
