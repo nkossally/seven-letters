@@ -6,11 +6,11 @@ This project is a web implementation of the board game Scrabble using React and 
 
 ## Section 2 - Overview
 
-2.1 Purpose
+### 2.1 Purpose
  
 The purpose of this project is to show how clean, well-designed code can manage the tens of thousands of calculations per second needed to automate the computer’s game play during the game of Scrabble.
 
-2.2 Scope
+### 2.2 Scope
  
 Most of the basic game play of Scrabble should be supported. This entails the following:
 Render a 15 by 15 grid.
@@ -20,7 +20,7 @@ Automate computer moves after each player move.
 Provide UI indicating when moves are invalid and when the computer passes.
 Calculate scores based on the rules of Scrabble. Each letter has a value. In addition, special boxes on the board triple and double letter and word scores.
 
-2.2 Out of Scope
+### 2.3 Out of Scope
  
 Some features of the board game Scrabble are out of scope for this project’s MVP. There are also some features of similar games, such as the New York Times Crossword App, that are not supported at this time. These features should be considered for future implementations.
 Enable players to dump unwanted letters (incurring a punishment of having to pass a round).
@@ -30,13 +30,13 @@ Make the app mobile friendly.
 
 ## Section 3 – System Architecture
 
-3.1 Components
+### 3.1 Components
  
 There are two basic components, Letter and Board.
 Letter: Props for this component include letter, board row, board column, and hand index. Letters can be in a player’s hand, in the computer’s hand, or on the board. Props determine the component’s behavior. For example, letters are draggable only if they are either in a player’s hand, or temporarily placed on the board and not yet submitted.
 Board: This is a 15 by 15 grid. No props are needed. Letters that are placed on the board, temporarily or permanently, can be retrieved from Redux state.
 
-3.1 Game Engine
+### 3.2 Game Engine
  
 Most of the game handling logic can be found in the App component.
 
