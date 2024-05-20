@@ -102,5 +102,5 @@ export const LETTER_COUNTS = {
   X: 1,
   Y: 2,
   Z: 1,
-  "-": 5,
+  "-": 0,
 };
