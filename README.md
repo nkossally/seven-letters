@@ -1,10 +1,10 @@
-Scrabble Design Doc
+# Scrabble Design Doc
 
-Section 1 - Description
+## Section 1 - Description
  
 This project is a web implementation of the board game Scrabble using React and Redux.
 
-Section 2 - Overview
+## Section 2 - Overview
 
 2.1 Purpose
  
@@ -28,7 +28,7 @@ Add blank tiles. Blank tiles can stand in for any letter and are worth no points
  This project currently supports users dragging and dropping letter tiles from their hand onto the board. A future implementation could allow users to click a starting block and then type (instead of dragging) in order to place letters on the board. Double clicking could toggle between vertical and horizontal placements.
 Make the app mobile friendly.
 
-Section 3 – System Architecture
+## Section 3 – System Architecture
 
 3.1 Components
  
@@ -42,13 +42,13 @@ Most of the game handling logic can be found in the App component.
 
 In order to keep track of where word tiles are, this app has, at most, three different “boards” in memory at any given time. One board contains all of the permanently placed tiles that have been validated and successfully submitted by player or computer gameplay. This board of “permanent” tiles is in Redux state. Another board, also in Redux state, contains tiles that players have temporarily placed, and have not yet successfully submitted. Finally, when the computer plays, it builds a “virtual board” upon which to try all placements of letters around previously played letters on the “real” board. The algorithm to test all placements of letters is a greedy algorithm that starts by trying to place all seven letters in the computer’s hand, then six, then five, etc. It is not necessary to store this virtual board in state. In fact, it is implausible to store this virtual board in state because of all the calculations that are done on this virtual board. Dispatching hundreds of thousands of actions to reducers for each computer move is not ideal and could easily create glitches (there are 7! = 5040 permutations of the letters in a hand). The virtual board is passed as a function argument.
 
-Section 4 – Technologies
+## Section 4 – Technologies
  
 Beyond using React and Redux, this app uses the “react-draggable” library to build draggable letter components. In addition, Material UI is used to render modals and buttons.
 
 Originally, in order to validate words, I used a free dictionary API (https://api.dictionaryapi.dev/api/v2/entries/en/). However, fetching data incurred high latencies. In addition, rate limiters stopped the app from working after making too many fetches. Ultimately, I decided to add a local text file containing words from an official Scrabble library to the app itself.
 
-Section 5 – References
+## Section 5 – References
 
 Inspiration for styling the board was drawn from a public source here.
 
