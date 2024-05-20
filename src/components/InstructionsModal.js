@@ -112,6 +112,13 @@ export default function InstructionsModal({ onCloseCallback }) {
             square.
           </Typography>
           <Typography id="modal-modal-description" sx={typographyStyle}>
+            Blank tiles can be played as any letter. When you submit a word with
+            a blank tile, the computer will find a word that matches the played
+            tiles, with any letter replacing the blank tile. Successfully
+            submitted blank tiles will turn red and have a letter on them once
+            validated. Blank tiles are worth zero points.
+          </Typography>
+          <Typography id="modal-modal-description" sx={typographyStyle}>
             Human player plays first.
           </Typography>
           <Typography id="modal-modal-description" sx={typographyStyle}>

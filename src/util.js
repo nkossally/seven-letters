@@ -28,7 +28,7 @@ import {
   resetZeroPointCoordinates,
 } from "./reducers/zeroPointCoordinatesSlice";
 
-let wordMadeWithBlankTile;
+let blankTileLetters = [];
 
 // Deprecated. No longer using this endpoint.
 export const lookUpWord = async (word) => {
@@ -420,8 +420,7 @@ const permanentlyPlaceLetters = (
         getTempLetterAtCoordinate(i, j, tempBoardValues) ||
         getTempLetterOnVirtualBoard(i, j, virtualBoard);
       if (letter === "-") {
-        const idx = wordMadeWithBlankTile.indexOf(wordSoFar);
-        letter = wordMadeWithBlankTile[idx + wordSoFar.length];
+        letter = blankTileLetters.shift();
         dispatch(addZeroCoordinates(JSON.stringify([i, j])));
       }
       if (letter) {
@@ -1103,31 +1102,34 @@ const handleComputerStepOnEmptyBoard = async (
 };
 
 const getIsValidWord = (word, localDictionary, dispatch) => {
+  blankTileLetters = []
+  let localBlankTileLetters = []
   if (localDictionary.has(word)) return word;
 
   let resolvedWord = false;
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
   if (word.includes("-")) {
-    const buildWord = (prefix, idx) => {
+    const buildWord = (prefix, idx, arr) => {
       if (resolvedWord) return;
       if (idx === word.length) {
         if (localDictionary.has(prefix)) {
           resolvedWord = prefix;
-          wordMadeWithBlankTile = resolvedWord;
+          localBlankTileLetters = arr
         }
         return;
       }
       if (word[idx] === "-") {
         alphabet.forEach((letter) => {
-          buildWord(prefix + letter, idx + 1);
+          buildWord(prefix + letter, idx + 1, [...arr, letter]);
         });
       } else {
-        buildWord(prefix + word[idx], idx + 1);
+        buildWord(prefix + word[idx], idx + 1, arr);
       }
     };
-    buildWord("", 0);
+    buildWord("", 0, []);
   }
+  blankTileLetters = localBlankTileLetters;
   return resolvedWord;
 };
 
