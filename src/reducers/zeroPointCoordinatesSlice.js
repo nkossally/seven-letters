@@ -4,7 +4,7 @@ export const zeroPointCoordinatesSlice = createSlice({
   name: "zeroPointCoordinates",
   initialState: {},
   reducers: {
-    addCoordinates: (state, action) => {
+    addZeroCoordinates: (state, action) => {
        state[action.payload] = true;
     },
     resetZeroPointCoordinates: (state, action) => {
@@ -13,6 +13,6 @@ export const zeroPointCoordinatesSlice = createSlice({
   },
 });
 
-export const { addCoordinates, resetZeroPointCoordinates } = zeroPointCoordinatesSlice.actions;
+export const { addZeroCoordinates, resetZeroPointCoordinates } = zeroPointCoordinatesSlice.actions;
 
 export default zeroPointCoordinatesSlice.reducer;

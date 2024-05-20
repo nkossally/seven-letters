@@ -23,9 +23,13 @@ import {
 import { removeTempLetterFromBoard } from "./reducers/tempBoardValuesSlice";
 import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
 import { setResolvedWord } from "./reducers/resolvedWordSlice";
-import { addCoordinates, resetZeroPointCoordinates } from "./reducers/zeroPointCoordinatesSlice";
+import {
+  addZeroCoordinates,
+  resetZeroPointCoordinates,
+} from "./reducers/zeroPointCoordinatesSlice";
 
-let blarg
+let wordMadeWithBlankTile;
+
 // Deprecated. No longer using this endpoint.
 export const lookUpWord = async (word) => {
   try {
@@ -142,7 +146,7 @@ export const startGame = (dispatch, hand, boardValues, tempBoardValues) => {
   dispatch(modifyLettersLeft(letters.slice(14)));
   dispatch(updateComputerScore(0));
   dispatch(updateScore(0));
-  dispatch(resetZeroPointCoordinates())
+  dispatch(resetZeroPointCoordinates());
 };
 
 const buildEmptyBoard = () => {
@@ -407,6 +411,7 @@ const permanentlyPlaceLetters = (
   hand,
   tempBoardValues
 ) => {
+  let wordSoFar = "";
   let letterCount = 0;
   const computerHandCopy = Array.from(computerHand);
   for (let i = 0; i < BOARD_SIZE; i++) {
@@ -414,11 +419,13 @@ const permanentlyPlaceLetters = (
       let letter =
         getTempLetterAtCoordinate(i, j, tempBoardValues) ||
         getTempLetterOnVirtualBoard(i, j, virtualBoard);
-      if(letter === "-"){
-        letter = blarg[letterCount]
-        dispatch(addCoordinates(JSON.stringify([i, j])))
-      } 
+      if (letter === "-") {
+        const idx = wordMadeWithBlankTile.indexOf(wordSoFar);
+        letter = wordMadeWithBlankTile[idx + wordSoFar.length];
+        dispatch(addZeroCoordinates(JSON.stringify([i, j])));
+      }
       if (letter) {
+        wordSoFar += letter;
         dispatch(addLetterToBoard({ row: i, col: j, letter }));
         letterCount++;
         if (virtualBoard) {
@@ -724,7 +731,10 @@ const calculateScoreFromLetter = (
     getTempLetterAtCoordinate(i, j, tempBoardValues) ||
     getLetterAtCoordinate(i, j, boardValues) ||
     getTempLetterOnVirtualBoard(i, j, virtualBoard);
-  let letterPoints = zeroPointCoordinates[JSON.stringify([i, j])] === true ? 0 : LETTER_TO_SCORE[letter];
+  let letterPoints =
+    zeroPointCoordinates[JSON.stringify([i, j])] === true
+      ? 0
+      : LETTER_TO_SCORE[letter];
   let wordMultiplier = 1;
 
   if (
@@ -906,7 +916,14 @@ const getPermanentlyPlacedLetters = (boardValues) => {
   return arr;
 };
 
-const placeLettersAroundSpot = (i, j, arr, localDictionary, boardValues, dispatch) => {
+const placeLettersAroundSpot = (
+  i,
+  j,
+  arr,
+  localDictionary,
+  boardValues,
+  dispatch
+) => {
   let result;
   for (let m = 0; m <= arr.length; m++) {
     // place horizontally
@@ -1052,12 +1069,17 @@ const handleComputerStepOnEmptyBoard = async (
           );
           wordScore += letterScoreObj.letterPoints;
           multiplier *= letterScoreObj.wordMultiplier;
+          const resolvedLetter = isValidWord[j];
+
+          if (perm[j] === "-") {
+            dispatch(addZeroCoordinates(JSON.stringify([firstRow + j, 7])));
+          }
 
           dispatch(
             addLetterToBoard({
               row: firstRow + j,
               col: 7,
-              letter: perm[j],
+              letter: resolvedLetter,
             })
           );
         }
@@ -1088,12 +1110,11 @@ const getIsValidWord = (word, localDictionary, dispatch) => {
 
   if (word.includes("-")) {
     const buildWord = (prefix, idx) => {
-      if(resolvedWord) return;
+      if (resolvedWord) return;
       if (idx === word.length) {
         if (localDictionary.has(prefix)) {
           resolvedWord = prefix;
-          // dispatch(setResolvedWord(resolvedWord))
-          blarg = resolvedWord
+          wordMadeWithBlankTile = resolvedWord;
         }
         return;
       }
