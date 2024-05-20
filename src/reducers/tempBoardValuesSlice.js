@@ -6,7 +6,6 @@ export const tempBoardValuesSlice = createSlice({
   initialState: createEmptyBoard(),
   reducers: {
     addTempLetterToBoard: (state, action) => {
-      console.log("addTempLetterToBoard", action.payload)
       const row = action.payload.row;
       const col = action.payload.col;
       state[row][col] = action.payload.letter;

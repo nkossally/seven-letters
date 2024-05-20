@@ -23,8 +23,7 @@ import {
 import { removeTempLetterFromBoard } from "./reducers/tempBoardValuesSlice";
 import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
 import { setResolvedWord } from "./reducers/resolvedWordSlice";
-import { addCoordinates } from "./reducers/zeroPointCoordinatesSlice";
-import { add } from "lodash";
+import { addCoordinates, resetZeroPointCoordinates } from "./reducers/zeroPointCoordinatesSlice";
 
 let blarg
 // Deprecated. No longer using this endpoint.
@@ -143,6 +142,7 @@ export const startGame = (dispatch, hand, boardValues, tempBoardValues) => {
   dispatch(modifyLettersLeft(letters.slice(14)));
   dispatch(updateComputerScore(0));
   dispatch(updateScore(0));
+  dispatch(resetZeroPointCoordinates())
 };
 
 const buildEmptyBoard = () => {
@@ -176,7 +176,8 @@ export const submitWord =
     lettersLeft,
     hand,
     boardValues,
-    tempBoardValues
+    tempBoardValues,
+    zeroPointCoordinates
   ) =>
   async () => {
     dispatch(removeDumpSelections());
@@ -242,7 +243,8 @@ export const submitWord =
       computerScore,
       playerScore,
       boardValues,
-      tempBoardValues
+      tempBoardValues,
+      zeroPointCoordinates
     );
 
     if (isComputersTurn) {
@@ -291,7 +293,8 @@ const checkAllWordsOnBoard = (
   computerScore,
   playerScore,
   boardValues,
-  tempBoardValues
+  tempBoardValues,
+  zeroPointCoordinates
 ) => {
   const rowsAndCols = getPlacedLettersRowsAndCols(
     virtualBoard,
@@ -312,7 +315,8 @@ const checkAllWordsOnBoard = (
       col,
       virtualBoard,
       boardValues,
-      tempBoardValues
+      tempBoardValues,
+      zeroPointCoordinates
     );
     word = wordAndScore.word;
     maxWordLength = Math.max(maxWordLength, word.length);
@@ -328,7 +332,8 @@ const checkAllWordsOnBoard = (
         col,
         virtualBoard,
         boardValues,
-        tempBoardValues
+        tempBoardValues,
+        zeroPointCoordinates
       );
       if (wordAndScore) {
         const word = wordAndScore.word;
@@ -348,7 +353,8 @@ const checkAllWordsOnBoard = (
       cols[0],
       virtualBoard,
       boardValues,
-      tempBoardValues
+      tempBoardValues,
+      zeroPointCoordinates
     );
     word = wordAndScore.word;
     maxWordLength = Math.max(maxWordLength, word.length);
@@ -364,7 +370,8 @@ const checkAllWordsOnBoard = (
         col,
         virtualBoard,
         boardValues,
-        tempBoardValues
+        tempBoardValues,
+        zeroPointCoordinates
       );
       if (wordAndScore) {
         const word = wordAndScore.word;
@@ -586,7 +593,8 @@ const getVerticalWordAtCoordinate = (
   y,
   virtualBoard,
   boardValues,
-  tempBoardValues
+  tempBoardValues,
+  zeroPointCoordinates
 ) => {
   let currX = x;
   let word = "";
@@ -607,7 +615,8 @@ const getVerticalWordAtCoordinate = (
       virtualBoard,
       undefined,
       boardValues,
-      tempBoardValues
+      tempBoardValues,
+      zeroPointCoordinates
     );
     wordScore += letterScoreObj.letterPoints;
     multiplier *= letterScoreObj.wordMultiplier;
@@ -629,7 +638,8 @@ const getVerticalWordAtCoordinate = (
       virtualBoard,
       undefined,
       boardValues,
-      tempBoardValues
+      tempBoardValues,
+      zeroPointCoordinates
     );
     wordScore += letterScoreObj.letterPoints;
     multiplier *= letterScoreObj.wordMultiplier;
@@ -644,7 +654,8 @@ const getHorizontalWordAtCoordinate = (
   y,
   virtualBoard,
   boardValues,
-  tempBoardValues
+  tempBoardValues,
+  zeroPointCoordinates
 ) => {
   let currY = y;
   let word = "";
@@ -665,7 +676,8 @@ const getHorizontalWordAtCoordinate = (
       virtualBoard,
       undefined,
       boardValues,
-      tempBoardValues
+      tempBoardValues,
+      zeroPointCoordinates
     );
     wordScore += letterScoreObj.letterPoints;
     multiplier *= letterScoreObj.wordMultiplier;
@@ -687,7 +699,8 @@ const getHorizontalWordAtCoordinate = (
       virtualBoard,
       undefined,
       boardValues,
-      tempBoardValues
+      tempBoardValues,
+      zeroPointCoordinates
     );
     wordScore += letterScoreObj.letterPoints;
     multiplier *= letterScoreObj.wordMultiplier;
@@ -703,14 +716,15 @@ const calculateScoreFromLetter = (
   virtualBoard,
   letterArg,
   boardValues,
-  tempBoardValues
+  tempBoardValues,
+  zeroPointCoordinates
 ) => {
   const letter =
     letterArg ||
     getTempLetterAtCoordinate(i, j, tempBoardValues) ||
     getLetterAtCoordinate(i, j, boardValues) ||
     getTempLetterOnVirtualBoard(i, j, virtualBoard);
-  let letterPoints = LETTER_TO_SCORE[letter];
+  let letterPoints = zeroPointCoordinates[JSON.stringify([i, j])] === true ? 0 : LETTER_TO_SCORE[letter];
   let wordMultiplier = 1;
 
   if (
@@ -755,7 +769,8 @@ export const handleComputerStep = async (
   computerHand,
   hand,
   setComputerPasses,
-  playerScore
+  playerScore,
+  zeroPointCoordinates
 ) => {
   const lettersOnBoard = getPermanentlyPlacedLetters(boardValues);
 
@@ -767,7 +782,8 @@ export const handleComputerStep = async (
       localDictionary,
       setSelectedComputerTiles,
       dispatch,
-      lettersLeft
+      lettersLeft,
+      zeroPointCoordinates
     );
     return;
   }
@@ -797,7 +813,8 @@ export const handleComputerStep = async (
         hand,
         boardValues,
         tempBoardValues,
-        playerScore
+        playerScore,
+        zeroPointCoordinates
       );
       if (result) break;
     }
@@ -828,7 +845,8 @@ const tryToPlaceComputerLetters = async (
   hand,
   boardValues,
   tempBoardValues,
-  playerScore
+  playerScore,
+  zeroPointCoordinates
 ) => {
   let result;
   let virtualBoard;
@@ -865,7 +883,8 @@ const tryToPlaceComputerLetters = async (
         lettersLeft,
         hand,
         boardValues,
-        tempBoardValues
+        tempBoardValues,
+        zeroPointCoordinates
       )();
     }
     if (result) break;
@@ -993,7 +1012,8 @@ const handleComputerStepOnEmptyBoard = async (
   localDictionary,
   setSelectedComputerTiles,
   dispatch,
-  lettersLeft
+  lettersLeft,
+  zeroPointCoordinates
 ) => {
   let lettersToPlay = MAX_LETTERS;
 
@@ -1027,7 +1047,8 @@ const handleComputerStepOnEmptyBoard = async (
             null,
             perm[j],
             boardValues,
-            tempBoardValues
+            tempBoardValues,
+            zeroPointCoordinates
           );
           wordScore += letterScoreObj.letterPoints;
           multiplier *= letterScoreObj.wordMultiplier;
@@ -1086,7 +1107,6 @@ const getIsValidWord = (word, localDictionary, dispatch) => {
     };
     buildWord("", 0);
   }
-  // console.log("resolvedWord",word, resolvedWord )
   return resolvedWord;
 };
 
