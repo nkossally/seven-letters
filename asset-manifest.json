@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/seven-letters/static/css/main.4ceb2eb7.css",
-    "main.js": "/seven-letters/static/js/main.18e76197.js",
+    "main.js": "/seven-letters/static/js/main.64648b38.js",
     "static/media/words.txt": "/seven-letters/static/media/words.9bf418a2661895000f62.txt",
     "static/media/info icon.png": "/seven-letters/static/media/info icon.82c90b46274d7dc674f1.png",
     "index.html": "/seven-letters/index.html",
     "main.4ceb2eb7.css.map": "/seven-letters/static/css/main.4ceb2eb7.css.map",
-    "main.18e76197.js.map": "/seven-letters/static/js/main.18e76197.js.map"
+    "main.64648b38.js.map": "/seven-letters/static/js/main.64648b38.js.map"
   },
   "entrypoints": [
     "static/css/main.4ceb2eb7.css",
-    "static/js/main.18e76197.js"
+    "static/js/main.64648b38.js"
   ]
 }
