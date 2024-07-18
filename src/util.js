@@ -990,7 +990,7 @@ const placeLettersMLettersBeforeAndNLettersAfter = (
     }
   }
   if (count < m) return undefined;
-  while (isOnBoard(x - dx, y - dy) && boardValues[x][y - dy]) {
+  while (isOnBoard(x - dx, y - dy) && boardValues[x - dx][y - dy]) {
     y -= dy;
     x -= dx;
     word = boardValues[x][y] + word;
@@ -1015,7 +1015,8 @@ const placeLettersMLettersBeforeAndNLettersAfter = (
   }
   if (count < n) return undefined;
   while (isOnBoard(x + dx, y + dy) && boardValues[x + dx][y + dy]) {
-    y++;
+    y += dy;
+    x += dx;
     word += boardValues[x][y];
   }
   return { word, coordinates };
