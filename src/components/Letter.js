@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { modifyHand } from "../reducers/handSlice";
 import {
   addTempLetterToBoard,

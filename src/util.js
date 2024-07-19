@@ -165,7 +165,7 @@ const handleSetInvalidWords = (text, setInvalidWords) => {
 };
 
 export const submitWord =
-  (
+ (
     virtualBoard,
     indices,
     setInvalidWords,
@@ -272,7 +272,7 @@ export const submitWord =
       }
     } else {
       if (allWordsInDict) {
-        permanentlyPlaceLetters(
+         permanentlyPlaceLetters(
           virtualBoard,
           computerHand,
           dispatch,
@@ -280,6 +280,7 @@ export const submitWord =
           hand,
           tempBoardValues
         );
+        await delay(10);
         dispatch(setIsComputersTurn(true));
       } else {
         handleSetInvalidWords(
