@@ -280,7 +280,7 @@ export const submitWord =
           hand,
           tempBoardValues
         );
-        await delay(10);
+        await delay(100);
         dispatch(setIsComputersTurn(true));
       } else {
         handleSetInvalidWords(
