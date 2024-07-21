@@ -218,13 +218,13 @@ const App = () => {
         {computerPasses && <>Computer passes</>}
         {invalidWords && <>{invalidWords}</>}
       </div>
-      <div
+      {/* <div
         className={classNames(
           "notification-text", "fade-in"
         )}
       >
         {isComputersTurn && !computerPasses && <>Computer is playing</>}
-      </div>
+      </div> */}
       <div className="board-and-computer-hand">
         <ScrabbleBoard selectedTiles={selectedComputerTiles} />
       </div>
