@@ -29,7 +29,7 @@ const ScrabbleBoard = ({ selectedTiles }) => {
                       (i !== boardSize / 2 || j !== boardSize / 2);
                     const isTempBlank = tempBoardValues[i][j] === "-";
                     return (
-                      <>
+                      <span key={`col ${j}`}>
                         {typeof boardValues[i][j] === "string" && (
                           <Letter
                             letter={boardValues[i][j]}
@@ -64,7 +64,7 @@ const ScrabbleBoard = ({ selectedTiles }) => {
                               </div>
                             </div>
                           )}
-                      </>
+                      </span>
                     );
                   })}
                 </div>
