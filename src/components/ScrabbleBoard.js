@@ -5,13 +5,13 @@ import Letter from "./Letter";
 import { getSpecialTileScoreIdx } from "../util";
 import ComputerHand from "./ComputerHand";
 
-const ScrabbleBoard2 = ({ selectedTiles }) => {
+const ScrabbleBoard = ({ selectedTiles }) => {
   const boardValues = useSelector((state) => state.boardValues);
   const tempBoardValues = useSelector((state) => state.tempBoardValues);
 
   var boardSize = BOARD_SIZE - 1;
 
-  const arr = Array(BOARD_SIZE).fill("");
+  const  boardLengthArr = Array(BOARD_SIZE).fill("");
 
   return (
     <div className="board-and-computer-hand-container">
@@ -19,10 +19,10 @@ const ScrabbleBoard2 = ({ selectedTiles }) => {
         <ComputerHand selectedTiles={selectedTiles} invisibleLeft={true} />
         <div id="js-board">
           <div className={classNames("board")}>
-            {arr.map((elem, i) => {
+            { boardLengthArr.map((elem, i) => {
               return (
                 <div className="row" key={`row${i}`}>
-                  {arr.map((elem, j) => {
+                  { boardLengthArr.map((elem, j) => {
                     const specialScore = getSpecialTileScoreIdx(i, j);
                     const addLetters =
                       specialScore &&
@@ -78,4 +78,4 @@ const ScrabbleBoard2 = ({ selectedTiles }) => {
   );
 };
 
-export default ScrabbleBoard2;
+export default ScrabbleBoard;
