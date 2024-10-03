@@ -328,10 +328,11 @@ const checkAllWordsOnBoard = (
     if (word.length > 1) {
       score += wordAndScore.wordScore;
       const isValidWord = getIsValidWord(word, localDictionary);
-      if (!isValidWord) allWordsInDict = false;
+      if (!isValidWord) return false;
     }
     // check if any of the letters in a vertical word adjoin an already placed horizontal words.
-    rows.forEach((row) => {
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
       const wordAndScore = getHorizontalWordAtCoordinate(
         row,
         col,
@@ -346,10 +347,15 @@ const checkAllWordsOnBoard = (
         if (word.length > 1) {
           score += wordAndScore.wordScore;
           const isValidWord = getIsValidWord(word, localDictionary);
-          if (!isValidWord) allWordsInDict = false;
+          if (!isValidWord) {
+            allWordsInDict = false;
+            break;
+          }
         }
       }
-    });
+    }
+    if (!allWordsInDict) return false;
+
   } else {
     // word is horizontal
     const row = rows[0];
@@ -369,7 +375,10 @@ const checkAllWordsOnBoard = (
 
       if (!isValidWord) allWordsInDict = false;
     }
-    cols.forEach((col) => {
+    if (!allWordsInDict) return false;
+
+    for (let i = 0; i < cols.length; i++) {
+      const col = cols[i];
       const wordAndScore = getVerticalWordAtCoordinate(
         row,
         col,
@@ -384,10 +393,14 @@ const checkAllWordsOnBoard = (
         if (word.length > 1) {
           const isValidWord = getIsValidWord(word, localDictionary);
           score += wordAndScore.wordScore;
-          if (!isValidWord) allWordsInDict = false;
+          if (!isValidWord){
+            allWordsInDict = false;
+            break;
+          } 
         }
       }
-    });
+    }
+    if (!allWordsInDict) return false;
   }
   // don't submit any one letter words
   if (maxWordLength < 2) return false;
@@ -401,7 +414,7 @@ const checkAllWordsOnBoard = (
     }
   }
 
-  return allWordsInDict;
+  return true;
 };
 
 const permanentlyPlaceLetters = (
