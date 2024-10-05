@@ -16,13 +16,8 @@ import { modifyComputerHand } from "./reducers/computerHandSlice";
 import { modifyLettersLeft } from "./reducers/lettersLeftSlice";
 import { updateScore } from "./reducers/scoreSlice";
 import { updateComputerScore } from "./reducers/computerScoreSlice";
-import {
-  addLetterToBoard,
-  removeLetterFromBoard,
-} from "./reducers/boardValuesSlice";
 import { removeTempLetterFromBoard } from "./reducers/tempBoardValuesSlice";
 import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
-import { setResolvedWord } from "./reducers/resolvedWordSlice";
 import {
   addZeroCoordinates,
   resetZeroPointCoordinates,
@@ -261,7 +256,8 @@ export const submitWord =
           dispatch,
           lettersLeft,
           hand,
-          tempBoardValues
+          tempBoardValues,
+          boardValues
         );
         dispatch(setIsComputersTurn(false));
         setSelectedComputerTiles([]);
@@ -278,7 +274,8 @@ export const submitWord =
           dispatch,
           lettersLeft,
           hand,
-          tempBoardValues
+          tempBoardValues,
+          boardValues
         );
         await delay(100);
         dispatch(setIsComputersTurn(true));
@@ -423,7 +420,8 @@ const permanentlyPlaceLetters = (
   dispatch,
   lettersLeft,
   hand,
-  tempBoardValues
+  tempBoardValues,
+  boardValues
 ) => {
   let wordSoFar = "";
   let letterCount = 0;
@@ -439,7 +437,7 @@ const permanentlyPlaceLetters = (
       }
       if (letter) {
         wordSoFar += letter;
-        dispatch(addLetterToBoard({ row: i, col: j, letter }));
+        boardValues.set(i, j, letter);
         letterCount++;
         if (virtualBoard) {
           const k = computerHandCopy.indexOf(letter);
@@ -493,7 +491,7 @@ const removeAllLetters = (dispatch, boardValues) => {
   for (let i = 0; i < BOARD_SIZE; i++) {
     for (let j = 0; j < BOARD_SIZE; j++) {
       if (getLetterAtCoordinate(i, j, boardValues)) {
-        dispatch(removeLetterFromBoard({ row: i, col: j }));
+        boardValues.set(i, j, undefined);
       }
     }
   }
@@ -558,7 +556,7 @@ const getIsContinuousWord = (
 
 const getLetterAtCoordinate = (x, y, boardValues) => {
   if (!boardValues) return;
-  return isOnBoard(x, y) ? boardValues[x][y] : undefined;
+  return isOnBoard(x, y) ? boardValues.get(x, y) : undefined;
 };
 
 const getTempLetterAtCoordinate = (x, y, tempBoardValues) => {
@@ -984,7 +982,7 @@ const placeLettersMLettersBeforeAndNLettersAfter = (
   dy,
   boardValues
 ) => {
-  let word = boardValues[i][j];
+  let word = boardValues.get(i, j);
   let count = 0;
   let x = i;
   let y = j;
@@ -994,20 +992,20 @@ const placeLettersMLettersBeforeAndNLettersAfter = (
     if (!isOnBoard(x - dx, y - dy)) break;
     y -= dy;
     x -= dx;
-    if (!boardValues[x][y]) {
+    if (!boardValues.get(x, y)) {
       coordinates.unshift([x, y]);
       word = arr[arrIdx] + word;
       arrIdx--;
       count++;
     } else {
-      word = boardValues[x][y] + word;
+      word = boardValues.get(x, y) + word;
     }
   }
   if (count < m) return undefined;
-  while (isOnBoard(x - dx, y - dy) && boardValues[x - dx][y - dy]) {
+  while (isOnBoard(x - dx, y - dy) && boardValues.get(x - dx, y - dy)) {
     y -= dy;
     x -= dx;
-    word = boardValues[x][y] + word;
+    word = boardValues.get(x, y) + word;
   }
 
   x = i;
@@ -1018,20 +1016,20 @@ const placeLettersMLettersBeforeAndNLettersAfter = (
     if (!isOnBoard(x + dx, y + dy)) break;
     y += dy;
     x += dx;
-    if (!boardValues[x][y]) {
+    if (!boardValues.get(x, y)) {
       coordinates.push([x, y]);
       word += arr[arrIdx];
       arrIdx++;
       count++;
     } else {
-      word += boardValues[x][y];
+      word += boardValues.get(x, y);
     }
   }
   if (count < n) return undefined;
-  while (isOnBoard(x + dx, y + dy) && boardValues[x + dx][y + dy]) {
+  while (isOnBoard(x + dx, y + dy) && boardValues.get(x + dx, y + dy)) {
     y += dy;
     x += dx;
-    word += boardValues[x][y];
+    word += boardValues.get(x, y);
   }
   return { word, coordinates };
 };
@@ -1088,14 +1086,7 @@ const handleComputerStepOnEmptyBoard = async (
           if (perm[j] === "-") {
             dispatch(addZeroCoordinates(JSON.stringify([firstRow + j, 7])));
           }
-
-          dispatch(
-            addLetterToBoard({
-              row: firstRow + j,
-              col: 7,
-              letter: resolvedLetter,
-            })
-          );
+          boardValues.set(firstRow + j, 7, resolvedLetter);
         }
         wordScore *= multiplier;
         const maybeFifty = perm.length === 7 ? 50 : 0;

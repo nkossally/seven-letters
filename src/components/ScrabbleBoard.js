@@ -1,12 +1,12 @@
 import classNames from "classnames";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { BOARD_SIZE } from "../consts";
 import Letter from "./Letter";
 import { getSpecialTileScoreIdx } from "../util";
 import ComputerHand from "./ComputerHand";
 
-const ScrabbleBoard = ({ selectedTiles }) => {
-  const boardValues = useSelector((state) => state.boardValues);
+const ScrabbleBoard = ({ selectedTiles, boardValues }) => {
   const tempBoardValues = useSelector((state) => state.tempBoardValues);
 
   var boardSize = BOARD_SIZE - 1;
@@ -30,9 +30,9 @@ const ScrabbleBoard = ({ selectedTiles }) => {
                     const isTempBlank = tempBoardValues[i][j] === "-";
                     return (
                       <span key={`col ${j}`}>
-                        {typeof boardValues[i][j] === "string" && (
+                        {typeof boardValues.get(i, j) === "string" && (
                           <Letter
-                            letter={boardValues[i][j]}
+                            letter={boardValues.get(i, j)}
                             boardRow={i}
                             boardCol={j}
                             permanentlyOnBoard={true}
@@ -49,7 +49,7 @@ const ScrabbleBoard = ({ selectedTiles }) => {
                           />
                         )}
                         {typeof tempBoardValues[i][j] !== "string" &&
-                          typeof boardValues[i][j] !== "string" && (
+                          typeof boardValues.get(i, j) !== "string" && (
                             <div
                               className={classNames(
                                 "tile",
