@@ -1,5 +1,4 @@
 import { useSelector, useDispatch } from "react-redux";
-import { useState } from "react";
 import { modifyHand } from "../reducers/handSlice";
 import {
   addTempLetterToBoard,
@@ -13,7 +12,6 @@ import { LETTER_TO_SCORE } from "../consts";
 
 import Draggable from "react-draggable";
 import $ from "jquery";
-import _ from "lodash";
 import classNames from "classnames";
 
 const Letter = ({
@@ -27,8 +25,6 @@ const Letter = ({
   temporary,
   selected,
 }) => {
-  const [clickCount, setClickCount] = useState(0);
-
   const hand = useSelector((state) => state.hand);
   const selectedForDumpingHandIndices = useSelector(
     (state) => state.selectedForDumpingHandIndices

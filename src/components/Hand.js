@@ -1,6 +1,5 @@
 import { useSelector } from "react-redux";
 import Letter from "./Letter";
-import _ from "lodash";
 
 const Hand = () => {
   const hand = useSelector((state) => state.hand);

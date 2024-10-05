@@ -1,5 +1,4 @@
 import classNames from "classnames";
-import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { BOARD_SIZE } from "../consts";
 import Letter from "./Letter";
@@ -27,7 +26,6 @@ const ScrabbleBoard = ({ selectedTiles, boardValues }) => {
                     const addLetters =
                       specialScore &&
                       (i !== boardSize / 2 || j !== boardSize / 2);
-                    const isTempBlank = tempBoardValues[i][j] === "-";
                     return (
                       <span key={`col ${j}`}>
                         {typeof boardValues.get(i, j) === "string" && (
