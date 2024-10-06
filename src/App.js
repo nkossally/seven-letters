@@ -72,7 +72,7 @@ const App = () => {
     ) {
       setIsGameOver(true);
     }
-  }, [lettersLeft]);
+  }, [lettersLeft, computerHand, hand]);
 
   useEffect(() => {
     const getTrieOfDictionaryWords = async () => {
