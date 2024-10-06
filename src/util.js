@@ -47,6 +47,21 @@ export class Node {
   }
 }
 
+const dictionaryTrieHasWord = (dictionaryTrie, word) => {
+  let i = 0;
+  let curr = dictionaryTrie;
+  while (i < word.length) {
+    const letter = word[i];
+    if (curr.children[letter]) {
+      curr = curr.children[letter];
+      i++;
+    } else {
+      break;
+    }
+  }
+  return i === word.length && curr.terminal;
+};
+
 const shuffle = (array) => {
   let currentIndex = array.length,
     randomIndex;
@@ -1127,7 +1142,7 @@ const handleComputerStepOnEmptyBoard = async (
 const getIsValidWord = (word, localDictionary, dispatch) => {
   blankTileLetters = []
   let localBlankTileLetters = []
-  if (localDictionary.has(word)) return word;
+  if (dictionaryTrieHasWord(localDictionary, word)) return word;
 
   let resolvedWord = false;
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -1136,7 +1151,7 @@ const getIsValidWord = (word, localDictionary, dispatch) => {
     const buildWord = (prefix, idx, arr) => {
       if (resolvedWord) return;
       if (idx === word.length) {
-        if (localDictionary.has(prefix)) {
+        if (dictionaryTrieHasWord(localDictionary, prefix)) {
           resolvedWord = prefix;
           localBlankTileLetters = arr
         }

@@ -95,7 +95,7 @@ const App = () => {
         curr.terminal = true;
       })
 
-      setLocalDictionary(new Set(wordArray));
+      setLocalDictionary(dictionaryTrie);
     };
     getTrieOfDictionaryWords();
   }, []);
