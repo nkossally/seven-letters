@@ -800,83 +800,8 @@ const calculateScoreFromLetter = (
   }
   return { letterPoints, wordMultiplier };
 };
-
+  
 export const handleComputerStep = async (
-  setInvalidWords,
-  dispatch,
-  isComputersTurn,
-  setSelectedComputerTiles,
-  setIsComputersTurn,
-  localDictionary,
-  computerScore,
-  lettersLeft,
-  boardValues,
-  tempBoardValues,
-  computerHand,
-  hand,
-  setComputerPasses,
-  playerScore,
-  zeroPointCoordinates
-) => {
-  const lettersOnBoard = getPermanentlyPlacedLetters(boardValues);
-
-  if (lettersOnBoard.length === 0) {
-    handleComputerStepOnEmptyBoard(
-      boardValues,
-      tempBoardValues,
-      computerHand,
-      localDictionary,
-      setSelectedComputerTiles,
-      dispatch,
-      lettersLeft,
-      zeroPointCoordinates
-    );
-    return;
-  }
-  let result;
-  let n = computerHand.length;
-
-  while (n > 0) {
-    const permsWithIndices = getAllPermutationsOfSizeN(computerHand, n);
-
-    for (let i = 0; i < permsWithIndices.length; i++) {
-      const permWithIndices = permsWithIndices[i];
-      const perm = permWithIndices.map((elem) => elem.letter);
-
-      const indices = permWithIndices.map((elem) => elem.idx);
-      result = await tryToPlaceComputerLetters(
-        perm,
-        indices,
-        setInvalidWords,
-        dispatch,
-        isComputersTurn,
-        setSelectedComputerTiles,
-        setIsComputersTurn,
-        localDictionary,
-        computerScore,
-        computerHand,
-        lettersLeft,
-        hand,
-        boardValues,
-        tempBoardValues,
-        playerScore,
-        zeroPointCoordinates
-      );
-      if (result) break;
-    }
-    if (result) break;
-    n--;
-  }
-  if (!result) {
-    setComputerPasses(true);
-    setTimeout(() => {
-      setComputerPasses(false);
-    }, ANIMATION_DURATION);
-  }
-  dispatch(setIsComputersTurn(false));
-};
-
-export const handleComputerStepV2 = async (
   setInvalidWords,
   dispatch,
   isComputersTurn,
