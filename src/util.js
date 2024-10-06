@@ -837,7 +837,7 @@ export const handleComputerStep = async (
     return;
   }
 
-  const permsWithIndices = [];
+  const permsWithData = [];
   const allIndices = [];
   for (let i = 0; i < computerHand.length; i++) {
     allIndices.push(i);
@@ -848,7 +848,7 @@ export const handleComputerStep = async (
       let higherRow = i - 1;
       if (!(isOnBoard(i, leftCol) && boardValues[i][leftCol])) {
         lookForValidLettersPermutation(
-          permsWithIndices,
+          permsWithData,
           boardValues,
           computerHand,
           localDictionary,
@@ -858,12 +858,14 @@ export const handleComputerStep = async (
           false,
           i,
           j,
-          [0, 1]
+          [0, 1],
+          i /* startX*/,
+          j /* startY */
         );
       }
       if (!(isOnBoard(higherRow, j) && boardValues[higherRow][j])) {
         lookForValidLettersPermutation(
-          permsWithIndices,
+          permsWithData,
           boardValues,
           computerHand,
           localDictionary,
@@ -873,153 +875,41 @@ export const handleComputerStep = async (
           false,
           i,
           j,
-          [1, 0]
+          [1, 0],
+          i /* startX*/,
+          j /* startY */
         );
       }
     }
   }
 
   let result;
-  permsWithIndices.sort((a, b) => b.length - a.length);
+  permsWithData.sort((a, b) => b[0].length - a[0].length);
 
-  for (let i = 0; i < permsWithIndices.length; i++) {
-    const permWithIndices = permsWithIndices[i];
+  for (let i = 0; i < permsWithData.length; i++) {
+    const elem = permsWithData[i];
+    const permWithIndices = elem[0];
+    const startX = elem[1];
+    const startY = elem[2];
+    const dir = elem[3];
     const perm = permWithIndices.map((elem) => elem.letter);
-
     const indices = permWithIndices.map((elem) => elem.idx);
-    result = await tryToPlaceComputerLetters(
-      perm,
-      indices,
-      setInvalidWords,
-      dispatch,
-      isComputersTurn,
-      setSelectedComputerTiles,
-      setIsComputersTurn,
-      localDictionary,
-      computerScore,
-      computerHand,
-      lettersLeft,
-      hand,
-      boardValues,
-      tempBoardValues,
-      playerScore,
-      zeroPointCoordinates
-    );
-    if (result) break;
-  }
 
-  if (!result) {
-    setComputerPasses(true);
-    setTimeout(() => {
-      setComputerPasses(false);
-    }, ANIMATION_DURATION);
-  }
-  dispatch(setIsComputersTurn(false));
-};
+    let virtualBoard;
 
-const lookForValidLettersPermutation = (
-  permsWithIndices,
-  boardValues,
-  computerHand,
-  node,
-  wordSoFar,
-  permWithIndices,
-  indicesLeft,
-  containsPlacedLetter,
-  x,
-  y,
-  dir
-) => {
-  if (
-    containsPlacedLetter &&
-    wordSoFar.length > 1 &&
-    permWithIndices.length > 0 &&
-    node.terminal
-  ) {
-    permsWithIndices.push(permWithIndices);
-  }
-  if (!isOnBoard(x, y)) return;
-  if (boardValues[x][y]) {
-    const letter = boardValues[x][y];
-    if (node.children[letter]) {
-      lookForValidLettersPermutation(
-        permsWithIndices,
-        boardValues,
-        computerHand,
-        node.children[letter],
-        wordSoFar + letter,
-        [...permWithIndices],
-        {...indicesLeft},
-        true,
-        x + dir[0],
-        y + dir[1],
-        dir
-      );
-    }
-  } else {
-    for (let i = 0; i < indicesLeft.length; i++) {
-      const index = indicesLeft[i];
-      const letter = computerHand[index];
-      if (node.children[letter]) {
-        const newIndicesLeft = [...indicesLeft];
-        newIndicesLeft.splice(index, 1);
-        const newPermWithIndices = [...permWithIndices];
-        newPermWithIndices.push({ letter, index });
-        lookForValidLettersPermutation(
-          permsWithIndices,
-          boardValues,
-          computerHand,
-          node.children[letter],
-          wordSoFar + letter,
-          newPermWithIndices,
-          newIndicesLeft,
-          containsPlacedLetter,
-          x + dir[0],
-          y + dir[1],
-          dir
-        );
-      }
-    }
-  }
-};
-
-const tryToPlaceComputerLetters = async (
-  arr,
-  indices,
-  setInvalidWords,
-  dispatch,
-  isComputersTurn,
-  setSelectedComputerTiles,
-  setIsComputersTurn,
-  localDictionary,
-  computerScore,
-  computerHand,
-  lettersLeft,
-  hand,
-  boardValues,
-  tempBoardValues,
-  playerScore,
-  zeroPointCoordinates
-) => {
-  let result;
-  let virtualBoard;
-  const lettersOnBoard = getPermanentlyPlacedLetters(boardValues);
-  for (let i = 0; i < lettersOnBoard.length; i++) {
-    const boardLetterObj = lettersOnBoard[i];
-    const row = boardLetterObj.row;
-    const col = boardLetterObj.col;
     const wordAndCoordinates = placeLettersAroundSpot(
-      row,
-      col,
-      arr,
+      startX,
+      startY,
+      perm,
       localDictionary,
-      boardValues
+      boardValues,
+      dir
     );
     if (wordAndCoordinates) {
       const coordinates = wordAndCoordinates.coordinates;
       virtualBoard = buildEmptyBoard();
       coordinates.forEach((coords, i) => {
-        virtualBoard[coords[0]][coords[1]] = arr[i];
+        virtualBoard[coords[0]][coords[1]] = perm[i];
       });
       result = await submitWord(
         virtualBoard,
@@ -1039,10 +929,89 @@ const tryToPlaceComputerLetters = async (
         tempBoardValues,
         zeroPointCoordinates
       )();
+      if (result) break;
     }
-    if (result) break;
   }
-  return result;
+
+  if (!result) {
+    setComputerPasses(true);
+    setTimeout(() => {
+      setComputerPasses(false);
+    }, ANIMATION_DURATION);
+  }
+  dispatch(setIsComputersTurn(false));
+};
+
+const lookForValidLettersPermutation = (
+  permsWithData,
+  boardValues,
+  computerHand,
+  node,
+  wordSoFar,
+  permWithIndices,
+  indicesLeft,
+  containsPlacedLetter,
+  x,
+  y,
+  dir,
+  startX,
+  startY
+) => {
+  if (
+    containsPlacedLetter &&
+    wordSoFar.length > 1 &&
+    permWithIndices.length > 0 &&
+    node.terminal
+  ) {
+    permsWithData.push([permWithIndices, startX, startY, dir]);
+  }
+  if (!isOnBoard(x, y)) return;
+  if (boardValues[x][y]) {
+    const letter = boardValues[x][y];
+    if (node.children[letter]) {
+      lookForValidLettersPermutation(
+        permsWithData,
+        boardValues,
+        computerHand,
+        node.children[letter],
+        wordSoFar + letter,
+        [...permWithIndices],
+        {...indicesLeft},
+        true,
+        x + dir[0],
+        y + dir[1],
+        dir,
+        startX,
+        startY
+      );
+    }
+  } else {
+    for (let i = 0; i < indicesLeft.length; i++) {
+      const index = indicesLeft[i];
+      const letter = computerHand[index];
+      if (node.children[letter]) {
+        const newIndicesLeft = [...indicesLeft];
+        newIndicesLeft.splice(index, 1);
+        const newPermWithIndices = [...permWithIndices];
+        newPermWithIndices.push({ letter, index });
+        lookForValidLettersPermutation(
+          permsWithData,
+          boardValues,
+          computerHand,
+          node.children[letter],
+          wordSoFar + letter,
+          newPermWithIndices,
+          newIndicesLeft,
+          containsPlacedLetter,
+          x + dir[0],
+          y + dir[1],
+          dir,
+          startX,
+          startY
+        );
+      }
+    }
+  }
 };
 
 const getPermanentlyPlacedLetters = (boardValues) => {
@@ -1065,103 +1034,52 @@ const placeLettersAroundSpot = (
   arr,
   localDictionary,
   boardValues,
-  dispatch
+  dir
 ) => {
   let result;
-  for (let m = 0; m <= arr.length; m++) {
-    // place horizontally
-    const wordAndCoordinates = placeLettersMLettersBeforeAndNLettersAfter(
-      i,
-      j,
-      m,
-      arr.length - m,
-      arr,
-      0,
-      1,
-      boardValues
-    );
-    // place vertically
-    if (!wordAndCoordinates)
-      placeLettersMLettersBeforeAndNLettersAfter(
-        i,
-        j,
-        m,
-        arr.length - m,
-        arr,
-        1,
-        0,
-        boardValues
-      );
+  // place horizontally
+  const wordAndCoordinates = placeLetterArrAroundCoordinates(
+    i,
+    j,
+    arr,
+    dir[0],
+    dir[1],
+    boardValues
+  );
 
-    if (wordAndCoordinates) {
-      const word = wordAndCoordinates.word;
-      if (getIsValidWord(word, localDictionary)) {
-        result = wordAndCoordinates;
-        break;
-      }
+  if (wordAndCoordinates) {
+    const word = wordAndCoordinates.word;
+    if (getIsValidWord(word, localDictionary)) {
+      result = wordAndCoordinates;
     }
   }
   return result;
 };
 
-const placeLettersMLettersBeforeAndNLettersAfter = (
+const placeLetterArrAroundCoordinates = (
   i,
   j,
-  m,
-  n,
   arr,
   dx,
   dy,
   boardValues
 ) => {
-  let word = boardValues[i][j];
-  let count = 0;
+  let word = "";
+  let idx = 0;
   let x = i;
   let y = j;
-  let arrIdx = m - 1;
   let coordinates = [];
-  while (count < m) {
-    if (!isOnBoard(x - dx, y - dy)) break;
-    y -= dy;
-    x -= dx;
-    if (!boardValues[x][y]) {
-      coordinates.unshift([x, y]);
-      word = arr[arrIdx] + word;
-      arrIdx--;
-      count++;
-    } else {
-      word = boardValues[x][y] + word;
-    }
-  }
-  if (count < m) return undefined;
-  while (isOnBoard(x - dx, y - dy) && boardValues[x - dx][y - dy]) {
-    y -= dy;
-    x -= dx;
-    word = boardValues[x][y] + word;
-  }
 
-  x = i;
-  y = j;
-  arrIdx = m;
-  count = 0;
-  while (count < n) {
-    if (!isOnBoard(x + dx, y + dy)) break;
-    y += dy;
-    x += dx;
-    if (!boardValues[x][y]) {
-      coordinates.push([x, y]);
-      word += arr[arrIdx];
-      arrIdx++;
-      count++;
+  while (idx < arr.length ) {
+    if(!boardValues[x[y]]){
+      word += arr[idx];
+      idx++;
+      coordinates.push([x, y])
     } else {
-      word += boardValues[x][y];
+      word += boardValues[x][y]
     }
-  }
-  if (count < n) return undefined;
-  while (isOnBoard(x + dx, y + dy) && boardValues[x + dx][y + dy]) {
-    y += dy;
     x += dx;
-    word += boardValues[x][y];
+    y += dy;
   }
   return { word, coordinates };
 };
