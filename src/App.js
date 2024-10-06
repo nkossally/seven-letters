@@ -11,7 +11,7 @@ import {
   pass,
   startGame,
   submitWord,
-  handleComputerStep,
+  handleComputerStepV2,
   handleNewGameClick,
   handleDump,
   Node
@@ -118,7 +118,7 @@ const App = () => {
 
   useEffect(() => {
     if (isComputersTurn) {
-      handleComputerStep(
+      handleComputerStepV2(
         setInvalidWords,
         dispatch,
         isComputersTurn,

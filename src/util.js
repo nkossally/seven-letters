@@ -876,6 +876,185 @@ export const handleComputerStep = async (
   dispatch(setIsComputersTurn(false));
 };
 
+export const handleComputerStepV2 = async (
+  setInvalidWords,
+  dispatch,
+  isComputersTurn,
+  setSelectedComputerTiles,
+  setIsComputersTurn,
+  localDictionary,
+  computerScore,
+  lettersLeft,
+  boardValues,
+  tempBoardValues,
+  computerHand,
+  hand,
+  setComputerPasses,
+  playerScore,
+  zeroPointCoordinates
+) => {
+  const lettersOnBoard = getPermanentlyPlacedLetters(boardValues);
+
+  if (lettersOnBoard.length === 0) {
+    handleComputerStepOnEmptyBoard(
+      boardValues,
+      tempBoardValues,
+      computerHand,
+      localDictionary,
+      setSelectedComputerTiles,
+      dispatch,
+      lettersLeft,
+      zeroPointCoordinates
+    );
+    return;
+  }
+
+  const permsWithIndices = [];
+  const allIndices = [];
+  for (let i = 0; i < computerHand.length; i++) {
+    allIndices.push(i);
+  }
+  for (let i = 0; i < BOARD_SIZE; i++) {
+    for (let j = 0; j < BOARD_SIZE; j++) {
+      let leftCol = j - 1;
+      let higherRow = i - 1;
+      if (!(isOnBoard(i, leftCol) && boardValues[i][leftCol])) {
+        lookForValidLettersPermutation(
+          permsWithIndices,
+          boardValues,
+          computerHand,
+          localDictionary,
+          "",
+          [],
+          allIndices,
+          false,
+          i,
+          j,
+          [0, 1]
+        );
+      }
+      if (!(isOnBoard(higherRow, j) && boardValues[higherRow][j])) {
+        lookForValidLettersPermutation(
+          permsWithIndices,
+          boardValues,
+          computerHand,
+          localDictionary,
+          "",
+          [],
+          allIndices,
+          false,
+          i,
+          j,
+          [1, 0]
+        );
+      }
+    }
+  }
+
+  let result;
+  permsWithIndices.sort((a, b) => b.length - a.length);
+
+  for (let i = 0; i < permsWithIndices.length; i++) {
+    const permWithIndices = permsWithIndices[i];
+    const perm = permWithIndices.map((elem) => elem.letter);
+
+    const indices = permWithIndices.map((elem) => elem.idx);
+    result = await tryToPlaceComputerLetters(
+      perm,
+      indices,
+      setInvalidWords,
+      dispatch,
+      isComputersTurn,
+      setSelectedComputerTiles,
+      setIsComputersTurn,
+      localDictionary,
+      computerScore,
+      computerHand,
+      lettersLeft,
+      hand,
+      boardValues,
+      tempBoardValues,
+      playerScore,
+      zeroPointCoordinates
+    );
+    if (result) break;
+  }
+
+  if (!result) {
+    setComputerPasses(true);
+    setTimeout(() => {
+      setComputerPasses(false);
+    }, ANIMATION_DURATION);
+  }
+  dispatch(setIsComputersTurn(false));
+};
+
+const lookForValidLettersPermutation = (
+  permsWithIndices,
+  boardValues,
+  computerHand,
+  node,
+  wordSoFar,
+  permWithIndices,
+  indicesLeft,
+  containsPlacedLetter,
+  x,
+  y,
+  dir
+) => {
+  if (
+    containsPlacedLetter &&
+    wordSoFar.length > 1 &&
+    permWithIndices.length > 0 &&
+    node.terminal
+  ) {
+    permsWithIndices.push(permWithIndices);
+  }
+  if (!isOnBoard(x, y)) return;
+  if (boardValues[x][y]) {
+    const letter = boardValues[x][y];
+    if (node.children[letter]) {
+      lookForValidLettersPermutation(
+        permsWithIndices,
+        boardValues,
+        computerHand,
+        node.children[letter],
+        wordSoFar + letter,
+        permWithIndices,
+        indicesLeft,
+        true,
+        x + dir[0],
+        y + dir[1],
+        dir
+      );
+    }
+  } else {
+    for (let i = 0; i < indicesLeft.length; i++) {
+      const index = indicesLeft[i];
+      const letter = computerHand[index];
+      if (node.children[letter]) {
+        const newIndicesLeft = [...indicesLeft];
+        newIndicesLeft.splice(index, 1);
+        const newPermWithIndices = [...permWithIndices];
+        newPermWithIndices.push({ letter, index });
+        lookForValidLettersPermutation(
+          permsWithIndices,
+          boardValues,
+          computerHand,
+          node.children[letter],
+          wordSoFar + letter,
+          newPermWithIndices,
+          newIndicesLeft,
+          containsPlacedLetter,
+          x + dir[0],
+          y + dir[1],
+          dir
+        );
+      }
+    }
+  }
+};
+
 const tryToPlaceComputerLetters = async (
   arr,
   indices,
