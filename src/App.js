@@ -14,6 +14,7 @@ import {
   handleComputerStep,
   handleNewGameClick,
   handleDump,
+  Node
 } from "./util";
 
 import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
@@ -74,14 +75,29 @@ const App = () => {
   }, [lettersLeft]);
 
   useEffect(() => {
-    const getSetOfDictionaryWords = async () => {
+    const getTrieOfDictionaryWords = async () => {
       const result = await fetch(AllWords);
       const text = await result.text();
-      const dict = text.split("\r\n").map((elem) => elem.toUpperCase());
+      const wordArray = text.split("\r\n").map((elem) => elem.toUpperCase());
 
-      setLocalDictionary(new Set(dict));
+      const dictionaryTrie = new Node();
+      wordArray.forEach(word =>{
+        let curr = dictionaryTrie;
+        let i = 0;
+        while(i < word.length){
+          const letter = word[i]
+          if(!curr.children[letter]){
+            curr.children[letter] = new Node(letter);
+          }
+          curr =  curr.children[letter];
+          i++;
+        }
+        curr.terminal = true;
+      })
+
+      setLocalDictionary(new Set(wordArray));
     };
-    getSetOfDictionaryWords();
+    getTrieOfDictionaryWords();
   }, []);
 
   useEffect(() => {}, [

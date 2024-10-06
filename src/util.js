@@ -39,6 +39,14 @@ export const lookUpWord = async (word) => {
   } catch (e) {}
 };
 
+export class Node {
+  constructor(letter) {
+    this.letter = letter;
+    this.children = {};
+    this.terminal = false;
+  }
+}
+
 const shuffle = (array) => {
   let currentIndex = array.length,
     randomIndex;
