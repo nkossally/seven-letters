@@ -1,6 +1,7 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import boardValuesReducer from "./boardValuesSlice";
 import tempBoardValuesReducer from "./tempBoardValuesSlice";
 import handReducer from "./handSlice";
 import computerHandReducer from "./computerHandSlice";
@@ -30,6 +31,7 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
+  boardValues: boardValuesReducer,
   tempBoardValues: tempBoardValuesReducer,
   hand: handReducer,
   computerHand: computerHandReducer,

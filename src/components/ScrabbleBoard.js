@@ -5,7 +5,8 @@ import Letter from "./Letter";
 import { getSpecialTileScoreIdx } from "../util";
 import ComputerHand from "./ComputerHand";
 
-const ScrabbleBoard = ({ selectedTiles, boardValues }) => {
+const ScrabbleBoard = ({ selectedTiles }) => {
+  const boardValues = useSelector((state) => state.boardValues);
   const tempBoardValues = useSelector((state) => state.tempBoardValues);
 
   var boardSize = BOARD_SIZE - 1;
@@ -28,9 +29,9 @@ const ScrabbleBoard = ({ selectedTiles, boardValues }) => {
                       (i !== boardSize / 2 || j !== boardSize / 2);
                     return (
                       <span key={`col ${j}`}>
-                        {typeof boardValues.get(i, j) === "string" && (
+                        {typeof boardValues[i][j] === "string" && (
                           <Letter
-                            letter={boardValues.get(i, j)}
+                            letter={boardValues[i][j]}
                             boardRow={i}
                             boardCol={j}
                             permanentlyOnBoard={true}
@@ -47,7 +48,7 @@ const ScrabbleBoard = ({ selectedTiles, boardValues }) => {
                           />
                         )}
                         {typeof tempBoardValues[i][j] !== "string" &&
-                          typeof boardValues.get(i, j) !== "string" && (
+                          typeof boardValues[i][j] !== "string" && (
                             <div
                               className={classNames(
                                 "tile",

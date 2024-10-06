@@ -6,7 +6,6 @@ import InstructionsModal from "./components/InstructionsModal";
 import GameOverModal from "./components/GameOverModal";
 import Hand from "./components/Hand";
 import ScoreCard from "./components/ScoreCard";
-import { Board } from "./components/Board";
 import AllWords from "./words.txt";
 import {
   pass,
@@ -49,7 +48,7 @@ const App = () => {
   const [gameStarted, setGameStarted] = useState(false);
   const [invalidWords, setInvalidWords] = useState(false);
   const [computerPasses, setComputerPasses] = useState(false);
-  const [boardValues, setBoardValues] = useState(new Board())
+  const boardValues = useSelector((state) => state.boardValues);
   const tempBoardValues = useSelector((state) => state.tempBoardValues);
   const lettersLeft = useSelector((state) => state.lettersLeft);
   const hand = useSelector((state) => state.hand);
@@ -227,7 +226,7 @@ const App = () => {
         {isComputersTurn && !computerPasses && <>Computer is playing</>}
       </div> */}
       <div className="board-and-computer-hand">
-        <ScrabbleBoard boardValues={boardValues} selectedTiles={selectedComputerTiles} />
+        <ScrabbleBoard selectedTiles={selectedComputerTiles} />
       </div>
     </div>
   );

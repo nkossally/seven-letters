@@ -8,17 +8,17 @@ export class Board {
     this.usedCols = new Set();
   }
 
-  set(x, y, val) {
+  set = function (x, y, val) {
     this.usedRows.add(x);
     this.usedCols.add(y);
     this.grid[x][y] = val;
-  }
+  };
 
-  get(x, y) {
+  get = function () {
     return this.grid[x][y];
-  }
+  };
 
-  remove(x, y) {
+  remove = function (x, y) {
     this.grid[x][y] = undefined;
     let columnUsed = false;
     let rowUsed = false;
@@ -29,5 +29,5 @@ export class Board {
     }
     if (!rowUsed) this.usedRows.delete(x);
     if (!columnUsed) this.usedCols.delete(y);
-  }
+  };
 }
