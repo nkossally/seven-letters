@@ -82,27 +82,30 @@ const shuffle = (array) => {
   return array;
 };
 
-const getAllPermutationsOfSizeN = (arr, n) => {
-  const result = [];
-  const elemsAndIndices = arr.map((letter, idx) => {
+const getLongestLetterAndIndexArr = (computerHand, localDictionary) => {
+  let longestLetterAndIndexArr = [];
+  const elemsAndIndices = computerHand.map((letter, idx) => {
     return { letter, idx };
   });
-  const helper = (selections, leftovers) => {
-    if (selections.length === n) {
-      result.push(selections);
-      return;
+  const helper = (selections, leftovers, node) => {
+    if (node.terminal && selections.length > longestLetterAndIndexArr.length) {
+      longestLetterAndIndexArr = selections;
     }
 
     for (let i = 0; i < leftovers.length; i++) {
-      helper(
-        [...selections, leftovers[i]],
-        leftovers.slice(0, i).concat(leftovers.slice(i + 1))
-      );
+      const letter = leftovers[i].letter;
+      if(node.children[letter]){
+        helper(
+          [...selections, leftovers[i]],
+          leftovers.slice(0, i).concat(leftovers.slice(i + 1)),
+          node.children[letter]
+        );
+      }
     }
   };
 
-  helper([], elemsAndIndices);
-  return result;
+  helper([], elemsAndIndices, localDictionary);
+  return longestLetterAndIndexArr;
 };
 
 const tileScoreIdx = {
@@ -851,7 +854,7 @@ export const handleComputerStep = async (
           localDictionary,
           "",
           [],
-          allIndices,
+          [...allIndices],
           false,
           i,
           j,
@@ -866,7 +869,7 @@ export const handleComputerStep = async (
           localDictionary,
           "",
           [],
-          allIndices,
+          [...allIndices],
           false,
           i,
           j,
@@ -945,8 +948,8 @@ const lookForValidLettersPermutation = (
         computerHand,
         node.children[letter],
         wordSoFar + letter,
-        permWithIndices,
-        indicesLeft,
+        [...permWithIndices],
+        {...indicesLeft},
         true,
         x + dir[0],
         y + dir[1],
@@ -1173,73 +1176,56 @@ const handleComputerStepOnEmptyBoard = async (
   lettersLeft,
   zeroPointCoordinates
 ) => {
-  let lettersToPlay = MAX_LETTERS;
 
-  let result;
   const computerHandCopy = Array.from(computerHand);
-  while (lettersToPlay > 2) {
-    const permsWithIndices = getAllPermutationsOfSizeN(
-      computerHand,
-      lettersToPlay
+  const permWithIndices = getLongestLetterAndIndexArr(
+    computerHand,
+    localDictionary
+  );
+  const perm = permWithIndices.map((elem) => elem.letter);
+  const indices = permWithIndices.map((elem) => elem.idx);
+  const word = perm.join("");
+
+  let wordScore = 0;
+  let multiplier = 1;
+  setSelectedComputerTiles(indices);
+  await delay(1000);
+  setSelectedComputerTiles([]);
+  for (let j = 0; j < perm.length; j++) {
+    const letter = word[j];
+    const idx = computerHandCopy.indexOf(letter);
+    computerHandCopy.splice(idx, 1);
+    const firstRow = MID_IDX - Math.ceil((perm.length - 1) / 2);
+    const letterScoreObj = calculateScoreFromLetter(
+      firstRow + j,
+      7,
+      null,
+      perm[j],
+      boardValues,
+      tempBoardValues,
+      zeroPointCoordinates
     );
-    for (let i = 0; i < permsWithIndices.length; i++) {
-      const permWithIndices = permsWithIndices[i];
-      const perm = permWithIndices.map((elem) => elem.letter);
-      const indices = permWithIndices.map((elem) => elem.idx);
-      const word = perm.join("");
-      const isValidWord = getIsValidWord(word, localDictionary);
+    wordScore += letterScoreObj.letterPoints;
+    multiplier *= letterScoreObj.wordMultiplier;
 
-      if (isValidWord) {
-        let wordScore = 0;
-        let multiplier = 1;
-        setSelectedComputerTiles(indices);
-        await delay(1000);
-        setSelectedComputerTiles([]);
-        for (let j = 0; j < perm.length; j++) {
-          const k = computerHandCopy.indexOf(perm[j]);
-          computerHandCopy.splice(k, 1);
-          const firstRow = MID_IDX - Math.ceil((perm.length - 1) / 2);
-          const letterScoreObj = calculateScoreFromLetter(
-            firstRow + j,
-            7,
-            null,
-            perm[j],
-            boardValues,
-            tempBoardValues,
-            zeroPointCoordinates
-          );
-          wordScore += letterScoreObj.letterPoints;
-          multiplier *= letterScoreObj.wordMultiplier;
-          const resolvedLetter = isValidWord[j];
-
-          if (perm[j] === "-") {
-            dispatch(addZeroCoordinates(JSON.stringify([firstRow + j, 7])));
-          }
-
-          dispatch(
-            addLetterToBoard({
-              row: firstRow + j,
-              col: 7,
-              letter: resolvedLetter,
-            })
-          );
-        }
-        wordScore *= multiplier;
-        const maybeFifty = perm.length === 7 ? 50 : 0;
-        dispatch(updateComputerScore(wordScore + maybeFifty));
-        result = word;
-        break;
-      }
-    }
-    lettersToPlay--;
-    if (result) break;
+    dispatch(
+      addLetterToBoard({
+        row: firstRow + j,
+        col: 7,
+        letter,
+      })
+    );
   }
+  wordScore *= multiplier;
+  const maybeFifty = perm.length === 7 ? 50 : 0;
+  dispatch(updateComputerScore(wordScore + maybeFifty));  
+
   dispatch(
     modifyComputerHand(
-      computerHandCopy.concat(lettersLeft.slice(0, result.length))
+      computerHandCopy.concat(lettersLeft.slice(0, word.length))
     )
   );
-  dispatch(modifyLettersLeft(lettersLeft.slice(result.length)));
+  dispatch(modifyLettersLeft(lettersLeft.slice(word.length)));
   dispatch(setIsComputersTurn(false));
 };
 
