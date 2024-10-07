@@ -8,7 +8,7 @@ This project is a web implementation of the board game Scrabble using React and 
 
 ### 2.1 Purpose
  
-The purpose of this project is to show how clean, well-designed code can manage the tens of thousands of calculations per second needed to automate the computer’s game play during the game of Scrabble.
+
 
 ### 2.2 Scope
  
@@ -22,11 +22,8 @@ Calculate scores based on the rules of Scrabble. Each letter has a value. In add
 
 ### 2.3 Out of Scope
  
-Some features of the board game Scrabble are out of scope for this project’s MVP. There are also some features of similar games, such as the New York Times Crossword App, that are not supported at this time. These features should be considered for future implementations.
-Enable players to dump unwanted letters (incurring a punishment of having to pass a round).
+Some features of the board game Scrabble are out of scope for this project’s MVP. These features may be considered for future implementations.
 Add blank tiles. Blank tiles can stand in for any letter and are worth no points.
- This project currently supports users dragging and dropping letter tiles from their hand onto the board. A future implementation could allow users to click a starting block and then type (instead of dragging) in order to place letters on the board. Double clicking could toggle between vertical and horizontal placements.
-Make the app mobile friendly.
 
 ## Section 3 – System Architecture
 
@@ -36,11 +33,9 @@ There are two basic components, Letter and Board.
 Letter: Props for this component include letter, board row, board column, and hand index. Letters can be in a player’s hand, in the computer’s hand, or on the board. Props determine the component’s behavior. For example, letters are draggable only if they are either in a player’s hand, or temporarily placed on the board and not yet submitted.
 Board: This is a 15 by 15 grid. No props are needed. Letters that are placed on the board, temporarily or permanently, can be retrieved from Redux state.
 
-### 3.2 Game Engine
- 
-Most of the game handling logic can be found in the App component.
+### 3.2 Data Structures and Algorithms
 
-In order to keep track of where word tiles are, this app has, at most, three different “boards” in memory at any given time. One board contains all of the permanently placed tiles that have been validated and successfully submitted by player or computer gameplay. This board of “permanent” tiles is in Redux state. Another board, also in Redux state, contains tiles that players have temporarily placed, and have not yet successfully submitted. Finally, when the computer plays, it builds a “virtual board” upon which to try all placements of letters around previously played letters on the “real” board. The algorithm to test all placements of letters is a greedy algorithm that starts by trying to place all seven letters in the computer’s hand, then six, then five, etc. It is not necessary to store this virtual board in state. In fact, it is implausible to store this virtual board in state because of all the calculations that are done on this virtual board. Dispatching hundreds of thousands of actions to reducers for each computer move is not ideal and could easily create glitches (there are 7! = 5040 permutations of the letters in a hand). The virtual board is passed as a function argument.
+DAWG Directed Acyclical Word Graph, backtracking Appel and Jacobson's "The World's Fastest Scrabble Program"
 
 ## Section 4 – Technologies
  
