@@ -841,7 +841,7 @@ export const handleComputerStep = async (
     const startY = elem[2];
     const dir = elem[3];
     const perm = permWithIndices.map((elem) => elem.letter);
-    const indices = permWithIndices.map((elem) => elem.idx);
+    const indices = permWithIndices.map((elem) => elem.index);
 
     let virtualBoard;
 
