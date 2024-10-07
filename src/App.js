@@ -14,8 +14,8 @@ import {
   handleComputerStep,
   handleNewGameClick,
   handleDump,
-  Node
 } from "./util";
+import { Node } from "./dataStructures";
 
 import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
 

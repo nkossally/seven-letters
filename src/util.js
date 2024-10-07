@@ -19,14 +19,6 @@ import {
 import { removeTempLetterFromBoard } from "./reducers/tempBoardValuesSlice";
 import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
 
-export class Node {
-  constructor(letter) {
-    this.letter = letter;
-    this.children = {};
-    this.terminal = false;
-  }
-}
-
 const getIsValidWord = (word, dictionaryTrie) => {
   let i = 0;
   let curr = dictionaryTrie;
