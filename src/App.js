@@ -64,6 +64,8 @@ const App = () => {
 
   const dispatch = useDispatch();
 
+  useEffect(()=>{},[isGameOver])
+
   useEffect(() => {
     if (
       gameStarted &&
