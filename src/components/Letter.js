@@ -101,7 +101,7 @@ const Letter = ({
     return (
       <div className={classNames("hand-tile", "hand-tile-permanent", points === 0 ? "zero-points" : "")}>
         {
-          <span className={letter === "-" ? "invisible-letter" : ""}>
+          <span>
             {letter}
           </span>
         }
@@ -115,7 +115,6 @@ const Letter = ({
           "hand-tile",
           "computer-tile",
           "look-3d",
-          letter === "-" ? "invisible-letter" : "",
           selected ? "slide-left" : ""
         )}
       >
@@ -136,7 +135,7 @@ const Letter = ({
           temporary ? "hand-tile-temporary" : "look-3d"
         )}
       >
-        <div className={letter === "-" ? "invisible-letter" : ""}>{letter}</div>
+        <div>{letter}</div>
         <span className="score-in-tile">{LETTER_TO_SCORE[letter]}</span>
       </div>
     </Draggable>

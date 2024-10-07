@@ -1,7 +1,6 @@
 import {
   BOARD_SIZE,
   LETTER_TO_SCORE,
-  DICTIONARY_ENDPOINT,
   MID_IDX,
   ANIMATION_DURATION,
   DIRS,
@@ -25,15 +24,6 @@ import {
 } from "./reducers/zeroPointCoordinatesSlice";
 
 let blankTileLetters = [];
-
-// Deprecated. No longer using this endpoint.
-export const lookUpWord = async (word) => {
-  try {
-    const resp = await fetch(`${DICTIONARY_ENDPOINT}${word}`);
-    const responseJson = await resp.json();
-    return responseJson[0]["meanings"][0]["definitions"][0]["definition"];
-  } catch (e) {}
-};
 
 export class Node {
   constructor(letter) {
@@ -455,10 +445,6 @@ const permanentlyPlaceLetters = (
       let letter =
         getTempLetterAtCoordinate(i, j, tempBoardValues) ||
         getTempLetterOnVirtualBoard(i, j, virtualBoard);
-      if (letter === "-") {
-        letter = blankTileLetters.shift();
-        dispatch(addZeroCoordinates(JSON.stringify([i, j])));
-      }
       if (letter) {
         wordSoFar += letter;
         dispatch(addLetterToBoard({ row: i, col: j, letter }));
@@ -1143,36 +1129,10 @@ const handleComputerStepOnEmptyBoard = async (
   dispatch(setIsComputersTurn(false));
 };
 
-const getIsValidWord = (word, localDictionary, dispatch) => {
-  blankTileLetters = []
-  let localBlankTileLetters = []
+const getIsValidWord = (word, localDictionary) => {
   if (dictionaryTrieHasWord(localDictionary, word)) return word;
 
-  let resolvedWord = false;
-  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-
-  if (word.includes("-")) {
-    const buildWord = (prefix, idx, arr) => {
-      if (resolvedWord) return;
-      if (idx === word.length) {
-        if (dictionaryTrieHasWord(localDictionary, prefix)) {
-          resolvedWord = prefix;
-          localBlankTileLetters = arr
-        }
-        return;
-      }
-      if (word[idx] === "-") {
-        alphabet.forEach((letter) => {
-          buildWord(prefix + letter, idx + 1, [...arr, letter]);
-        });
-      } else {
-        buildWord(prefix + word[idx], idx + 1, arr);
-      }
-    };
-    buildWord("", 0, []);
-  }
-  blankTileLetters = localBlankTileLetters;
-  return resolvedWord;
+  return false;
 };
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));

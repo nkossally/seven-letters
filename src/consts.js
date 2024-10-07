@@ -1,10 +1,6 @@
 export const BOARD_SIZE = 15;
-export const HAND_SIZE = 7;
-export const DICTIONARY_ENDPOINT =
-  "https://api.dictionaryapi.dev/api/v2/entries/en/";
 export const HUNDRED_THOUSAND = 100000;
 export const MID_IDX = 7;
-export const MAX_LETTERS = 7;
 export const ANIMATION_DURATION = 2000;
 
 export const LETTER_TO_SCORE = {
@@ -34,38 +30,6 @@ export const LETTER_TO_SCORE = {
   X: 8,
   Y: 4,
   Z: 10,
-  "-": 0,
-};
-
-// Ranges calculated from data found at
-// http://en.wikipedia.org/wiki/Letter_frequency
-export const LETTER_FREQUENCIES = {
-  A: 8167,
-  B: 9659,
-  C: 12441,
-  D: 16694,
-  E: 29396,
-  F: 31624,
-  G: 33639,
-  H: 39733,
-  I: 46699,
-  J: 46852,
-  K: 47624,
-  L: 51649,
-  M: 54055,
-  N: 60804,
-  O: 68311,
-  P: 70240,
-  Q: 70335,
-  R: 76322,
-  S: 82649,
-  T: 91705,
-  U: 94463,
-  V: 95441,
-  W: 97801,
-  X: 97951,
-  Y: 99925,
-  Z: HUNDRED_THOUSAND,
 };
 
 export const DIRS = [
@@ -102,5 +66,4 @@ export const LETTER_COUNTS = {
   X: 1,
   Y: 2,
   Z: 1,
-  "-": 0,
 };
