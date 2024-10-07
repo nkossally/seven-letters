@@ -8,7 +8,8 @@ This project is a web implementation of the board game Scrabble using React and 
 
 ### 2.1 Purpose
  
-
+Use React and other libraries to render an easy to use and understand implementation of Scrabble. Use efficient data structures and algorithms to optimize the speed at which the computer finds 
+moves that maximize the number of tiles played. The underlying algorithm does not maximize for points. It maximizes for letters played.
 
 ### 2.2 Scope
  
@@ -22,8 +23,7 @@ Calculate scores based on the rules of Scrabble. Each letter has a value. In add
 
 ### 2.3 Out of Scope
  
-Some features of the board game Scrabble are out of scope for this project’s MVP. These features may be considered for future implementations.
-Add blank tiles. Blank tiles can stand in for any letter and are worth no points.
+One feature of the board game Scrabble, blank tiles, is out of scope for this project’s MVP. 
 
 ## Section 3 – System Architecture
 
@@ -35,7 +35,8 @@ Board: This is a 15 by 15 grid. No props are needed. Letters that are placed on 
 
 ### 3.2 Data Structures and Algorithms
 
-DAWG Directed Acyclical Word Graph, backtracking Appel and Jacobson's "The World's Fastest Scrabble Program"
+The efficient data structure that enables the word search algorithm is a trie. When the game loads, a text file containing valid Scrabble words is parsed and converted into a trie. The trie structure enables the computer to only try to place words that exist, instead of every permutation of letters in the computer's hand.
+In "The World's Fastest Scrabble Program," Appel and Jacobson explain how they used a Directed Acyclical Word Graphs (DAWG) to make their Scrabble Solver algorithm efficient. DAWGs are like tries, but take up much less space. In the future, this project can add a python backend that implements a DAWG for storing the dictionary and searching for the best word to place.
 
 ## Section 4 – Technologies
  
