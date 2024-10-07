@@ -54,6 +54,7 @@
     ]
   },
   "devDependencies": {
-    "@types/jquery": "^3.5.29"
+    "@types/jquery": "^3.5.29",
+    "redux-mock-store": "^1.5.4"
   }
 }

@@ -36,7 +36,6 @@ const rootReducer = combineReducers({
   computerScore: computerScoreSliceReducer,
   isComputersTurn: isComputersTurnSliceReducer,
   selectedForDumpingHandIndices: selectedForDumpingHandIndicesReducer,
-  selectedForDumpingHandIndices: selectedForDumpingHandIndicesReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
