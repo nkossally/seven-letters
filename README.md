@@ -27,11 +27,13 @@ One feature of the board game Scrabble, blank tiles, is out of scope for this pr
 
 ## Section 3 – System Architecture
 
+This project uses React to build components. The benefits of React include efficent rendering due to its virtual DOM, and reusable components.
+This project uses Redux for state management. Among other variables, player hand, computer hand, played letters and letters staged on the board are stored in global state. Storing these variables in global states avoids prop drilling.
+
 ### 3.1 Components
  
-There are two basic components, Letter and Board.
-Letter: Props for this component include letter, board row, board column, and hand index. Letters can be in a player’s hand, in the computer’s hand, or on the board. Props determine the component’s behavior. For example, letters are draggable only if they are either in a player’s hand, or temporarily placed on the board and not yet submitted.
-Board: This is a 15 by 15 grid. No props are needed. Letters that are placed on the board, temporarily or permanently, can be retrieved from Redux state.
+There are five basic components to this project: App, ScrabbleBoard, Hand, ComputerHand and Letter. App controls game logic and renders the ScrabbleBoard. ScrabbleBoard contains the layout of the game, and contains the child components Hand and ComputerHand. The two hand components render Letter components.
+Props for the Letter component include letter, board row, board column, and hand index. Letters can be in a player’s hand, in the computer’s hand, or on the board. Props determine the component’s behavior. For example, letters are draggable only if they are either in a player’s hand, or temporarily placed on the board and not yet submitted.
 
 ### 3.2 Data Structures and Algorithms
 

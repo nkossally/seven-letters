@@ -1,5 +1,4 @@
 export const BOARD_SIZE = 15;
-export const HUNDRED_THOUSAND = 100000;
 export const MID_IDX = 7;
 export const ANIMATION_DURATION = 2000;
 
