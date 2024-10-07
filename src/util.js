@@ -27,7 +27,7 @@ export class Node {
   }
 }
 
-const dictionaryTrieHasWord = (dictionaryTrie, word) => {
+const getIsValidWord = (word, dictionaryTrie) => {
   let i = 0;
   let curr = dictionaryTrie;
   while (i < word.length) {
@@ -1098,12 +1098,6 @@ const handleComputerStepOnEmptyBoard = async (
   );
   dispatch(modifyLettersLeft(lettersLeft.slice(word.length)));
   dispatch(setIsComputersTurn(false));
-};
-
-const getIsValidWord = (word, localDictionary) => {
-  if (dictionaryTrieHasWord(localDictionary, word)) return word;
-
-  return false;
 };
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
