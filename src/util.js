@@ -2,11 +2,8 @@ import {
   BOARD_SIZE,
   LETTER_TO_SCORE,
   DICTIONARY_ENDPOINT,
-  HUNDRED_THOUSAND,
   MID_IDX,
-  MAX_LETTERS,
   ANIMATION_DURATION,
-  LETTER_FREQUENCIES,
   DIRS,
   LETTER_COUNTS,
 } from "./consts";
@@ -22,7 +19,6 @@ import {
 } from "./reducers/boardValuesSlice";
 import { removeTempLetterFromBoard } from "./reducers/tempBoardValuesSlice";
 import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
-import { setResolvedWord } from "./reducers/resolvedWordSlice";
 import {
   addZeroCoordinates,
   resetZeroPointCoordinates,

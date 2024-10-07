@@ -10,7 +10,6 @@ import scoreSliceReducer from "./scoreSlice";
 import computerScoreSliceReducer from "./computerScoreSlice";
 import isComputersTurnSliceReducer from "./isComputersTurn.slice";
 import selectedForDumpingHandIndicesReducer from "./selectedForDumpingHandIndicesSlice";
-import resolvedWordReducer from "./resolvedWordSlice";
 import zeroPointCoordinatesReducer from "./zeroPointCoordinatesSlice";
 
 const persistConfig = {
@@ -25,7 +24,6 @@ const persistConfig = {
     "score",
     "computerScore",
     "isComputersTurn",
-    "resolvedWord",
     "zeroPointCoordinates"
   ],
 };
@@ -41,7 +39,6 @@ const rootReducer = combineReducers({
   isComputersTurn: isComputersTurnSliceReducer,
   selectedForDumpingHandIndices: selectedForDumpingHandIndicesReducer,
   selectedForDumpingHandIndices: selectedForDumpingHandIndicesReducer,
-  resolvedWord: resolvedWordReducer,
   zeroPointCoordinates: zeroPointCoordinatesReducer,
 });
 
