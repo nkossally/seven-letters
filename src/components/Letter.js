@@ -29,8 +29,7 @@ const Letter = ({
   const selectedForDumpingHandIndices = useSelector(
     (state) => state.selectedForDumpingHandIndices
   );
-  const zeroPointCoordinates = useSelector((state) => state.zeroPointCoordinates);
-  const points = zeroPointCoordinates[JSON.stringify([boardRow, boardCol])] === true ? 0 : LETTER_TO_SCORE[letter]
+  const points = LETTER_TO_SCORE[letter];
 
   const dispatch = useDispatch();
 

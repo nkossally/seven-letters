@@ -10,7 +10,6 @@ import scoreSliceReducer from "./scoreSlice";
 import computerScoreSliceReducer from "./computerScoreSlice";
 import isComputersTurnSliceReducer from "./isComputersTurn.slice";
 import selectedForDumpingHandIndicesReducer from "./selectedForDumpingHandIndicesSlice";
-import zeroPointCoordinatesReducer from "./zeroPointCoordinatesSlice";
 
 const persistConfig = {
   key: "root",
@@ -24,7 +23,6 @@ const persistConfig = {
     "score",
     "computerScore",
     "isComputersTurn",
-    "zeroPointCoordinates"
   ],
 };
 
@@ -39,7 +37,6 @@ const rootReducer = combineReducers({
   isComputersTurn: isComputersTurnSliceReducer,
   selectedForDumpingHandIndices: selectedForDumpingHandIndicesReducer,
   selectedForDumpingHandIndices: selectedForDumpingHandIndicesReducer,
-  zeroPointCoordinates: zeroPointCoordinatesReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

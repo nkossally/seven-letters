@@ -60,7 +60,6 @@ const App = () => {
   const selectedForDumpingHandIndices = useSelector(
     (state) => state.selectedForDumpingHandIndices
   );
-  const zeroPointCoordinates = useSelector((state) => state.zeroPointCoordinates);
 
   const dispatch = useDispatch();
 
@@ -135,7 +134,6 @@ const App = () => {
         hand,
         setComputerPasses,
         playerScore,
-        zeroPointCoordinates
       );
     }
   }, [isComputersTurn]);
@@ -195,7 +193,6 @@ const App = () => {
               hand,
               boardValues,
               tempBoardValues,
-              zeroPointCoordinates
             )}
           >
             {" "}
