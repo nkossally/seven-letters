@@ -15,6 +15,7 @@ import {
   handleNewGameClick,
   handleDump,
 } from "./util";
+import { testSetDawg, testGetDawg} from "./api"
 import { Node } from "./dataStructures";
 
 import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
@@ -49,6 +50,7 @@ const App = () => {
   const [gameStarted, setGameStarted] = useState(false);
   const [invalidWords, setInvalidWords] = useState(false);
   const [computerPasses, setComputerPasses] = useState(false);
+  const redisKey = useSelector((state) => state.redisKey);
   const boardValues = useSelector((state) => state.boardValues);
   const tempBoardValues = useSelector((state) => state.tempBoardValues);
   const lettersLeft = useSelector((state) => state.lettersLeft);
@@ -59,7 +61,7 @@ const App = () => {
   const isComputersTurn = useSelector((state) => state.isComputersTurn);
   const selectedForDumpingHandIndices = useSelector(
     (state) => state.selectedForDumpingHandIndices
-  );
+)
 
   const dispatch = useDispatch();
 
@@ -113,27 +115,26 @@ const App = () => {
   ]);
 
   useEffect(() => {
-    startGame(dispatch, hand, boardValues, tempBoardValues);
+    const wrapper = async () =>{
+      await  startGame(dispatch, hand, boardValues, tempBoardValues);
+    }
+    wrapper();
     setGameStarted(true);
   }, []);
 
   useEffect(() => {
     if (isComputersTurn) {
       handleComputerStep(
-        setInvalidWords,
         dispatch,
-        isComputersTurn,
         setSelectedComputerTiles,
         setIsComputersTurn,
-        localDictionary,
-        computerScore,
-        lettersLeft,
         boardValues,
         tempBoardValues,
-        computerHand,
-        hand,
         setComputerPasses,
+        localDictionary,
+        computerScore,
         playerScore,
+        redisKey
       );
     }
   }, [isComputersTurn]);
@@ -146,9 +147,12 @@ const App = () => {
   } else {
     gameOverText = "It's a tie";
   }
+
+
   return (
     <div className="App">
       <div className="top-row">
+
         <Button
           variant="outlined"
           sx={resetButtonStyle}
@@ -172,6 +176,7 @@ const App = () => {
       {isGameOver ? <GameOverModal text={gameOverText} /> : ""}
       <div className="player-row">
         <Hand />
+
         <div>
           <Button
             variant="outlined"
@@ -179,10 +184,8 @@ const App = () => {
             disabled={isComputersTurn || isGameOver}
             onClick={submitWord(
               undefined,
-              undefined,
               setInvalidWords,
               dispatch,
-              isComputersTurn,
               setSelectedComputerTiles,
               setIsComputersTurn,
               localDictionary,
@@ -193,6 +196,7 @@ const App = () => {
               hand,
               boardValues,
               tempBoardValues,
+              redisKey
             )}
           >
             {" "}
@@ -207,7 +211,8 @@ const App = () => {
               hand,
               tempBoardValues,
               selectedForDumpingHandIndices,
-              lettersLeft
+              lettersLeft,
+              redisKey
             )}
           >
             {" "}
