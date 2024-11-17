@@ -157,7 +157,8 @@ export const submitWord =
     hand,
     boardValues,
     tempBoardValues,
-    key
+    key,
+    setIsSubmitting
   ) =>
   async () => {
     dispatch(removeDumpSelections());
@@ -216,6 +217,8 @@ export const submitWord =
       return;
     }
 
+    setIsSubmitting(true);
+
     const allWordsInDict = checkAllWordsOnBoard(
       virtualBoard,
       localDictionary,
@@ -233,8 +236,10 @@ export const submitWord =
         tempBoardValues,
         key
       );
+      setIsSubmitting(false)
       dispatch(setIsComputersTurn(true));
     } else {
+      setIsSubmitting(false)
       handleSetInvalidWords(
         "Word(s) not found in dictionary.",
         setInvalidWords

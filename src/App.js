@@ -51,6 +51,7 @@ const App = () => {
   const [computerPasses, setComputerPasses] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDumping, setIsDumping] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const redisKey = useSelector((state) => state.redisKey);
   const boardValues = useSelector((state) => state.boardValues);
   const tempBoardValues = useSelector((state) => state.tempBoardValues);
@@ -186,7 +187,7 @@ const App = () => {
           <Button
             variant="outlined"
             sx={buttonStyle}
-            disabled={isComputersTurn || isGameOver || isDumping}
+            disabled={isComputersTurn || isGameOver || isDumping || isSubmitting}
             onClick={submitWord(
               undefined,
               setInvalidWords,
@@ -201,7 +202,8 @@ const App = () => {
               hand,
               boardValues,
               tempBoardValues,
-              redisKey
+              redisKey,
+              setIsSubmitting
             )}
           >
             {" "}
@@ -210,7 +212,7 @@ const App = () => {
           <Button
             variant="outlined"
             sx={buttonStyle}
-            disabled={isComputersTurn || isGameOver|| isDumping}
+            disabled={isComputersTurn || isGameOver || isDumping || isSubmitting}
             onClick={handleDump(
               dispatch,
               hand,
@@ -227,7 +229,7 @@ const App = () => {
           <Button
             variant="outlined"
             sx={buttonStyle}
-            disabled={isComputersTurn || isGameOver || isDumping}
+            disabled={isComputersTurn || isGameOver || isDumping || isSubmitting}
             onClick={pass(dispatch, setIsComputersTurn, hand, tempBoardValues)}
           >
             {" "}
