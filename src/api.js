@@ -1,5 +1,7 @@
-const API_URL = "https://scrabble-backend.vercel.app"
+const env = process.env.NODE_ENV
+const API_URL = env === "development" ? "" : "https://scrabble-backend.vercel.app";
 // const API_URL = ""
+console.log("process.env", process.env, "API_URL", API_URL);
 
 export const setUpGame = async () => {
   try {

@@ -720,7 +720,9 @@ export const handleComputerStep = async (
       tempBoardValues,
       setSelectedComputerTiles,
       dispatch,
-      key
+      key,
+      setComputerPasses,
+      setIsComputersTurn
     );
     return;
   }
@@ -729,8 +731,12 @@ export const handleComputerStep = async (
   await delay(500);
 
   const resp = await getBestMove(key);
-  if (!resp) {
-    console.log("no response");
+  if (!resp || !resp['word']) {
+    setComputerPasses(true);
+    setTimeout(() => {
+      setComputerPasses(false);
+      dispatch(setIsComputersTurn(false));
+    }, ANIMATION_DURATION);
     return;
   }
   let row = resp["row"];
@@ -824,12 +830,18 @@ const handleComputerStepOnEmptyBoard = async (
   tempBoardValues,
   setSelectedComputerTiles,
   dispatch,
-  key
+  key,
+  setComputerPasses,
+  setIsComputersTurn
 ) => {
 
   const resp = await getComputerFirstMove(key);
-  if (!resp) {
-    console.log("no response");
+  if (!resp || !resp['word']) {
+    setComputerPasses(true);
+    setTimeout(() => {
+      setComputerPasses(false);
+      dispatch(setIsComputersTurn(false));
+    }, ANIMATION_DURATION);
     return;
   }
   const tileBag = resp['tile_bag'];
