@@ -117,7 +117,7 @@ export const startGame = async (dispatch, hand, boardValues, tempBoardValues) =>
   const tiles = resp["tiles"]
   const computerHand = resp["computer_hand"]
   const playerHand = resp["player_hand"]
-  const key = resp["key"]
+  const key = resp["key"] ?  resp["key"]  : "";
   console.log("redis key", key)
 
   removeAllTempLetters(

@@ -1,5 +1,4 @@
 const API_URL = "https://scrabble-backend.vercel.app"
-// const API_URL = "https://scrabble-backend-xwj2.vercel.app"
 // const API_URL = ""
 
 export const setUpGame = async () => {
@@ -10,7 +9,7 @@ export const setUpGame = async () => {
   } catch {}
 };
 
-export const getComputerFirstMove = async (key) => {
+export const getComputerFirstMove = async (key = "") => {
   try {
     const resp = await fetch(`${API_URL}/get-computer-first-move?key=${key}`);
     const json = await resp.json();
@@ -18,16 +17,16 @@ export const getComputerFirstMove = async (key) => {
   } catch {}
 };
 
-export const getBestMove = async (key) => {
+export const getBestMove = async (key = "") => {
     try {
-      const resp = await fetch(`${API_URL}/get-best-move`);
+      const resp = await fetch(`${API_URL}/get-best-move?key=${key}`);
       const json = await resp.json();
       console.log("resp in fetch", json)
       return json;
     } catch {}
   };
 
-  export const insertTilesInBackend = async (lettersAndCoordinates, key) => {
+  export const insertTilesInBackend = async (lettersAndCoordinates, key = "") => {
     console.log("insertTilesInBackend")
     try {
       const resp = await fetch(API_URL+"/insert-letters", {
@@ -43,7 +42,7 @@ export const getBestMove = async (key) => {
     } catch {}
   };
 
-  export const dumpLetters = async (letters, key) => {
+  export const dumpLetters = async (letters, key = "") => {
     try {
       const resp = await fetch(API_URL+"/dump-letters", {
         method: "POST",
