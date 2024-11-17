@@ -906,13 +906,16 @@ export const handleNewGameClick =
     boardValues,
     tempBoardValues,
     setGameStarted,
-    setIsGameOver
+    setIsGameOver,
+    setIsLoading
   ) =>
-  () => {
+  async() => {
+    setIsLoading(true);
     setGameStarted(true);
     setIsGameOver(false);
     dispatch(removeDumpSelections());
-    startGame(dispatch, hand, boardValues, tempBoardValues);
+    await startGame(dispatch, hand, boardValues, tempBoardValues);
+    setIsLoading(false);
   };
 
 export const handleDump =

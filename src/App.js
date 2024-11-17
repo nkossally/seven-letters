@@ -50,6 +50,7 @@ const App = () => {
   const [gameStarted, setGameStarted] = useState(false);
   const [invalidWords, setInvalidWords] = useState(false);
   const [computerPasses, setComputerPasses] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const redisKey = useSelector((state) => state.redisKey);
   const boardValues = useSelector((state) => state.boardValues);
   const tempBoardValues = useSelector((state) => state.tempBoardValues);
@@ -148,6 +149,9 @@ const App = () => {
     gameOverText = "It's a tie";
   }
 
+  if(isLoading){
+    return <div className="loader-container"><div className="loader"/></div>
+  }
 
   return (
     <div className="App">
@@ -162,7 +166,8 @@ const App = () => {
             boardValues,
             tempBoardValues,
             setGameStarted,
-            setIsGameOver
+            setIsGameOver,
+            setIsLoading
           )}
         >
           New Game
