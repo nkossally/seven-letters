@@ -50,6 +50,7 @@ const App = () => {
   const [invalidWords, setInvalidWords] = useState(false);
   const [computerPasses, setComputerPasses] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDumping, setIsDumping] = useState(false);
   const redisKey = useSelector((state) => state.redisKey);
   const boardValues = useSelector((state) => state.boardValues);
   const tempBoardValues = useSelector((state) => state.tempBoardValues);
@@ -185,7 +186,7 @@ const App = () => {
           <Button
             variant="outlined"
             sx={buttonStyle}
-            disabled={isComputersTurn || isGameOver}
+            disabled={isComputersTurn || isGameOver || isDumping}
             onClick={submitWord(
               undefined,
               setInvalidWords,
@@ -209,14 +210,15 @@ const App = () => {
           <Button
             variant="outlined"
             sx={buttonStyle}
-            disabled={isComputersTurn || isGameOver}
+            disabled={isComputersTurn || isGameOver|| isDumping}
             onClick={handleDump(
               dispatch,
               hand,
               tempBoardValues,
               selectedForDumpingHandIndices,
               lettersLeft,
-              redisKey
+              redisKey,
+              setIsDumping
             )}
           >
             {" "}
@@ -225,7 +227,7 @@ const App = () => {
           <Button
             variant="outlined"
             sx={buttonStyle}
-            disabled={isComputersTurn || isGameOver}
+            disabled={isComputersTurn || isGameOver || isDumping}
             onClick={pass(dispatch, setIsComputersTurn, hand, tempBoardValues)}
           >
             {" "}

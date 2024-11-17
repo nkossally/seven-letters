@@ -925,9 +925,11 @@ export const handleDump =
     tempBoardValues,
     selectedForDumpingHandIndices,
     lettersLeft,
-    key
+    key,
+    setIsDumping
   ) =>
   async () => {
+    setIsDumping(true)
     const dumpNum = selectedForDumpingHandIndices.length;
     if (dumpNum > 0) {
 
@@ -960,5 +962,6 @@ export const handleDump =
       setTimeout(() => {
         dispatch(setIsComputersTurn(true));
       }, 30);
+      setIsDumping(false)
     }
   };
