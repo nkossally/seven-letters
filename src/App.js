@@ -22,6 +22,7 @@ import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
 import classNames from "classnames";
 
 import "./styles.scss";
+import { get } from "jquery";
 
 const resetButtonStyle = {
   "text-transform": "uppercase",

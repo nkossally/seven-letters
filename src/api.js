@@ -28,12 +28,26 @@ export const getBestMove = async (key = "") => {
     } catch {}
   };
 
-  export const insertTilesInBackend = async (lettersAndCoordinates, key = "") => {
-    console.log("insertTilesInBackend")
+  export const insertTilesInBackend = async (
+    lettersAndCoordinates,
+    key = "",
+    maxWord,
+    startRow,
+    startCol,
+    isVertical
+  ) => {
+    console.log("insertTilesInBackend");
     try {
-      const resp = await fetch(API_URL+"/insert-letters", {
+      const resp = await fetch(API_URL + "/insert-letters", {
         method: "POST",
-        body: JSON.stringify({letters_and_coordinates: lettersAndCoordinates, key}),
+        body: JSON.stringify({
+          letters_and_coordinates: lettersAndCoordinates,
+          key,
+          max_word: maxWord,
+          start_row: startRow,
+          start_col: startCol,
+          is_vertical: isVertical,
+        }),
         headers: {
           "Content-type": "application/json",
         },
@@ -46,9 +60,9 @@ export const getBestMove = async (key = "") => {
 
   export const dumpLetters = async (letters, key = "") => {
     try {
-      const resp = await fetch(API_URL+"/dump-letters", {
+      const resp = await fetch(API_URL + "/dump-letters", {
         method: "POST",
-        body: JSON.stringify({letters, key}),
+        body: JSON.stringify({ letters, key }),
         headers: {
           "Content-type": "application/json",
         },
@@ -58,3 +72,4 @@ export const getBestMove = async (key = "") => {
       return json;
     } catch {}
   };
+  

@@ -111,14 +111,12 @@ export const pass =
 export const startGame = async (dispatch, hand, boardValues, tempBoardValues) => {
   const resp = await setUpGame();
   if (!resp) {
-    console.log("no response");
     return;
   }
   const tiles = resp["tiles"]
   const computerHand = resp["computer_hand"]
   const playerHand = resp["player_hand"]
   const key = resp["key"] ?  resp["key"]  : "";
-  console.log("redis key", key)
 
   removeAllTempLetters(
     /** putBackInHand */ false,
@@ -230,11 +228,20 @@ export const submitWord =
     );
 
     if (allWordsInDict) {
+      const maxWord = allWordsInDict.maxWord;
+      const startRow = allWordsInDict.startRow;
+      const startCol = allWordsInDict.startCol;
+      const isVertical = allWordsInDict.isVertical;
+
       await permanentlyPlaceLetters(
         computerHand,
         dispatch,
         tempBoardValues,
-        key
+        key,
+        maxWord,
+        startRow,
+        startCol,
+        isVertical
       );
       setIsSubmitting(false)
       dispatch(setIsComputersTurn(true));
@@ -265,8 +272,11 @@ const checkAllWordsOnBoard = (
   let score = 0;
 
   let word = "";
-  let maxWordLength = 0;
   let allWordsInDict = true;
+  let maxWord = ""
+  let startRow
+  let startCol
+  let isVertical
   // if the word is vertical
   if (rows.length > 1) {
     const col = cols[0];
@@ -278,7 +288,12 @@ const checkAllWordsOnBoard = (
       tempBoardValues
     );
     word = wordAndScore.word;
-    maxWordLength = Math.max(maxWordLength, word.length);
+    if(word.length > maxWord.length){
+      maxWord = word;
+      startRow = wordAndScore.startRow;
+      startCol = wordAndScore.startCol;
+      isVertical  = true;
+    }
     if (word.length > 1) {
       score += wordAndScore.wordScore;
       const isValidWord = getIsValidWord(word, localDictionary);
@@ -296,7 +311,12 @@ const checkAllWordsOnBoard = (
       );
       if (wordAndScore) {
         const word = wordAndScore.word;
-        maxWordLength = Math.max(maxWordLength, word.length);
+        if(word.length > maxWord.length){
+          maxWord = word;
+          startRow = wordAndScore.startRow;
+          startCol = wordAndScore.startCol;
+          isVertical  = false;
+        }
         if (word.length > 1) {
           score += wordAndScore.wordScore;
           const isValidWord = getIsValidWord(word, localDictionary);
@@ -319,7 +339,12 @@ const checkAllWordsOnBoard = (
       tempBoardValues
     );
     word = wordAndScore.word;
-    maxWordLength = Math.max(maxWordLength, word.length);
+    if(word.length > maxWord.length){
+      maxWord = word;
+      startRow = wordAndScore.startRow;
+      startCol = wordAndScore.startCol;
+      isVertical  = false;
+    }
     if (word.length > 1) {
       score += wordAndScore.wordScore;
       const isValidWord = getIsValidWord(word, localDictionary);
@@ -339,7 +364,12 @@ const checkAllWordsOnBoard = (
       );
       if (wordAndScore) {
         const word = wordAndScore.word;
-        maxWordLength = Math.max(maxWordLength, word.length);
+        if(word.length > maxWord.length){
+          maxWord = word;
+          startRow = wordAndScore.startRow;
+          startCol = wordAndScore.startCol;
+          isVertical  = true;
+        }
         if (word.length > 1) {
           const isValidWord = getIsValidWord(word, localDictionary);
           score += wordAndScore.wordScore;
@@ -358,7 +388,7 @@ const checkAllWordsOnBoard = (
     dispatch(updateComputerScore(computerScore + score + maybeFifty));
   }
   // don't submit any one letter words
-  if (maxWordLength < 2) return false;
+  if (maxWord.length < 2) return false;
   if (allWordsInDict) {
     if (virtualBoard) {
       dispatch(updateComputerScore(computerScore + score + maybeFifty));
@@ -367,14 +397,18 @@ const checkAllWordsOnBoard = (
     }
   }
 
-  return true;
+  return { maxWord, startRow, startCol, isVertical };
 };
 
 const permanentlyPlaceLetters = async (
   computerHand,
   dispatch,
   tempBoardValues,
-  key
+  key,
+  maxWord,
+  startRow,
+  startCol,
+  isVertical
 ) => {
   let wordSoFar = "";
   let letterCount = 0;
@@ -393,9 +427,8 @@ const permanentlyPlaceLetters = async (
       }
     }
   }
-  const resp = await insertTilesInBackend(lettersAndCoordinates, key);
+  const resp = await insertTilesInBackend(lettersAndCoordinates, key, maxWord, startRow, startCol, isVertical);
   if (!resp) {
-    console.log("no response");
     return;
   }
   const playerWordRack = resp["player_word_rack"];
@@ -556,6 +589,8 @@ const getVerticalWordAtCoordinate = (
   let word = "";
   let wordScore = 0;
   let multiplier = 1;
+  let startRow = x;
+  const startCol = y;
   while (
     getTempLetterAtCoordinate(currX, y, tempBoardValues) ||
     getLetterAtCoordinate(currX, y, boardValues) ||
@@ -597,10 +632,11 @@ const getVerticalWordAtCoordinate = (
     );
     wordScore += letterScoreObj.letterPoints;
     multiplier *= letterScoreObj.wordMultiplier;
+    startRow = currX;
     currX--;
   }
   wordScore *= multiplier;
-  return { word, wordScore };
+  return { word, wordScore, startRow, startCol};
 };
 
 const getHorizontalWordAtCoordinate = (
@@ -614,6 +650,8 @@ const getHorizontalWordAtCoordinate = (
   let word = "";
   let wordScore = 0;
   let multiplier = 1;
+  const startRow = x;
+  let startCol = y
   while (
     getTempLetterAtCoordinate(x, currY, tempBoardValues) ||
     getLetterAtCoordinate(x, currY, boardValues) ||
@@ -655,10 +693,11 @@ const getHorizontalWordAtCoordinate = (
     );
     wordScore += letterScoreObj.letterPoints;
     multiplier *= letterScoreObj.wordMultiplier;
+    startCol = currY;
     currY--;
   }
   wordScore *= multiplier;
-  return { word, wordScore };
+  return { word, wordScore, startRow, startCol };
 };
 
 const calculateScoreFromLetter = (
@@ -751,8 +790,8 @@ export const handleComputerStep = async (
   const tileBag = resp["tile_bag"];
   const computerWordRack = resp["computer_word_rack"];
   const oldComputerWordRack = resp["old_computer_word_rack"];
-  console.log("oldComputerWordRack", oldComputerWordRack)
   const isVertical =resp["is_vertical"];
+  const score = resp["score"]
 
   if (row !== undefined) {
     const indices = [];
@@ -785,29 +824,8 @@ export const handleComputerStep = async (
     }, ANIMATION_DURATION);
   }
 
-  const virtualBoard = createEmptyBoard();
-  let currRow = resp.row;
-  let currCol = resp.col;
-  let count = 0;
-  while(count < word.length){
-    if(!boardValues[currRow][currCol]) virtualBoard[currRow][currCol] = word[count];
-    if(isVertical){
-      currRow++
-    } else {
-      currCol++
-    }
-    count++
-  }
+  dispatch(updateComputerScore(computerScore + score));
 
-  checkAllWordsOnBoard(
-    virtualBoard,
-    localDictionary,
-    dispatch,
-    computerScore,
-    playerScore,
-    boardValues,
-    tempBoardValues,
-  );
 
   dispatch(modifyComputerHand(computerWordRack));
   dispatch(modifyLettersLeft(tileBag));
@@ -852,7 +870,6 @@ const handleComputerStepOnEmptyBoard = async (
   const tileBag = resp['tile_bag'];
   const computerWordRack = resp['computer_word_rack'];
   const oldComputerWordRack = resp['old_computer_word_rack'];
-  console.log("oldComputerWordRack", oldComputerWordRack)
   const row = resp['row'];
   const col = resp['col'];
   const word = resp['word']
@@ -958,14 +975,11 @@ export const handleDump =
       }
       const resp = await dumpLetters(dumpedLetters, key);
       if (!resp) {
-        console.log("no response");
         return;
       }
       console.log(resp)
       const tileBag = resp["tile_bag"];
       const playerWordRack = resp["player_word_rack"];
-      console.log("tileBag",tileBag )
-      console.log("playerWordRack",playerWordRack )
 
       removeAllTempLetters(
         /** putBackInHand */ false,
