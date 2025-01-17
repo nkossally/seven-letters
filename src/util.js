@@ -241,7 +241,10 @@ export const submitWord =
         maxWord,
         startRow,
         startCol,
-        isVertical
+        isVertical,
+        hand,
+        lettersLeft,
+        boardValues
       );
       setIsSubmitting(false)
       dispatch(setIsComputersTurn(true));
@@ -408,7 +411,10 @@ const permanentlyPlaceLetters = async (
   maxWord,
   startRow,
   startCol,
-  isVertical
+  isVertical,
+  hand,
+  lettersLeft,
+  boardValues
 ) => {
   let wordSoFar = "";
   let letterCount = 0;
@@ -427,7 +433,7 @@ const permanentlyPlaceLetters = async (
       }
     }
   }
-  const resp = await insertTilesInBackend(lettersAndCoordinates, key, maxWord, startRow, startCol, isVertical);
+  const resp = await insertTilesInBackend(lettersAndCoordinates, key, maxWord, startRow, startCol, isVertical, hand, computerHand, lettersLeft, boardValues);
   if (!resp) {
     return;
   }
@@ -754,7 +760,10 @@ export const handleComputerStep = async (
   localDictionary,
   computerScore,
   playerScore,
-  key
+  key,
+  hand,
+  computerHand,
+  lettersLeft
 ) => {
   const lettersOnBoard = getPermanentlyPlacedLetters(boardValues);
 
@@ -774,7 +783,7 @@ export const handleComputerStep = async (
   // before tiles inserted by the player are persisted to and retrieved from Redis. Fix later.
   await delay(500);
 
-  const resp = await getBestMove(key);
+  const resp = await getBestMove(key, boardValues, hand, computerHand, lettersLeft);
   if (!resp || !resp['word']) {
     setComputerPasses(true);
     setTimeout(() => {
@@ -960,7 +969,9 @@ export const handleDump =
     selectedForDumpingHandIndices,
     lettersLeft,
     key,
-    setIsDumping
+    setIsDumping,
+    computerHand,
+    boardValues
   ) =>
   async () => {
     setIsDumping(true)
@@ -973,7 +984,7 @@ export const handleDump =
           dumpedLetters.push(hand[i]);
         }
       }
-      const resp = await dumpLetters(dumpedLetters, key);
+      const resp = await dumpLetters(dumpedLetters, key, hand, computerHand, lettersLeft, boardValues);
       if (!resp) {
         return;
       }

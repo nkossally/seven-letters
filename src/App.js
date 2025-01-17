@@ -137,7 +137,10 @@ const App = () => {
         localDictionary,
         computerScore,
         playerScore,
-        redisKey
+        redisKey,
+        hand,
+        computerHand,
+        lettersLeft
       );
     }
   }, [isComputersTurn]);
@@ -221,7 +224,9 @@ const App = () => {
               selectedForDumpingHandIndices,
               lettersLeft,
               redisKey,
-              setIsDumping
+              setIsDumping,
+              computerHand,
+              boardValues
             )}
           >
             {" "}

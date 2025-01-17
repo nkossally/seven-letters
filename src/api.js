@@ -19,11 +19,22 @@ export const getComputerFirstMove = async (key = "") => {
   } catch {}
 };
 
-export const getBestMove = async (key = "") => {
+export const getBestMove = async (key = "", boardValues, hand, computerHand, lettersLeft) => {
     try {
-      const resp = await fetch(`${API_URL}/get-best-move?key=${key}`);
+      const resp = await fetch(API_URL + "/get-best-move", {
+        method: "POST",
+        body: JSON.stringify({
+          board_values: boardValues,
+          key,
+          hand,
+          computer_hand: computerHand,
+          tile_bag: lettersLeft
+        }),
+        headers: {
+          "Content-type": "application/json",
+        },
+      });
       const json = await resp.json();
-      console.log("resp in fetch", json)
       return json;
     } catch {}
   };
@@ -34,7 +45,11 @@ export const getBestMove = async (key = "") => {
     maxWord,
     startRow,
     startCol,
-    isVertical
+    isVertical,
+    hand, 
+    computerHand,
+    lettersLeft,
+    boardValues,
   ) => {
     console.log("insertTilesInBackend");
     try {
@@ -47,6 +62,10 @@ export const getBestMove = async (key = "") => {
           start_row: startRow,
           start_col: startCol,
           is_vertical: isVertical,
+          hand,
+          computer_hand: computerHand,
+          tile_bag: lettersLeft,
+          board_values: boardValues
         }),
         headers: {
           "Content-type": "application/json",
@@ -58,17 +77,23 @@ export const getBestMove = async (key = "") => {
     } catch {}
   };
 
-  export const dumpLetters = async (letters, key = "") => {
+  export const dumpLetters = async (letters, key = "",  hand, computerHand, lettersLeft, boardValues) => {
     try {
       const resp = await fetch(API_URL + "/dump-letters", {
         method: "POST",
-        body: JSON.stringify({ letters, key }),
+        body: JSON.stringify({ 
+          letters, 
+          key,
+          hand,
+          computer_hand: computerHand,
+          tile_bag: lettersLeft,
+          board_values: boardValues
+         }),
         headers: {
           "Content-type": "application/json",
         },
       });
       const json = await resp.json();
-      console.log("resp in fetch", json);
       return json;
     } catch {}
   };

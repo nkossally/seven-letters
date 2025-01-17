@@ -7,3 +7,14 @@ This project is a web implementation of the board game Scrabble using React/Redu
 ## Section 2 - Architecture
 
 User actions trigger requests to the API. The API retrieves game state from Redis, changes game state, serializes game state and sends the serialized state to a Redis database, and then sends game state to the frontend.
+
+## Section 3 - Local Development
+
+npm run start
+redis-server
+
+From backend directory:
+source venv/bin/activate
+flask run
+
+
