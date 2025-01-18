@@ -1,7 +1,5 @@
 const env = process.env.NODE_ENV
 const API_URL = env === "development" ? "" : "https://scrabble-backend.vercel.app";
-// const API_URL = ""
-console.log("process.env", process.env, "API_URL", API_URL);
 
 export const setUpGame = async () => {
   try {
@@ -51,7 +49,6 @@ export const getBestMove = async (key = "", boardValues, hand, computerHand, let
     lettersLeft,
     boardValues,
   ) => {
-    console.log("insertTilesInBackend");
     try {
       const resp = await fetch(API_URL + "/insert-letters", {
         method: "POST",
@@ -72,7 +69,6 @@ export const getBestMove = async (key = "", boardValues, hand, computerHand, let
         },
       });
       const json = await resp.json();
-      console.log("resp in fetch", json);
       return json;
     } catch {}
   };

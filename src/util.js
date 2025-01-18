@@ -988,7 +988,6 @@ export const handleDump =
       if (!resp) {
         return;
       }
-      console.log(resp)
       const tileBag = resp["tile_bag"];
       const playerWordRack = resp["player_word_rack"];
 
