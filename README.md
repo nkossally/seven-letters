@@ -11,14 +11,14 @@ When a user starts a new game, a request is sent to the API to construct a DAWG 
 ## Section 3 - Local Development
 In order to test locally, download this repo and download the backend repo at https://github.com/nkossally/scrabble-backend.
 
-From the fontend directory, start the React app with the command:
+From the fontend directory, start the React app with the command:  
 npm run start
 
-From backend directory, run the following commands:
-source venv/bin/activate
+From backend directory, run the following commands:  
+source venv/bin/activate  
 flask run
 
-To test and run Redis locally, run the following:
+To test and run Redis locally, run the following:  
 redis-server
 
 
